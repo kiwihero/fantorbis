@@ -1,6 +1,7 @@
 class GeneralStructure:
     def __init__(self, **kwargs):
         self.ArrayStorage = None
+        self.cellShape = None
 
     def print_contents(self):
         raise DoesNotExistError("ArrayStorage")
