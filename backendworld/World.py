@@ -1,5 +1,5 @@
-from backendstorage.TectonicBoundary import *
-from backendstorage.TectonicPlate import *
+from backendworld.TectonicBoundary import *
+from backendworld.TectonicPlate import *
 
 class World:
     def __init__(self):
