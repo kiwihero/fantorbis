@@ -1,5 +1,5 @@
-from GridStructure import *
-from NodeStructure import *
-from World import *
+from backendstorage.GridStructure import *
+from backendstorage.NodeStructure import *
+from backendworld.World import *
 
 w1 = World()
