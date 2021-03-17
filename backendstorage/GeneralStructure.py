@@ -14,6 +14,11 @@ class GeneralStructure:
     def __str__(self):
         return 'Data structure of some sort'.format()
 
+    def swap_cells(self, cell1, cell2):
+        tmp = cell1.pos
+        self.move_cell(cell1,cell2.pos)
+        self.move_cell(cell2, tmp)
+
     def move_cell(self, cell, destination):
         raise StructureNotImplementedError("move_cell")
 

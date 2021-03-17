@@ -26,6 +26,7 @@ def draw_world(world):
 def gif_world(world):
     if len(world.images) > 0:
         fnt = ImageFont.truetype('/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf',100)
+        fnt_sm = ImageFont.truetype('/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf', 20)
         # ImageFont.truetype()
         images = []
         image_steps = list(world.images.keys())
@@ -37,7 +38,12 @@ def gif_world(world):
             # min_step = image_steps.pop(min(image_steps))
             min_step = min(image_steps)
             image_steps.remove(min_step)
-            images.append(world.images[min_step])
+            next_img = world.images[min_step]
+            single_draw = ImageDraw.Draw(next_img)
+            caption = "Age: {}".format(min_step)
+            grayscale = 0.8
+            single_draw.text((20,20), caption, anchor='lt', fill=(int(255*grayscale), int(255*grayscale), int(255*grayscale), int(255*grayscale)), stroke_width=1, font=fnt_sm)
+            images.append(next_img)
             if world.images[min_step].size[0] > canvas_width:
                 canvas_width = world.images[min_step].size[0]
             if world.images[min_step].size[1] > canvas_height:
