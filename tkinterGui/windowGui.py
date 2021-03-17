@@ -1,11 +1,34 @@
-import tkinter as tk
-
 from tkinter import *
-
 import os
 
+import tk
 
-# replace this code with the commands for the file menu
+
+class Window(Frame):
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.master = master
+
+        menu = Menu(self.master)
+        self.master.config(menu=menu)
+
+        filemenu = Menu(menu)
+        filemenu.add_command(label="New", command=donothing)
+        filemenu.add_command(label="Open", command=donothing)
+        filemenu.add_command(label="Save", command=donothing)
+        filemenu.add_command(label="Save as...", command=donothing)
+        filemenu.add_command(label="Close", command=donothing)
+
+        filemenu.add_separator()
+
+        filemenu.add_command(label="Exit", command=root.quit)
+        menu.add_cascade(label="File", menu=filemenu)
+
+        helpmenu = Menu(menu)
+        helpmenu.add_command(label="About...", command=about)
+        menu.add_cascade(label="Help", menu=helpmenu)
+
+
 def donothing():
     filewin = tk.Toplevel(root)
     button = tk.Button(filewin, text="Do nothing button")
@@ -14,33 +37,20 @@ def donothing():
 
 
 def about():
-    os.system('notepad About.txt')
+    os.system('notepad tkinterGui/About.txt')
 
 
-root = tk.Tk()
-root.title('Fantorbis')
 
+root = Tk()
+app = Window(root)
+root.wm_title("Fantorbis")
 
-menubar = tk.Menu(root)
-filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="New", command=donothing)
-filemenu.add_command(label="Open", command=donothing)
-filemenu.add_command(label="Save", command=donothing)
-filemenu.add_command(label="Save as...", command=donothing)
-filemenu.add_command(label="Close", command=donothing)
+#Setting Icon for window widget
+#root.iconbitmap(r'full path ')
 
-filemenu.add_separator()
-
-filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(label="File", menu=filemenu)
-
-helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="About...", command=about)
-menubar.add_cascade(label="Help", menu=helpmenu)
-
-
-root.config(menu=menubar)
-
-#setting custom icon
-#root.iconbitmap("images/favicon.ico")
 root.mainloop()
+
+
+
+
+
