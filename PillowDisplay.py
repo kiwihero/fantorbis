@@ -1,7 +1,8 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
+from PIL import ImageFont
 import numbers
 
-def show_world(world):
+def draw_world(world):
     canvas_width = 1200
     canvas_height = 800
 
@@ -21,6 +22,43 @@ def show_world(world):
         return
 
     world.images[world.age] = im
+
+def gif_world(world):
+    if len(world.images) > 0:
+        fnt = ImageFont.truetype('/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf',100)
+        # ImageFont.truetype()
+        images = []
+        image_steps = list(world.images.keys())
+        canvas_width = 0
+        canvas_height = 0
+        # gf = Image.new(mode="RGB")
+        print("image keys {}".format(image_steps))
+        while len(image_steps) > 0:
+            # min_step = image_steps.pop(min(image_steps))
+            min_step = min(image_steps)
+            image_steps.remove(min_step)
+            images.append(world.images[min_step])
+            if world.images[min_step].size[0] > canvas_width:
+                canvas_width = world.images[min_step].size[0]
+            if world.images[min_step].size[1] > canvas_height:
+                canvas_height = world.images[min_step].size[1]
+            # print("min key {}, value {}".format(min_step, world.images[min_step]))
+
+        # gf = Image.new(mode=images[0].mode, size=(canvas_width,canvas_height))
+        gf = images[0]
+        draw = ImageDraw.Draw(gf)
+        # draw_rect = (int(0.25*canvas_width),int(0.25*canvas_height),int(0.75*canvas_width),int(0.75*canvas_height))
+        text_center = (int(0.5 * canvas_width), int(0.25 * canvas_height))
+        reset_text = "END OF WORLD"
+        print("type {} {} rect {}".format(type(gf),type(draw), text_center))
+        draw.text(text_center, reset_text, anchor='mb', fill=(255, 255, 255, 255), stroke_width=5,font=fnt)
+        # draw.text(text_center, "->")
+        text_center = (int(0.5 * canvas_width), int(0.75 * canvas_height))
+        reset_text = "START ANEW"
+        draw.text(text_center, reset_text, fill=(255, 255, 255, 255), stroke_width=5, anchor='mb',font=fnt)
+        gf.save('out.gif', save_all=True, append_images=images[:], duration=200, loop=0)
+        # print(type(w1.images))
+        # (w1.images[max(w1.images.keys())]).show()
 
 def square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
     square_dims = (int(image.size[0] / rectanglestructure.width), int(image.size[1] / rectanglestructure.height))

@@ -10,6 +10,9 @@ class World:
         self.dataStructure = GridStructure()
         self.images = {}
 
+    def step(self):
+        self.age += 1
+
     def diverge(self, p1, p2, boundary):
         pass
 
