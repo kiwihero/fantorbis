@@ -46,9 +46,11 @@ app = Window(root)
 root.wm_title("Fantorbis")
 
 #Setting Icon for window widget
-#root.iconbitmap(r'full path ')
+#root.iconbitmap(r'C:\Users\ashnf\fantorbis\images\favicon.ico')
+root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='images/bitmap.png'))
 
 root.mainloop()
+
 
 
 
