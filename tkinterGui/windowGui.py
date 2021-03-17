@@ -1,8 +1,8 @@
 from tkinter import *
 import os
-
+import sys
 import tk
-
+from tkinter.ttk import *
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -37,18 +37,14 @@ def donothing():
 
 
 def about():
-    os.system('notepad tkinterGui/About.txt')
+    os.system('notepad About.txt')
 
 
 
 root = Tk()
 app = Window(root)
 root.wm_title("Fantorbis")
-
-#Setting Icon for window widget
-#root.iconbitmap(r'C:\Users\ashnf\fantorbis\images\favicon.ico')
-root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='images/bitmap.png'))
-
+root.iconbitmap(os.path.join(sys.path[0], 'Fantorbis-Logo.ico'))
 root.mainloop()
 
 
