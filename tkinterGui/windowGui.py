@@ -25,7 +25,7 @@ class Window(Frame):
         menu.add_cascade(label="File", menu=filemenu)
 
         helpmenu = Menu(menu)
-        helpmenu.add_command(label="About...", command=about)
+        helpmenu.add_command(label="About...", command=donothing)
         menu.add_cascade(label="Help", menu=helpmenu)
 
 
@@ -35,9 +35,6 @@ def donothing():
     button.pack()
 
 
-
-def about():
-    os.system('notepad About.txt')
 
 
 

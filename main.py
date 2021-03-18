@@ -1,7 +1,5 @@
-from backendstorage.GridStructure import *
-from backendstorage.NodeStructure import *
-from backendworld.World import *
 from PillowDisplay import draw_world, gif_world
+from backendworld.World import *
 
 w1 = World()
 
