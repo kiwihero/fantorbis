@@ -14,6 +14,8 @@ class ArrayStructure(GeneralStructure):
                 printed_row += str(col) + ' '
             print(printed_row)
 
+    # def move_cell(self, cell, destination):
+
     def __iter__(self):
         if not type(self.ArrayStorage) is list:
             raise DoesNotExistError("ArrayStorage")
