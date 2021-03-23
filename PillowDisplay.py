@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
+import os
 
 
 def draw_world(world, add_text=False):
@@ -123,7 +124,19 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
 
 
 def _save_image(image, filename):
+    # splitpath = filename.split()
+    dirname = os.path.dirname(filename)
+    # basnm = os.path.basename(filename)
+    # print("splitpath {}, dirname {}, basename {}".format(splitpath,dirname, basnm))
+    try:
+        os.mkdir(dirname)
+        print("new directory",dirname)
+    except OSError as error:
+        print("existing directory",dirname)
+        pass
     image.save(filename)
+
+
 
 def gif_world(world):
     if len(world.images) > 0:
@@ -175,10 +188,10 @@ def gif_world(world):
 
 def _annotate_image(drawInstance, position, caption, conf):
     print("pos {} capt {}".format(position,caption))
-    drawInstance.text(xy=position, text=caption)
-    # drawInstance.text(xy=position, text=caption, anchor='lt',
-    #                  fill=conf.imageAnnotationProperties['fill'],
-    #                  stroke_width=conf.imageAnnotationProperties['stroke_width'], font=conf.imageAnnotationProperties['font'])
+    # drawInstance.text(xy=position, text=caption)
+    drawInstance.text(xy=position, text=caption, anchor='lt',
+                     fill=conf.imageAnnotationProperties['fill'],
+                     stroke_width=conf.imageAnnotationProperties['stroke_width'], font=conf.imageAnnotationProperties['font'])
 
 
 
