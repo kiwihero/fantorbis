@@ -1,3 +1,4 @@
+import copy
 class TwoDimensionalArray(list):
     def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, **kwargs):
         super(TwoDimensionalArray, self).__init__(**kwargs)
@@ -91,6 +92,7 @@ class TwoDimensionalArray(list):
     def subdivide(self):
         self.subdivide_rows()
         self.subdivide_cols()
+        print("size now rows {}, cols {}".format(self.rows,self.cols))
 
     def subdivide_rows(self):
         new_array = []
@@ -98,12 +100,14 @@ class TwoDimensionalArray(list):
             new_row = []
             for col in range(self.cols):
                 old_cell = self.array[row][col]
-                print("CELL TYPE {}".format(type(old_cell)))
-                new_cell = old_cell.copy()
+                # print("CELL TYPE {}".format(type(old_cell)))
+                new_cell = copy.deepcopy(old_cell)
+                # new_cell = old_cell.copy()
                 new_row.append(new_cell)
             new_array.append(self.array[row])
             new_array.append(new_row)
         self.array = new_array
+        self.rows = 2 * self.rows
 
 
 
@@ -113,11 +117,12 @@ class TwoDimensionalArray(list):
             new_row = []
             for col in range(self.cols):
                 cell = self.array[row][col]
-                new_cell = cell.copy()
+                new_cell = copy.copy(cell)
                 new_row.append(cell)
                 new_row.append(new_cell)
             new_array.append(new_row)
         self.array = new_array
+        self.cols = 2*self.cols
 
 
 

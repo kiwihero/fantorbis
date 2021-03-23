@@ -14,6 +14,8 @@ class GridStructure(ArrayStructure):
 
     def subdivide(self):
         self._ArrayStorage.subdivide()
+        self.width = self._ArrayStorage.cols
+        self.height = self._ArrayStorage.rows
 
     def subdivide_rows(self):
         self._ArrayStorage.subdivide_rows()

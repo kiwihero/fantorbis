@@ -24,6 +24,9 @@ class Conf:
         self.gifName = self.flatImageFolder + 'out.gif'
         self.imageName = self.flatImageFolder + '{}/image_{}'
         self.defaultImageExtension = 'jpg'
+        self.imageHeight = 1200
+        self.imageWidth = int(1.5*self.imageHeight)
+
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)

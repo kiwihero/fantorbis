@@ -17,7 +17,7 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 for elem in w1._dataStructure:
     print("Elem",elem)
 
-for x in range(10):
+for x in range(4):
     draw_world(w1, True)
     w1.step()
     w1._dataStructure.subdivide()

@@ -5,8 +5,8 @@ import os
 
 
 def draw_world(world, add_text=False):
-    canvas_width = 1200
-    canvas_height = 800
+    canvas_width = world.conf.imageWidth
+    canvas_height = world.conf.imageHeight
 
 
     im = Image.new(mode="RGB", size=(canvas_width, canvas_height))
