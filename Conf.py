@@ -11,7 +11,7 @@ class Conf:
         self.structureModule = 'backendstorage.GridStructure'
 
         self.gifName = 'out.gif'
-        self.imageName = 'image_{}'
+        self.imageName = 'image{}_{}'
         self.defaultImageExtension = 'jpg'
 
         self.fnt = ImageFont.truetype(self.fontLocation, 100)

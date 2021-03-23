@@ -3,14 +3,14 @@ from PIL import ImageFont
 import numbers
 
 
-def draw_world(world):
+def draw_world(world, add_text=False):
     canvas_width = 1200
     canvas_height = 800
 
 
     im = Image.new(mode="RGB", size=(canvas_width, canvas_height))
     draw = ImageDraw.Draw(im)
-    struct = world.dataStructure
+    struct = world._dataStructure
 
     if struct.cellShape == 'rectangle':
 
@@ -23,6 +23,14 @@ def draw_world(world):
         return
 
     world.images[world.age] = im
+
+    if add_text is True:
+        annotated_img = world.images[world.age].copy()
+        annotated_draw = ImageDraw.Draw(annotated_img)
+        caption = world.conf.imageCaption.format(world.age)
+        _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
+        world.annotatedImages[world.age] = annotated_img
+
 
 def image_world(world, force_current=False, current_only=False, image_type=('all', True)):
     #Image type defines if you want annotated/unannotated, and if it should be forced
@@ -80,8 +88,8 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
             annotated_draw = ImageDraw.Draw(annotated_img)
             caption = world.conf.imageCaption.format(world.age)
             _annotate_image(annotated_draw,caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
+            world.annotatedImages[world.age] = annotated_img
             print("annotated image", annotated_img)
-            annotated_img.show()
 
     else:
         print("Known image dicts", image_dicts)
@@ -95,18 +103,23 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
         draw_world(world)
     if current_only is True:
         age = world.age
-        im = world.images[age]
-        filename = world.conf.imageName.format(str(age))
-        _save_image(im, filename)
-    else:
-        for age, im in world.images.items():
-            filename = world.conf.imageName.format(str(age))
-            if '.' not in filename:
-                if '.' not in world.conf.defaultImageExtension:
-                    filename += '.'
-                filename += world.conf.defaultImageExtension
-            # print("Filename {} age {}".format(filename,age))
+        for key, value in image_dicts.items():
+            im = value[age]
+            filename = world.conf.imageName.format(key,str(age))
             _save_image(im, filename)
+    else:
+        for key, value in image_dicts.items():
+            print("key {} value {}".format(key,value))
+            for age, im in value.items():
+
+                print("age {} im {}".format(age, im))
+                filename = world.conf.imageName.format(key,str(age))
+                if '.' not in filename:
+                    if '.' not in world.conf.defaultImageExtension:
+                        filename += '.'
+                    filename += world.conf.defaultImageExtension
+                # print("Filename {} age {}".format(filename,age))
+                _save_image(im, filename)
 
 
 def _save_image(image, filename):
@@ -132,6 +145,7 @@ def gif_world(world):
             caption = world.conf.imageCaption.format(min_step)
             grayscale = 0.8
             _annotate_image(single_draw, position=world.conf.imageSmallCaptionPos, caption=caption,  conf=world.conf)
+            world.annotatedImages[world.age] = next_img
             # annotate_image(single_draw, (20, 20), caption, anchor='lt', fill=(int(255 * grayscale), int(255 * grayscale), int(255 * grayscale), int(255 * grayscale)), stroke_width=1, font=fnt_sm)
 
             # single_draw.text((20,20), caption, anchor='lt', fill=(int(255*grayscale), int(255*grayscale), int(255*grayscale), int(255*grayscale)), stroke_width=1, font=fnt_sm)

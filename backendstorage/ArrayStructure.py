@@ -5,9 +5,9 @@ class ArrayStructure(GeneralStructure):
         super(ArrayStructure, self).__init__(**kwargs)
 
     def print_contents(self):
-        if not type(self.ArrayStorage) is list:
+        if not type(self._ArrayStorage) is list:
             raise _DoesNotExistError("ArrayStorage")
-        for row in self.ArrayStorage:
+        for row in self._ArrayStorage:
             print("row of len", len(row))
             printed_row = ''
             for col in row:
@@ -17,12 +17,12 @@ class ArrayStructure(GeneralStructure):
     # def move_cell(self, cell, destination):
 
     def __iter__(self):
-        if not type(self.ArrayStorage) is list:
-            raise _DoesNotExistError("ArrayStorage")
+        if not type(self._ArrayStorage) is list:
+            raise DoesNotExistError("ArrayStorage")
         return _GeneralArrayIterator(self)
 
 
-class _GeneralArrayIterator(_GeneralIterator):
+class _GeneralArrayIterator(GeneralIterator):
 
     def __init__(self, grid, **kwargs):
         self._grid = grid

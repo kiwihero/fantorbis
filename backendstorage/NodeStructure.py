@@ -45,7 +45,7 @@ class NodeStructure(GeneralStructure):
         # print("iterator:",itr, "current:", itr._current, "visited:",itr._visited, "missing:", itr._missing)
         return itr
 
-class _NodeIterator(_GeneralIterator):
+class _NodeIterator(GeneralIterator):
     def __init__(self, nodestruct, **kwargs):
         self._nodestruct = nodestruct
         self._current = self._nodestruct.startNode
