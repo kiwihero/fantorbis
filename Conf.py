@@ -46,11 +46,18 @@ class Conf:
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
     def class_for_name(self, module_name, class_name):
-        # load the module, will raise ImportError if module cannot be loaded
-        m = importlib.import_module(module_name)
-        # get the class, will raise AttributeError if class cannot be found
-        c = getattr(m, class_name)
-        return c
+        try:
+            # load the module, will raise ImportError if module cannot be loaded
+            m = importlib.import_module(module_name)
+            # get the class, will raise AttributeError if class cannot be found
+            c = getattr(m, class_name)
+            return c
+        except ImportError as e:
+            self.log_from_conf('error', "Module {} could not be found".format(module_name))
+        except AttributeError as e:
+            self.log_from_conf('error', "Class {} could not be found in module".format(class_name, module_name))
+        return
+
 
     def time_id(self):
         startTime = time.time()

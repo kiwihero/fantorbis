@@ -26,18 +26,21 @@ class _GeneralArrayIterator(GeneralIterator):
 
     def __init__(self, grid, **kwargs):
         self._grid = grid
-        self._index = [0, 1]
+        self._index = [0, 0]
         super(_GeneralArrayIterator, self).__init__(**kwargs)
 
     def __next__(self):
-        if self._index[0] < len(self._grid.ArrayStorage) and self._index[1] < len(
-                self._grid.ArrayStorage[self._index[0]]):
-            result = self._grid.ArrayStorage[self._index[0]][self._index[1]]
+        if self._index[0] < len(self._grid._ArrayStorage) and self._index[1] < len(
+                self._grid._ArrayStorage[self._index[0]]):
+            result = self._grid._ArrayStorage[self._index[0]][self._index[1]]
+            print('\titr if result {} from index {} of {}: {}'.format(result, self._index, type(self._grid._ArrayStorage),self._grid._ArrayStorage))
             self._index[1] += 1
             return result
-        elif self._index[0] + 1 < len(self._grid.ArrayStorage):
+        elif self._index[0] + 1 < len(self._grid._ArrayStorage):
             self._index[0] += 1
             self._index[1] = 0
-            result = self._grid.ArrayStorage[self._index[0]][self._index[1]]
+            result = self._grid._ArrayStorage[self._index[0]][self._index[1]]
+            print('\titr elif result {} from index {} of {}: {}'.format(result, self._index, type(self._grid._ArrayStorage),self._grid._ArrayStorage))
+            self._index[1] += 1
             return result
         raise StopIteration

@@ -1,9 +1,16 @@
 # All of the structures inherit this
 # Declares some methods expected, default to returning an error when those are called and not implemented in inherited
 class GeneralStructure:
-    def __init__(self, **kwargs):
+    def __init__(self, conf=None, **kwargs):
         self._ArrayStorage = None
         self.cellShape = None
+        self.conf = conf
+        self.cellClassName = 'GridCell'
+        self.cellClassFile = 'backendstorage.GridCell'
+        if self.conf is not None:
+            self.cellClass = self.conf.class_for_name(module_name=self.cellClassFile, class_name=self.cellClassName)
+        else:
+            raise DoesNotExistError("self.conf")
 
     def print_contents(self):
         raise DoesNotExistError("ArrayStorage")
