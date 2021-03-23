@@ -10,8 +10,8 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
         self.dataStructure = self.conf.class_for_name(self.conf.structureModule,self.conf.structureClass)()
-            # GridStructure()
         self.images = {}
+        self.annotatedImages = {}
 
     def step(self):
         self.age += 1
