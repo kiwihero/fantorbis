@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
 
-
+#example
 def draw_world(world):
     canvas_width = 1200
     canvas_height = 800
