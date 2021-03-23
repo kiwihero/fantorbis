@@ -14,13 +14,15 @@ def draw_world(world, add_text=False):
     struct = world._dataStructure
 
     if struct.cellShape == 'rectangle':
+        cellstruct = struct
 
-        locs = _square_cells(im,struct)
+        locs = _square_cells(im,cellstruct)
         for row in locs:
             for col in row:
                 draw.rectangle(col, fill=(100,100,100),
                                outline=None, width=0)
     else:
+        world.conf.log_from_conf('error', "Cell shape not known, could not draw world")
         return
 
     world.images[world.age] = im
@@ -46,7 +48,8 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
         if type(image_type[1]) is not bool:
             raise CustomTypeError("Image type second argument \'{}\' invalid, must be a boolean".format(image_type[1]))
     except CustomTypeError as e:
-        print("Error {}, could not generate images for world".format(e.message))
+        world.conf.log_from_conf('error', "{}, could not generate images for world".format(e.message))
+        # print("Error {}, could not generate images for world".format(e.message))
         return
     type_mode = image_type[0]
     force_mode = image_type[1]
@@ -81,7 +84,8 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
 
 
     if image_dicts_len == 0:
-        print("no images already known")
+        world.conf.log_from_conf('info', "No images already known")
+        # print("no images already known")
         if world.age not in image_dicts['clean']:
             draw_world(world)
         if type_mode == 'annotated' or type_mode == 'all':
@@ -90,10 +94,10 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
             caption = world.conf.imageCaption.format(world.age)
             _annotate_image(annotated_draw,caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
             world.annotatedImages[world.age] = annotated_img
-            print("annotated image", annotated_img)
+            # print("annotated image", annotated_img)
 
-    else:
-        print("Known image dicts", image_dicts)
+    # else:
+    #     print("Known image dicts", image_dicts)
 
 
 
@@ -107,32 +111,33 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
         for key, value in image_dicts.items():
             im = value[age]
             filename = world.conf.imageName.format(key,str(age))
-            _save_image(im, filename)
+            _save_image(im, filename, world.conf)
     else:
         for key, value in image_dicts.items():
-            print("key {} value {}".format(key,value))
+            # print("key {} value {}".format(key,value))
             for age, im in value.items():
 
-                print("age {} im {}".format(age, im))
+                # print("age {} im {}".format(age, im))
                 filename = world.conf.imageName.format(key,str(age))
                 if '.' not in filename:
                     if '.' not in world.conf.defaultImageExtension:
                         filename += '.'
                     filename += world.conf.defaultImageExtension
                 # print("Filename {} age {}".format(filename,age))
-                _save_image(im, filename)
+                _save_image(im, filename, world.conf)
 
 
-def _save_image(image, filename):
+def _save_image(image, filename, conf):
     # splitpath = filename.split()
     dirname = os.path.dirname(filename)
     # basnm = os.path.basename(filename)
     # print("splitpath {}, dirname {}, basename {}".format(splitpath,dirname, basnm))
     try:
         os.mkdir(dirname)
-        print("new directory",dirname)
+        conf.log_from_conf('info', "Had to create new directory {}".format(dirname))
+        # print("new directory",dirname)
     except OSError as error:
-        print("existing directory",dirname)
+        # print("existing directory",dirname)
         pass
     image.save(filename)
 
@@ -150,7 +155,7 @@ def gif_world(world):
         canvas_width = 0
         canvas_height = 0
         # gf = Image.new(mode="RGB")
-        print("image keys {}".format(image_steps))
+        # print("image keys {}".format(image_steps))
         while len(image_steps) > 0:
             # min_step = image_steps.pop(min(image_steps))
             min_step = min(image_steps)
@@ -178,7 +183,7 @@ def gif_world(world):
         # draw_rect = (int(0.25*canvas_width),int(0.25*canvas_height),int(0.75*canvas_width),int(0.75*canvas_height))
         text_center = (int(0.5 * canvas_width), int(0.25 * canvas_height))
         reset_text = "END OF WORLD"
-        print("type {} {} rect {}".format(type(gf),type(draw), text_center))
+        # print("type {} {} rect {}".format(type(gf),type(draw), text_center))
         draw.text(text_center, reset_text, anchor='mb', fill=(255, 255, 255, 255), stroke_width=5,font=fnt)
         # draw.text(text_center, "->")
         text_center = (int(0.5 * canvas_width), int(0.75 * canvas_height))
@@ -265,8 +270,8 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
         y1 = y2 + separation[1]
         y2 += (separation[1] + square_dims[1])
 
-    print("square dims", square_dims, "separation", separation)
-    print("cell locations",cell_locations)
+    # print("square dims", square_dims, "separation", separation)
+    # print("cell locations",cell_locations)
     return cell_locations
 
 class GenericError(Exception):

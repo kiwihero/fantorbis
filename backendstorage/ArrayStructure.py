@@ -6,7 +6,7 @@ class ArrayStructure(GeneralStructure):
 
     def print_contents(self):
         if not type(self._ArrayStorage) is list:
-            raise _DoesNotExistError("ArrayStorage")
+            raise DoesNotExistError("ArrayStorage")
         for row in self._ArrayStorage:
             print("row of len", len(row))
             printed_row = ''

@@ -15,7 +15,7 @@ class Conf:
         self.clear_logs()
 
         self.resourceFolder = 'resources/'
-        self.fontLocation = self.resourceFolder + '07558_CenturyGothic.tttf'
+        self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
         self.fontExtensions = ['.ttf']
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
