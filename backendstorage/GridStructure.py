@@ -11,8 +11,16 @@ class GridStructure(ArrayStructure):
         self.width = width
         self.height = height
         self._ArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass)
-        print("array storage", self._ArrayStorage)
-        print("array item", self._ArrayStorage[1][1])
+
+    def subdivide(self):
+        self._ArrayStorage.subdivide()
+
+    def subdivide_rows(self):
+        self._ArrayStorage.subdivide_rows()
+
+    def subdivide_cols(self):
+        self._ArrayStorage.subdivide_cols()
+
 
 
 

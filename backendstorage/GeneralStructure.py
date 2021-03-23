@@ -37,6 +37,15 @@ class GeneralStructure:
     def remove_cell(self, cell):
         raise StructureNotImplementedError("move_cell")
 
+    def subdivide(self):
+        raise StructureNotImplementedError("subdivide")
+
+    def subdivide_rows(self):
+        raise StructureNotImplementedError("subdivide_rows")
+
+    def subdivide_cols(self):
+        raise StructureNotImplementedError("subdivide_cols")
+
 class _GenericError(Exception):
     pass
 

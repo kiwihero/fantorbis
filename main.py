@@ -14,9 +14,13 @@ print('\n'+'-'*50+'\n'+"PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n')
 w1._dataStructure.print_contents()
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
+for elem in w1._dataStructure:
+    print("Elem",elem)
+
 for x in range(10):
     draw_world(w1, True)
     w1.step()
+    w1._dataStructure.subdivide()
     # print("images len {}, world age {}".format(len(w1.images),w1.age))
 
 

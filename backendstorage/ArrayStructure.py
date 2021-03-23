@@ -14,7 +14,7 @@ class ArrayStructure(GeneralStructure):
                     printed_row += str(col) + ' '
                 print(printed_row)
         elif type(self._ArrayStorage) is TwoDimensionalArray:
-            self._ArrayStorage.print_contents
+            self._ArrayStorage.print_contents()
         else:
             raise DoesNotExistError("ArrayStorage")
 
@@ -24,9 +24,13 @@ class ArrayStructure(GeneralStructure):
     # def move_cell(self, cell, destination):
 
     def __iter__(self):
-        if not type(self._ArrayStorage) is list:
+        if type(self._ArrayStorage) is list:
+            return self._ArrayStorage.__iter__()
+        elif type(self._ArrayStorage) is TwoDimensionalArray:
+            return self._ArrayStorage.__iter__()
+        else:
             raise DoesNotExistError("ArrayStorage")
-        return _GeneralArrayIterator(self._ArrayStorage, self)
+
 
 
 class _GeneralArrayIterator(GeneralIterator):
