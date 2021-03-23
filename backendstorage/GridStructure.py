@@ -1,4 +1,5 @@
 from backendstorage.ArrayStructure import ArrayStructure
+from backendstorage.TwoDimensionalArray import TwoDimensionalArray
 
 class GridStructure(ArrayStructure):
     def __init__(self, width=2, height=2, **kwargs):
@@ -9,25 +10,10 @@ class GridStructure(ArrayStructure):
         self.cellClass = self.conf.class_for_name(module_name=self.cellClassFile, class_name=self.cellClassName)
         self.width = width
         self.height = height
-        self._ArrayStorage = [[None] * self.width] * self.height
+        self._ArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass)
+        print("array storage", self._ArrayStorage)
+        print("array item", self._ArrayStorage[1][1])
 
-        # print("thing gridstructure {}".format(self[0]))
-        counter = 0
-        cells = []
-        for selem in self:
-            # from backendstorage.GridCell import GridCell
-            # selem = counter
-            cell = self.cellClass()
-            cells.append(cell)
-            selem = cell
-            # selem = self.cellClass()
-            print("selem {} {}".format(type(selem),selem))
-            counter += 1
-        print(cells)
-        print("SELF",self)
-
-        for selem in self:
-            print("new selem",selem)
 
 
 

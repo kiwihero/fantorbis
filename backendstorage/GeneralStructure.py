@@ -55,3 +55,4 @@ class WrongTypeError(_GenericError):
 class GeneralIterator:
     def __next__(self):
         raise StructureNotImplementedError("Iteration")
+
