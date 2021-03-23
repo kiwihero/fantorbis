@@ -3,10 +3,7 @@ import importlib
 
 class Conf:
     def __init__(self):
-        # You can put whatever here it doesn't have to be century gothic
-        self.fontLocation = '/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf'
-
-        # Change this to change how the data is stored
+        self.fontLocation = '07558_CenturyGothic.ttf'
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
 
