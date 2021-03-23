@@ -14,7 +14,7 @@ def draw_world(world):
 
     if struct.cellShape == 'rectangle':
 
-        locs = __square_cells(im,struct)
+        locs = _square_cells(im,struct)
         for row in locs:
             for col in row:
                 draw.rectangle(col, fill=(100,100,100),
@@ -79,7 +79,7 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
             annotated_img = world.images[world.age].copy()
             annotated_draw = ImageDraw.Draw(annotated_img)
             caption = world.conf.imageCaption.format(world.age)
-            __annotate_image(annotated_draw,caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
+            _annotate_image(annotated_draw,caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
             print("annotated image", annotated_img)
             annotated_img.show()
 
@@ -97,7 +97,7 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
         age = world.age
         im = world.images[age]
         filename = world.conf.imageName.format(str(age))
-        __save_image(im, filename)
+        _save_image(im, filename)
     else:
         for age, im in world.images.items():
             filename = world.conf.imageName.format(str(age))
@@ -106,10 +106,10 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
                     filename += '.'
                 filename += world.conf.defaultImageExtension
             # print("Filename {} age {}".format(filename,age))
-            __save_image(im, filename)
+            _save_image(im, filename)
 
 
-def __save_image(image, filename):
+def _save_image(image, filename):
     image.save(filename)
 
 def gif_world(world):
@@ -131,7 +131,7 @@ def gif_world(world):
             single_draw = ImageDraw.Draw(next_img)
             caption = world.conf.imageCaption.format(min_step)
             grayscale = 0.8
-            __annotate_image(single_draw, position=world.conf.imageSmallCaptionPos, caption=caption,  conf=world.conf)
+            _annotate_image(single_draw, position=world.conf.imageSmallCaptionPos, caption=caption,  conf=world.conf)
             # annotate_image(single_draw, (20, 20), caption, anchor='lt', fill=(int(255 * grayscale), int(255 * grayscale), int(255 * grayscale), int(255 * grayscale)), stroke_width=1, font=fnt_sm)
 
             # single_draw.text((20,20), caption, anchor='lt', fill=(int(255*grayscale), int(255*grayscale), int(255*grayscale), int(255*grayscale)), stroke_width=1, font=fnt_sm)
@@ -159,7 +159,7 @@ def gif_world(world):
         # print(type(w1.images))
         # (w1.images[max(w1.images.keys())]).show()
 
-def __annotate_image(drawInstance, position, caption, conf):
+def _annotate_image(drawInstance, position, caption, conf):
     print("pos {} capt {}".format(position,caption))
     drawInstance.text(xy=position, text=caption)
     # drawInstance.text(xy=position, text=caption, anchor='lt',
@@ -169,7 +169,7 @@ def __annotate_image(drawInstance, position, caption, conf):
 
 
 
-def __square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
+def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
     square_dims = (int(image.size[0] / rectanglestructure.width), int(image.size[1] / rectanglestructure.height))
 
     separation = sep_fixed
