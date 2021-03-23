@@ -8,7 +8,6 @@ import math
 class Conf:
     def __init__(self):
         self.startTimeInt = self.time_id()
-        # print("starttime",24*60*60,self.startTimeOffset,self.startTime, self.startTimeInt, type(self.startTimeInt))
         self.logFolder = 'logs/'
         self.logsSaved = 1
         self.logfilename = self.logFolder + '{}_backendlog.log'.format(self.startTimeInt)
@@ -28,16 +27,9 @@ class Conf:
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)
-
-            # self.fnt_sm = ImageFont.truetype(self.fontLocation, size=20)
-        # except OSError:
-        #     self.log_from_conf('info', "Specified font {} could not be found on system".format(self.fontLocation))
-        #     self._fix_fonts()
-
         self.imageGrayscale = 0.8
         self.imageCaption = "Age: {}"
         self.imageSmallCaptionPos = (20,20)
-        # self.imageAnnotationProperties = {"anchor": "lt","stroke_width":1}
         self.imageAnnotationProperties = {'anchor':'lt', 'fill':(
             int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale)), 'stroke_width':1,
                              'font':self.fnt_sm}
@@ -68,9 +60,7 @@ class Conf:
     def clear_logs(self):
         existing_logs = os.listdir(self.logFolder)
         new_log = os.path.basename(self.logfilename)
-        print("existing logs {} max {} min {} new {}".format(len(existing_logs), max(existing_logs), min(existing_logs), new_log))
-        print("eval",max(existing_logs).split('_')[0]>new_log.split('_')[0])
-        while max(existing_logs).split('_')[0]>new_log.split('_')[0]:
+        while max(existing_logs).split('_')[0]>str(new_log).split('_')[0]:
             self.log_from_conf('info', 'Removing log {} that is more than a week old'.format(max(existing_logs)))
             os.remove(self.logFolder+max(existing_logs))
             existing_logs.remove(max(existing_logs))
@@ -116,8 +106,6 @@ class Conf:
         except OSError:
             self.log_from_conf('info', "Specified font {} could not be found on system".format(self.fontLocation))
             fontfile = self._fix_fonts()
-            print("fontfile {}".format(fontfile))
-            # time.sleep(60)
             fnt = self.set_font(fontfile,size)
 
         return fnt
@@ -143,9 +131,6 @@ class Conf:
                         fonts[name] = {'path': os.path.join(root, name), 'extension': ext, 'filename': name}
         if len(fonts) == 0:
             self.log_from_conf('warning', 'No fonts installed')
-        else:
-            print("FONTS",fonts)
-
         return fonts
 
     def _fix_fonts(self):
