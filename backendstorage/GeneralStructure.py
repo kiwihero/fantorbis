@@ -1,3 +1,5 @@
+# All of the structures inherit this
+# Declares some methods expected, default to returning an error when those are called and not implemented in inherited
 class GeneralStructure:
     def __init__(self, **kwargs):
         self.ArrayStorage = None
