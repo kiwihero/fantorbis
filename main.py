@@ -1,7 +1,7 @@
 from backendstorage.GridStructure import *
 from backendstorage.NodeStructure import *
 from backendworld.World import *
-from PillowDisplay import draw_world, gif_world
+from PillowDisplay import draw_world, gif_world,image_world
 
 w1 = World()
 
@@ -9,14 +9,15 @@ print(type(w1.dataStructure),w1.dataStructure)
 
 w1.dataStructure.print_contents()
 
-for x in range(10):
-    draw_world(w1)
-    w1.step()
-    print("images len {}, world age {}".format(len(w1.images),w1.age))
+# for x in range(10):
+#     draw_world(w1)
+#     w1.step()
+#     print("images len {}, world age {}".format(len(w1.images),w1.age))
+#
+#
+# gif_world(w1)
 
-
-gif_world(w1)
-
+image_world(w1)
 
 # print("world", w1, "images", w1.images)
 #
