@@ -2,7 +2,7 @@ import importlib
 
 class Conf:
     def __init__(self):
-        self.fontLocation = '/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf'
+        self.fontLocation = '07558_CenturyGothic.ttf'
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
 
