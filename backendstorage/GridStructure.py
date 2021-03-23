@@ -6,7 +6,7 @@ class GridStructure(ArrayStructure):
         self.cellShape = 'rectangle'
         self.width = width
         self.height = height
-        self.ArrayStorage = [[None] * self.width] * self.height
+        self._ArrayStorage = [[None] * self.width] * self.height
 
 
 

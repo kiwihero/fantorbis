@@ -6,7 +6,7 @@ class ArrayStructure(GeneralStructure):
 
     def print_contents(self):
         if not type(self.ArrayStorage) is list:
-            raise DoesNotExistError("ArrayStorage")
+            raise _DoesNotExistError("ArrayStorage")
         for row in self.ArrayStorage:
             print("row of len", len(row))
             printed_row = ''
@@ -18,16 +18,16 @@ class ArrayStructure(GeneralStructure):
 
     def __iter__(self):
         if not type(self.ArrayStorage) is list:
-            raise DoesNotExistError("ArrayStorage")
-        return GeneralArrayIterator(self)
+            raise _DoesNotExistError("ArrayStorage")
+        return _GeneralArrayIterator(self)
 
 
-class GeneralArrayIterator(GeneralIterator):
+class _GeneralArrayIterator(_GeneralIterator):
 
     def __init__(self, grid, **kwargs):
         self._grid = grid
         self._index = [0, 1]
-        super(GeneralArrayIterator, self).__init__(**kwargs)
+        super(_GeneralArrayIterator, self).__init__(**kwargs)
 
     def __next__(self):
         if self._index[0] < len(self._grid.ArrayStorage) and self._index[1] < len(

@@ -9,7 +9,7 @@ class World:
         self.age = 0
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
-        self.dataStructure = self.conf.class_for_name(self.conf.structureModule,self.conf.structureClass)()
+        self._dataStructure = self.conf.class_for_name(self.conf.structureModule,self.conf.structureClass)()
         self.images = {}
         self.annotatedImages = {}
 

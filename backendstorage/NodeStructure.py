@@ -3,8 +3,8 @@ from backendstorage.Node import *
 
 class NodeStructure(GeneralStructure):
     def __init__(self, **kwargs):
-        self.startNode = Node()
-        self.endNode = self.startNode
+        self._startNode = Node()
+        self._endNode = self._startNode
         self.id = 0
         super(NodeStructure, self).__init__(**kwargs)
 
@@ -29,9 +29,9 @@ class NodeStructure(GeneralStructure):
         print("PRINTING CONTENTS OF A NODE STRUCTURE")
         for node in self:
             strAdditions = '{}'
-            if node == self.endNode:
+            if node == self._endNode:
                 strAdditions = "(end) " + strAdditions
-            if node == self.startNode:
+            if node == self._startNode:
                 strAdditions = "(start) " + strAdditions
             print("\t"+strAdditions.format(node))
             print("\t\t" + node.neighbor_string())
@@ -41,17 +41,17 @@ class NodeStructure(GeneralStructure):
 
 
     def __iter__(self):
-        itr = NodeIterator(nodestruct=self)
+        itr = _NodeIterator(nodestruct=self)
         # print("iterator:",itr, "current:", itr._current, "visited:",itr._visited, "missing:", itr._missing)
         return itr
 
-class NodeIterator(GeneralIterator):
+class _NodeIterator(_GeneralIterator):
     def __init__(self, nodestruct, **kwargs):
         self._nodestruct = nodestruct
         self._current = self._nodestruct.startNode
         self._visited = set()
         self._missing = set()
-        super(NodeIterator, self).__init__(**kwargs)
+        super(_NodeIterator, self).__init__(**kwargs)
 
     def __next__(self):
         neighbors = self._current.neighbors
