@@ -138,6 +138,8 @@ def _save_image(image, filename):
 
 
 
+
+
 def gif_world(world):
     if len(world.images) > 0:
         fnt = world.conf.fnt

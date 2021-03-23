@@ -2,14 +2,22 @@ from PIL import ImageFont
 import importlib
 import os
 import logging
+import time
+import math
 
 class Conf:
     def __init__(self):
+        self.startTimeInt = self.time_id()
+        # print("starttime",24*60*60,self.startTimeOffset,self.startTime, self.startTimeInt, type(self.startTimeInt))
         self.logFolder = 'logs/'
-        self.logfilename = self.logFolder + 'backendlog.log'
+        self.logsSaved = 1
+        self.logfilename = self.logFolder + '{}_backendlog.log'.format(self.startTimeInt)
+        self.config_log()
+        self.clear_logs()
 
         self.resourceFolder = 'resources/'
-        self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
+        self.fontLocation = self.resourceFolder + '07558_CenturyGothic.tttf'
+        self.fontExtensions = ['.ttf']
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
 
@@ -18,8 +26,14 @@ class Conf:
         self.imageName = self.flatImageFolder + '{}/image_{}'
         self.defaultImageExtension = 'jpg'
 
-        self.fnt = ImageFont.truetype(self.fontLocation, size=100)
-        self.fnt_sm = ImageFont.truetype(self.fontLocation, size=20)
+        self.fnt = self.set_font(self.fontLocation, size=100)
+        self.fnt_sm = self.set_font(self.fontLocation, size=20)
+
+            # self.fnt_sm = ImageFont.truetype(self.fontLocation, size=20)
+        # except OSError:
+        #     self.log_from_conf('info', "Specified font {} could not be found on system".format(self.fontLocation))
+        #     self._fix_fonts()
+
         self.imageGrayscale = 0.8
         self.imageCaption = "Age: {}"
         self.imageSmallCaptionPos = (20,20)
@@ -28,15 +42,16 @@ class Conf:
             int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale)), 'stroke_width':1,
                              'font':self.fnt_sm}
 
-        self.config_log()
+
         self.make_necessary_folders()
+
 
 
     # ------------------------------------
     # Functions needed for conf to work
     # ------------------------------------
 
-    # If you know the name of the class and the module/package of the class
+    # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
     def class_for_name(self, module_name, class_name):
         # load the module, will raise ImportError if module cannot be loaded
@@ -45,11 +60,31 @@ class Conf:
         c = getattr(m, class_name)
         return c
 
+    def time_id(self):
+        startTime = time.time()
+        startTimeOffset = pow(10, math.ceil(math.log(7 * 24 * 60 * 60, 10)))
+        return int(startTime) % (startTimeOffset)
+
+    def clear_logs(self):
+        existing_logs = os.listdir(self.logFolder)
+        new_log = os.path.basename(self.logfilename)
+        print("existing logs {} max {} min {} new {}".format(len(existing_logs), max(existing_logs), min(existing_logs), new_log))
+        print("eval",max(existing_logs).split('_')[0]>new_log.split('_')[0])
+        while max(existing_logs).split('_')[0]>new_log.split('_')[0]:
+            self.log_from_conf('info', 'Removing log {} that is more than a week old'.format(max(existing_logs)))
+            os.remove(self.logFolder+max(existing_logs))
+            existing_logs.remove(max(existing_logs))
+        while (self.logsSaved < len(existing_logs)):
+            oldest = min(existing_logs)
+            self.log_from_conf('info', 'Removing oldest log {}'.format(min(existing_logs)))
+            os.remove(self.logFolder + min(existing_logs))
+            existing_logs.remove(oldest)
+
     def make_necessary_folders(self, given_folders=None):
-        known_folders = [self.flatImageFolder]
         if type(given_folders) is str:
             given_folders = [given_folders]
         elif given_folders is None:
+            known_folders = [self.flatImageFolder, self.resourceFolder, self.logFolder]
             given_folders = known_folders
 
         for folder in given_folders:
@@ -65,8 +100,59 @@ class Conf:
             filename = self.logfilename
         if '.log' not in filename:
             filename += '.log'
-        self.make_necessary_folders(given_folders=[filename])
+        self.make_necessary_folders(given_folders=filename)
         logging.basicConfig(filename=filename,
                             level=level,
                             format='%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+
+    def log_from_conf(self, level, message):
+        levels = {'critical': logging.critical, 'error':logging.error, 'warning':logging.warning, 'info':logging.info, 'debug':logging.debug}
+        if level in levels:
+            levels[level](message)
+
+    def set_font(self, fontfile, size):
+        try:
+            fnt = ImageFont.truetype(fontfile, size)
+        except OSError:
+            self.log_from_conf('info', "Specified font {} could not be found on system".format(self.fontLocation))
+            fontfile = self._fix_fonts()
+            print("fontfile {}".format(fontfile))
+            # time.sleep(60)
+            fnt = self.set_font(fontfile,size)
+
+        return fnt
+
+
+
+    def _search_for_fonts(self, given_location=None, font_extensions=None, ignore_dot_files=True):
+        fonts = {}
+        if font_extensions is None:
+            font_extensions = self.fontExtensions
+
+        if given_location is None:
+            given_location = os.getcwd()
+
+        for root, dirs, files in os.walk(given_location, topdown=True):
+            if ignore_dot_files is True:
+                files = [f for f in files if not f[0] == '.']
+                dirs[:] = [d for d in dirs if not d[0] == '.']
+            for name in files:
+                if '.' in name:
+                    ext = name.rsplit('.')[-1]
+                    if ext in font_extensions or '.' + ext in font_extensions:
+                        fonts[name] = {'path': os.path.join(root, name), 'extension': ext, 'filename': name}
+        if len(fonts) == 0:
+            self.log_from_conf('warning', 'No fonts installed')
+        else:
+            print("FONTS",fonts)
+
+        return fonts
+
+    def _fix_fonts(self):
+        fonts = self._search_for_fonts()
+
+        self.log_from_conf('info', 'Found {} fonts'.format(len(fonts)))
+
+        return fonts[list(fonts)[0]]['path']
+
 
