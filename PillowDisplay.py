@@ -187,7 +187,7 @@ def gif_world(world):
         # (w1.images[max(w1.images.keys())]).show()
 
 def _annotate_image(drawInstance, position, caption, conf):
-    print("pos {} capt {}".format(position,caption))
+    # print("pos {} capt {}".format(position,caption))
     # drawInstance.text(xy=position, text=caption)
     drawInstance.text(xy=position, text=caption, anchor='lt',
                      fill=conf.imageAnnotationProperties['fill'],

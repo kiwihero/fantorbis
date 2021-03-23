@@ -1,10 +1,15 @@
 from PIL import ImageFont
 import importlib
 import os
+import logging
 
 class Conf:
     def __init__(self):
-        self.fontLocation = '07558_CenturyGothic.ttf'
+        self.logFolder = 'logs/'
+        self.logfilename = self.logFolder + 'backendlog.log'
+
+        self.resourceFolder = 'resources/'
+        self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
 
@@ -23,7 +28,9 @@ class Conf:
             int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale), int(255 * self.imageGrayscale)), 'stroke_width':1,
                              'font':self.fnt_sm}
 
+        self.config_log()
         self.make_necessary_folders()
+
 
     # ------------------------------------
     # Functions needed for conf to work
@@ -48,8 +55,18 @@ class Conf:
         for folder in given_folders:
             try:
                 os.mkdir(os.path.dirname(folder))
-                print("new directory", os.path.dirname(folder))
+                logging.info("New directory {} had to be created".format(str(os.path.dirname(folder))))
+
             except OSError as error:
-                print("existing directory", os.path.dirname(folder))
                 pass
+
+    def config_log(self, level=logging.DEBUG, filename=None):
+        if filename is None:
+            filename = self.logfilename
+        if '.log' not in filename:
+            filename += '.log'
+        self.make_necessary_folders(given_folders=[filename])
+        logging.basicConfig(filename=filename,
+                            level=level,
+                            format='%(asctime)s | %(name)s | %(levelname)s | %(message)s')
 
