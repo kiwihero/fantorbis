@@ -3,24 +3,33 @@ from backendstorage.NodeStructure import *
 from backendworld.World import *
 from PillowDisplay import draw_world, gif_world,image_world
 
+
 w1 = World()
 
-print(type(w1.dataStructure),w1.dataStructure)
+print('\n'+'-'*50+'\n'+"PRINTING WORLD DATA STRUCTURE"+'\n')
+print(type(w1._dataStructure),w1._dataStructure)
+print('\n'+"DONE PRINTING WORLD DATA STRUCTURE"+'\n'+'-'*50)
 
-w1.dataStructure.print_contents()
+print('\n'+'-'*50+'\n'+"PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n')
+w1._dataStructure.print_contents()
+print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
-# for x in range(10):
-#     draw_world(w1)
-#     w1.step()
-#     print("images len {}, world age {}".format(len(w1.images),w1.age))
-#
-#
-# gif_world(w1)
+for elem in w1._dataStructure:
+    print("Elem",elem)
+
+for x in range(4):
+    draw_world(w1, True)
+    w1.step()
+    w1._dataStructure.subdivide()
+    # print("images len {}, world age {}".format(len(w1.images),w1.age))
+
+
+gif_world(w1)
 
 image_world(w1)
 
 # print("world", w1, "images", w1.images)
-#
+
 # if len(w1.images) > 0:
 #     print(type(w1.images))
 #     (w1.images[max(w1.images.keys())]).show()
