@@ -3,6 +3,8 @@ import os
 import sys
 import tk
 from tkinter.ttk import *
+from main import *
+
 
 class Window(Frame):
     def __init__(self, master=None):
