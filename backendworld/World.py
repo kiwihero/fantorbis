@@ -10,6 +10,8 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
         self._dataStructure = self.conf.class_for_name(self.conf.structureModule,self.conf.structureClass)(conf=self.conf)
+        #gotta tidy up and use one or the other
+        self.dataStructure = self._dataStructure
         self.images = {}
         self.annotatedImages = {}
 

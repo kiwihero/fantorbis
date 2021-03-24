@@ -70,6 +70,8 @@ class Conf:
     def clear_logs(self):
         existing_logs = os.listdir(self.logFolder)
         new_log = os.path.basename(self.logfilename)
+        if len(existing_logs) == 0:
+            return
         while max(existing_logs).split('_')[0]>str(new_log).split('_')[0]:
             self.log_from_conf('info', 'Removing log {} that is more than a week old'.format(max(existing_logs)))
             os.remove(self.logFolder+max(existing_logs))
