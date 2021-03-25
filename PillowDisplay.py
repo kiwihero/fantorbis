@@ -1,8 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
-import os
-import sys
 
 def draw_world(world):
     canvas_width = 1200
@@ -27,8 +25,8 @@ def draw_world(world):
 
 def gif_world(world):
     if len(world.images) > 0:
-        fnt = ImageFont.truetype(os.path.join(sys.path[0],'07558_CenturyGothic.ttf'))
-        fnt_sm = ImageFont.truetype(os.path.join(sys.path[0],'07558_CenturyGothic.ttf'))
+        fnt = ImageFont.truetype('/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf',100)
+        fnt_sm = ImageFont.truetype('/Users/mancia2/PycharmProjects/SoftwareEngMaps/fantorbis/07558_CenturyGothic.ttf', 20)
         # ImageFont.truetype()
         images = []
         image_steps = list(world.images.keys())
