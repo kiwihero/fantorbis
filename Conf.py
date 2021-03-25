@@ -7,6 +7,7 @@ import math
 
 class Conf:
     def __init__(self):
+        self.world = None
         self.startTimeInt = self.time_id()
         self.logFolder = 'logs/'
         self.logsSaved = 1
@@ -20,12 +21,16 @@ class Conf:
         self.structureClass = 'GridStructure'
         self.structureModule = 'backendstorage.GridStructure'
 
+        self.cellClass = 'TectonicCell'
+        self.cellModule = 'backendworld.TectonicCell'
+
         self.flatImageFolder = 'flatImages/'
         self.gifName = self.flatImageFolder + 'out.gif'
         self.imageName = self.flatImageFolder + '{}/image_{}'
         self.defaultImageExtension = 'jpg'
         self.imageHeight = 1200
         self.imageWidth = int(1.5*self.imageHeight)
+        self.gifFrameDuration = 1000
 
 
         self.fnt = self.set_font(self.fontLocation, size=100)

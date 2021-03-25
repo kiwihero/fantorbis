@@ -21,6 +21,7 @@ for x in range(4):
     draw_world(w1, True)
     w1.step()
     w1._dataStructure.subdivide()
+    print("world cells count", len(w1.tectonicCells))
     # print("images len {}, world age {}".format(len(w1.images),w1.age))
 
 
@@ -33,3 +34,6 @@ image_world(w1)
 # if len(w1.images) > 0:
 #     print(type(w1.images))
 #     (w1.images[max(w1.images.keys())]).show()
+
+for cell in w1.tectonicCells:
+    print("cell age",cell.age)

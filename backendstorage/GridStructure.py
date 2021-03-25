@@ -7,10 +7,14 @@ class GridStructure(ArrayStructure):
         self.cellShape = 'rectangle'
         self.cellClassName = 'GridCell'
         self.cellClassFile = 'backendstorage.GridCell'
+        self.cellChildName = self.conf.cellClass
+        self.cellChildFile = self.conf.cellModule
+        self.cellChildClass = self.conf.class_for_name(module_name=self.cellChildFile, class_name=self.cellChildName)
+        self.cellClassArgs = {'conf':self.conf, 'childClass':self.cellChildClass}
         self.cellClass = self.conf.class_for_name(module_name=self.cellClassFile, class_name=self.cellClassName)
         self.width = width
         self.height = height
-        self._ArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass)
+        self._ArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, elemKwargs=self.cellClassArgs)
 
     def subdivide(self):
         self._ArrayStorage.subdivide()

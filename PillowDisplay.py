@@ -189,7 +189,7 @@ def gif_world(world):
         text_center = (int(0.5 * canvas_width), int(0.75 * canvas_height))
         reset_text = "START ANEW"
         draw.text(text_center, reset_text, fill=(255, 255, 255, 255), stroke_width=5, anchor='mb',font=fnt)
-        gf.save(world.conf.gifName, save_all=True, append_images=images[:], duration=200, loop=0)
+        gf.save(world.conf.gifName, save_all=True, append_images=images[:], duration=world.conf.gifFrameDuration, loop=0)
         # print(type(w1.images))
         # (w1.images[max(w1.images.keys())]).show()
 

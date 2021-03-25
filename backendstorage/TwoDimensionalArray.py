@@ -1,17 +1,26 @@
 import copy
 class TwoDimensionalArray(list):
-    def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, **kwargs):
+    def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, elemKwargs=None, **kwargs):
         super(TwoDimensionalArray, self).__init__(**kwargs)
         self.array = []
         self.rows = rows
         self.cols = cols
         self.defaultElem = defaultElem
         self.createElem = createElem
+        if elemKwargs is not None:
+            self.elemKwargs = elemKwargs
+        else:
+            self.elemKwargs = {}
+        self.elemKwargs['parent'] = self
+        print('2darray self {} type {}'.format(self.elemKwargs['parent'],type(self.elemKwargs['parent'])))
+        print("2darray elemkwargs",self.elemKwargs)
+        print("2darray kwargs",kwargs)
+        print("2darray create elem",createElem)
         while(self.rows > len(self.array)):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
-                    elem = self.createElem()
+                    elem = self.createElem(customkwargs=self.elemKwargs,**kwargs)
                     row.append(elem)
                 else:
                     row.append(self.defaultElem)
@@ -100,8 +109,8 @@ class TwoDimensionalArray(list):
             new_row = []
             for col in range(self.cols):
                 old_cell = self.array[row][col]
-                # print("CELL TYPE {}".format(type(old_cell)))
-                new_cell = copy.deepcopy(old_cell)
+                print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
+                new_cell = copy.copy(old_cell)
                 # new_cell = old_cell.copy()
                 new_row.append(new_cell)
             new_array.append(self.array[row])
