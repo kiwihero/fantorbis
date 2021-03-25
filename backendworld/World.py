@@ -2,6 +2,7 @@ from backendworld.TectonicBoundary import *
 from backendworld.TectonicPlate import *
 from backendstorage.GridStructure import *
 from Conf import Conf
+import random
 
 class World:
     def __init__(self):
@@ -25,3 +26,16 @@ class World:
 
     def converge(self, p1, p2, boundary):
         pass
+
+    def random_wiggle(self):
+        random_row = random.randint(0, self._dataStructure.height-1)
+        random_col = random.randint(0, self._dataStructure.width-1)
+
+
+        print("random row {}: {}".format(type(random_row),random_row))
+        print("random col {}: {}".format(type(random_col),random_col))
+        random_cell = self._dataStructure.lookupPosition(row=random_row, col=random_col)
+        print("random cell {}: {}".format(type(random_cell),random_cell))
+        relx = random.randint(-1,1)
+        rely = random.randint(-1,1)
+        self._dataStructure.move_cell(random_cell, relative=(relx,rely))

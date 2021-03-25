@@ -43,6 +43,7 @@ class GridCell(Cell):
         newCell.world = self.conf.world
         for child in newCell.children:
             newCell.world.tectonicCells.add(child)
+            child.age = self.children[0].age
         return newCell
 
     def __deepcopy__(self, memodict={}):

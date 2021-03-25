@@ -27,6 +27,36 @@ class GridStructure(ArrayStructure):
     def subdivide_cols(self):
         self._ArrayStorage.subdivide_cols()
 
+    def swap_cells(self, cell1, cell2):
+        cell1pos = self._ArrayStorage.search_for_address(cell=cell1)
+        cell2pos = self._ArrayStorage.search_for_address(cell=cell2)
+        self._ArrayStorage.swap_pos(originRow=cell1pos['row'],originCol=cell1pos['col'],destRow=cell2pos['row'], destCol=cell2pos['col'])
+
+    def move_cell(self, cell, destination=None, relative=None):
+        if destination==None and relative==None:
+            self.conf.log_from_conf('error', 'No destination or relative movement known to move cell')
+            return
+        cellpos = self._ArrayStorage.search_for_address(cell=cell)
+        print("moving cell {}".format(cell))
+        if destination == None:
+            destination = [cellpos['row']+relative[0], cellpos['col']+relative[1]]
+
+        print("Moving from {} to {}".format(cellpos, destination))
+
+        self._ArrayStorage.move_pos(cellpos['row'], cellpos['col'], destination[0], destination[1])
+
+    def search_for_cell(self, cell):
+        return self._ArrayStorage.search_for_cell(cell)
+
+    def lookupPosition(self,row,col):
+        return self._ArrayStorage.lookupPosition(row=row, col=col)
+
+    # def add_cell(self, cell):
+    #     raise StructureNotImplementedError("move_cell")
+    #
+    # def remove_cell(self, cell):
+    #     raise StructureNotImplementedError("move_cell")
+
 
 
 

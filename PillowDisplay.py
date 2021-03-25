@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
 import os
+import eris_gradient
 
 
 def draw_world(world, add_text=False):
@@ -13,14 +14,28 @@ def draw_world(world, add_text=False):
     draw = ImageDraw.Draw(im)
     struct = world._dataStructure
 
+
+
     if struct.cellShape == 'rectangle':
         cellstruct = struct
+        gradient_ends = world.conf.ageGradient
+        gradient_steps = world.age+1
+        full_gradient = eris_gradient.make_gradient(gradient_ends[0], gradient_ends[1], gradient_steps)
+        # print("full gradient len", len(full_gradient))
 
         locs = _square_cells(im,cellstruct)
+        r=0
         for row in locs:
+            c = 0
             for col in row:
-                draw.rectangle(col, fill=(100,100,100),
+                ind_cell = cellstruct.lookupPosition(row=r, col=c)
+                ind_cell_age = ind_cell.children[0].age
+                # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
+
+                draw.rectangle(col, fill=full_gradient[ind_cell_age],
                                outline=None, width=0)
+                c += 1
+            r += 1
     else:
         world.conf.log_from_conf('error', "Cell shape not known, could not draw world")
         return
@@ -270,8 +285,8 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
         y1 = y2 + separation[1]
         y2 += (separation[1] + square_dims[1])
 
-    # print("square dims", square_dims, "separation", separation)
-    # print("cell locations",cell_locations)
+    print("square dims", square_dims, "separation", separation)
+    print("cell locations",cell_locations)
     return cell_locations
 
 class GenericError(Exception):

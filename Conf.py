@@ -32,6 +32,8 @@ class Conf:
         self.imageWidth = int(1.5*self.imageHeight)
         self.gifFrameDuration = 1000
 
+        self.ageGradient = ((130, 245, 0), (244,0,245))
+
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)
@@ -74,6 +76,8 @@ class Conf:
 
     def clear_logs(self):
         existing_logs = os.listdir(self.logFolder)
+        if len(existing_logs) == 0:
+            return
         new_log = os.path.basename(self.logfilename)
         while max(existing_logs).split('_')[0]>str(new_log).split('_')[0]:
             self.log_from_conf('info', 'Removing log {} that is more than a week old'.format(max(existing_logs)))

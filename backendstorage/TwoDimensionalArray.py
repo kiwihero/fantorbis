@@ -30,6 +30,7 @@ class TwoDimensionalArray(list):
         return _TwoDimensionalArrayIterator(self.array)
 
     def lookupPosition(self,row,col):
+        print("looking up  row {} col {}".format(row,col))
         return self.array[row][col]
 
     def __getitem__(self, item):
@@ -85,10 +86,24 @@ class TwoDimensionalArray(list):
 
     def move_pos(self, originRow, originCol, destRow, destCol):
         cell = self.lookupPosition(row=originRow,col=originCol)
+        print("moving cell in array {}".format(cell))
         self.add_pos(cell, destRow, destCol)
+        if self.createElem != None:
+            elem = self.createElem(customkwargs=self.elemKwargs)
+            self.add_pos(elem, originRow, originCol)
+
+        else:
+            self.add_pos(self.defaultElem, originRow, originCol)
+        print("cell now at ".format(self.search_for_cell(cell)))
+
 
     def add_pos(self, cell, row, col):
+        print("adding to pos {},{}".format(row, col))
+        row = row % len(self.array)
+        col = col % len(self.array[row])
+        print("adding to moded pos {},{}".format(row,col))
         self.array[row][col] = cell
+        print("array row {} col {} now {}".format(row,col,self.array[row][col]))
 
     def remove_pos(self, row, col):
         cell = self.lookupPosition(row,col)
@@ -116,7 +131,7 @@ class TwoDimensionalArray(list):
             new_array.append(self.array[row])
             new_array.append(new_row)
         self.array = new_array
-        self.rows = 2 * self.rows
+        self.rows = len(self.array)
 
 
 
@@ -130,8 +145,10 @@ class TwoDimensionalArray(list):
                 new_row.append(cell)
                 new_row.append(new_cell)
             new_array.append(new_row)
+
         self.array = new_array
-        self.cols = 2*self.cols
+        self.cols = len(self.array[0])
+
 
 
 
