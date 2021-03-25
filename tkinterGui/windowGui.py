@@ -3,7 +3,7 @@ import os
 import sys
 import tk
 from tkinter.ttk import *
-from main import *
+#from main import *
 
 
 class Window(Frame):
@@ -35,6 +35,7 @@ def donothing():
     filewin = tk.Toplevel(root)
     button = tk.Button(filewin, text="Do nothing button")
     button.pack()
+
 
 
 
