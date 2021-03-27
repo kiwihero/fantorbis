@@ -1,6 +1,3 @@
-from backendworld.TectonicBoundary import *
-from backendworld.TectonicPlate import *
-from backendstorage.GridStructure import *
 from Conf import Conf
 import random
 
