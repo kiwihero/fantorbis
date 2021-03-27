@@ -28,7 +28,7 @@ class GeneralStructure:
         self.move_cell(cell1,cell2.pos)
         self.move_cell(cell2, tmp)
 
-    def move_cell(self, cell, destination):
+    def move_cell(self, cell, **kwargs):
         raise StructureNotImplementedError("move_cell")
 
     def add_cell(self, cell):

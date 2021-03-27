@@ -6,15 +6,15 @@ class ArrayStructure(GeneralStructure):
         super(ArrayStructure, self).__init__(**kwargs)
 
     def print_contents(self):
-        if type(self._ArrayStorage) is list:
-            for row in self._ArrayStorage:
+        if type(self._CellArrayStorage) is list:
+            for row in self._CellArrayStorage:
                 print("row of len", len(row))
                 printed_row = ''
                 for col in row:
                     printed_row += str(col) + ' '
                 print(printed_row)
-        elif type(self._ArrayStorage) is TwoDimensionalArray:
-            self._ArrayStorage.print_contents()
+        elif type(self._CellArrayStorage) is TwoDimensionalArray:
+            self._CellArrayStorage.print_contents()
         else:
             raise DoesNotExistError("ArrayStorage")
 
@@ -24,10 +24,10 @@ class ArrayStructure(GeneralStructure):
     # def move_cell(self, cell, destination):
 
     def __iter__(self):
-        if type(self._ArrayStorage) is list:
-            return self._ArrayStorage.__iter__()
-        elif type(self._ArrayStorage) is TwoDimensionalArray:
-            return self._ArrayStorage.__iter__()
+        if type(self._CellArrayStorage) is list:
+            return self._CellArrayStorage.__iter__()
+        elif type(self._CellArrayStorage) is TwoDimensionalArray:
+            return self._CellArrayStorage.__iter__()
         else:
             raise DoesNotExistError("ArrayStorage")
 

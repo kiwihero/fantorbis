@@ -1,5 +1,5 @@
 class Vertex:
-    def __init__(self):
+    def __init__(self, customkwargs=None, **kwargs):
         self.originVertex = None
         self.destinationVertex = None
         self.vertices = set()
@@ -13,5 +13,5 @@ class Vertex:
     def splitVertex(self, vertexPoint1, vertexPoint2):
         return Exception
 
-    def insertVerted(self, vertexPoint1, vertexPoint2, newVertexPoint):
+    def insertVertex(self, vertexPoint1, vertexPoint2, newVertexPoint):
         return Exception

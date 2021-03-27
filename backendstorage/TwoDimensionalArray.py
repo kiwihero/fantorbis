@@ -20,6 +20,7 @@ class TwoDimensionalArray(list):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
+                    print("creating elem", self.createElem)
                     elem = self.createElem(customkwargs=self.elemKwargs,**kwargs)
                     row.append(elem)
                 else:
