@@ -4,4 +4,8 @@ class TectonicBoundary(WorldAttribute):
     def __init__(self, **kwargs):
         self.origin = None
         self.destination = None
+        self.tectonicCells = set()
         super(TectonicBoundary, self).__init__(**kwargs)
+
+    def addTectonicCell(self, tectonicCell):
+        self.tectonicCells.add(tectonicCell)
