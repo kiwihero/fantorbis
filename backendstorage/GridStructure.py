@@ -1,5 +1,6 @@
 from backendstorage.ArrayStructure import ArrayStructure
 from backendstorage.TwoDimensionalArray import TwoDimensionalArray
+from backendstorage.VertexPoint import VertexPoint
 
 class GridStructure(ArrayStructure):
     def __init__(self, width=2, height=2, **kwargs):
@@ -12,9 +13,13 @@ class GridStructure(ArrayStructure):
         self.cellChildClass = self.conf.class_for_name(module_name=self.cellChildFile, class_name=self.cellChildName)
         self.cellClassArgs = {'conf':self.conf, 'childClass':self.cellChildClass}
         self.cellClass = self.conf.class_for_name(module_name=self.cellClassFile, class_name=self.cellClassName)
+        self.vertexClassName = 'VertexPoint'
+        self.vertexClassFile = 'backendstorage.VertexPoint'
+        self.vertexClass = self.conf.class_for_name(module_name=self.vertexClassFile, class_name=self.vertexClassName)
         self.width = width
         self.height = height
         self._ArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, elemKwargs=self.cellClassArgs)
+        self._VertexArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
 
     def subdivide(self):
         self._ArrayStorage.subdivide()
@@ -50,14 +55,6 @@ class GridStructure(ArrayStructure):
 
     def lookupPosition(self,row,col):
         return self._ArrayStorage.lookupPosition(row=row, col=col)
-
-    # def add_cell(self, cell):
-    #     raise StructureNotImplementedError("move_cell")
-    #
-    # def remove_cell(self, cell):
-    #     raise StructureNotImplementedError("move_cell")
-
-
 
 
 

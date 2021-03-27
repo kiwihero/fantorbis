@@ -2,10 +2,8 @@ from backendworld.WorldAttribute import WorldAttribute
 
 class TectonicBoundary(WorldAttribute):
     def __init__(self, **kwargs):
-        self.origin = None
-        self.destination = None
+        self.originVertex = None
+        self.destinationVertex = None
         self.tectonicCells = set()
+        self._dataStorageVertices = set()
         super(TectonicBoundary, self).__init__(**kwargs)
-
-    def addTectonicCell(self, tectonicCell):
-        self.tectonicCells.add(tectonicCell)
