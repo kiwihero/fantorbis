@@ -1,13 +1,23 @@
 from backendstorage.Vertices.VertexPoint import VertexPoint
 import backendstorage.CustomExceptions
+
+
 class VertexSegment:
     """
     A VertexSegment class instance is the line between two adjacent VertexPoints
     """
+
     def __init__(self, originPoint=None, destinationPoint=None):
         self._vertexOrigin = originPoint
         self._vertexDestination = destinationPoint
         self._vertexPoints = {self._vertexOrigin, self._vertexDestination}
+
+    def points(self):
+        """
+        The set of points in a vertex
+        :return: set of VertexPoint objects
+        """
+        return self._vertexPoints
 
     def remove_point(self, vertex_point):
         """
@@ -68,3 +78,30 @@ class VertexSegment:
         self.remove_point(self._vertexDestination)
 
         return {self, new_vertex_segment}
+
+    def
+
+    def is_contiguous(self, vertex_segment):
+        """
+        Tests if a given VertexSegment is contiguous with the current one
+        :param vertex_segment: A different vertex segment
+        :return: Boolean if contiguous or not
+        """
+        shared_points = (self._vertexPoints & vertex_segment.points())
+        if len(shared_points) > 0:
+            return True
+        else:
+            return False
+
+    def shared_point(self, vertex_segment):
+        """
+        Similar to self.is_contiguous, but returns a specific point
+        :param vertex_segment:
+        :return: A single point that is contiguous
+        """
+        shared_points = (self._vertexPoints & vertex_segment.points())
+        if len(shared_points) > 0:
+            return list(shared_points)[0]
+        else:
+            return backendstorage.CustomExceptions.MessageError(
+                "The segments {} and {} are not contiguous".format(vertex_segment, self))
