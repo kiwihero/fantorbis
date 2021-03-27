@@ -3,10 +3,8 @@ import os
 import sys
 import tk
 from tkinter.ttk import *
-#from main import *
 
-
-class Window(Frame):
+class FileMenuFrame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.master = master
@@ -36,19 +34,10 @@ def donothing():
     button = tk.Button(filewin, text="Do nothing button")
     button.pack()
 
-
-
-
-
-
 root = Tk()
 app = Window(root)
 root.wm_title("Fantorbis")
 root.iconbitmap(os.path.join(sys.path[0], 'Fantorbis-Logo.ico'))
 root.mainloop()
-
-
-
-
 
 
