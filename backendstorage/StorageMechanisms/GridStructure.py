@@ -1,6 +1,6 @@
-# from backendstorage.ArrayStructure import ArrayStructure
-# from backendstorage.TwoDimensionalArray import TwoDimensionalArray
-# from backendstorage.VertexPoint import VertexPoint
+from backendstorage.StorageMechanisms.ArrayStructure import ArrayStructure
+from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
+from backendstorage.Vertices.VertexPoint import VertexPoint
 #
 # class GridStructure(ArrayStructure):
 #     def __init__(self, width=2, height=2, **kwargs):

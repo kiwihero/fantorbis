@@ -1,5 +1,5 @@
-# from backendstorage.GeneralStructure import *
-# from backendstorage.TwoDimensionalArray import TwoDimensionalArray
+from backendstorage.StorageMechanisms.GeneralStructure import *
+from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
 #
 # class ArrayStructure(GeneralStructure):
 #     def __init__(self, **kwargs):

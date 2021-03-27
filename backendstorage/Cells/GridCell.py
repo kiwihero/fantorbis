@@ -1,4 +1,4 @@
-# from backendstorage.Cell import Cell
+from backendstorage.Cells.Cell import Cell
 # import copy
 # class GridCell(Cell):
 #     def __init__(self, parent=None, customkwargs=None, **kwargs):

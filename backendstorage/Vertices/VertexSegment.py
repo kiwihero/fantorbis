@@ -1,4 +1,4 @@
-# from backendstorage.VertexPoint import VertexPoint
+# from backendstorage.Vertices.VertexPoint import VertexPoint
 # class VertexSegment:
 #     def __init__(self,**kwargs):
 #         self.vertexPoints = set()
