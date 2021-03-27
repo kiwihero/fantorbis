@@ -68,6 +68,11 @@ class Vertex:
             return set(self)
 
     def split_at_segment(self, vertex_segment):
+        """
+        Splits a Vertex into two Vertices, discarding the included vertex_segment
+        :param vertex_segment: a VertexSegment included in self
+        :return: The set of new vertices created
+        """
         segments = set()
         split_points = list(vertex_segment.points())
         split_vertex = self.split_at_point(split_points[0])
@@ -80,11 +85,16 @@ class Vertex:
         return segments
 
     def split_at_point(self, vertex_point):
+        """
+        Split a Vertex into two Vertices at a single given point
+        :param vertex_point: A VertexPoint within self
+        :return: The set of new vertices created
+        """
         new_vertex = Vertex()
         segments = set()
         active_vertex = new_vertex
         for vertex_segment in self.orderedVertexSegments:
-            if vertex_point in vertex_segment.points():
+            if vertex_point in vertex_segment.points() and len(segments) == 0:
                 segments.add(active_vertex)
                 active_vertex = Vertex()
                 segments.add(active_vertex)
