@@ -7,29 +7,31 @@ class Vertex:
         self.orderedVertexSegments = []
 
     def add_vertex_segment(self, vertex_segment):
-        '''
+        """
         Extend an existing vertex using a vertex segment that connects
         :param vertex_segment: A single vertex segment that is contiguous with existing vertex
-        :return: none
-        '''
-        if len({self.originVertexPoint,self.destinationVertexPoint} & vertex_segment.points()) == 0:
+        :return: error if applicable
+        """
+        shared_points = {self.originVertexPoint,self.destinationVertexPoint} & vertex_segment.points()
+        if len(shared_points) == 0:
             for existing_segment in self.vertexSegments:
                 if existing_segment.is_contiguous(vertex_segment):
+                    self.vertexSegments.add(vertex_segment)
                     # TODO: Make multi-vertices when adding a segment in the middle of a vertex
                     return
             return backendstorage.CustomExceptions.MessageError(
                 "The segment {} is not contiguous with the vertex {}".format(vertex_segment, self))
-        elif self.originVertexPoint in vertex_segment.points():
+        else:
+            new_point = vertex_segment.points() - shared_points
+            if len(new_point) == 0:
+                return backendstorage.CustomExceptions.MessageError(
+                    "The segment {} does not add to the vertex {}".format(vertex_segment, self))
+            elif self.originVertexPoint in shared_points:
+                self.originVertexPoint = new_point
+            else:
+                self.destinationVertexPoint = new_point
+            self.vertexSegments.add(vertex_segment)
 
+    # def remove_vertex_segment:
 
-        self.vertexSegments.add(vertex_segment)
-#         return Exception
-#
-#     def removeVertex(self, vertex):
-#         return Exception
-#
-#     def splitVertex(self, vertexPoint1, vertexPoint2):
-#         return Exception
-#
-#     def insertVertex(self, vertexPoint1, vertexPoint2, newVertexPoint):
-#         return Exception
+    # def split_at_point:

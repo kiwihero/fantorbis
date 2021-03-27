@@ -79,8 +79,6 @@ class VertexSegment:
 
         return {self, new_vertex_segment}
 
-    def
-
     def is_contiguous(self, vertex_segment):
         """
         Tests if a given VertexSegment is contiguous with the current one
