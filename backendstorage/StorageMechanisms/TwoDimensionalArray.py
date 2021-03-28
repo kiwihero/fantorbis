@@ -3,6 +3,7 @@ class TwoDimensionalArray(list):
     """
     List of lists, has some helpful functions
     """
+
     def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, elemKwargs=None, **kwargs):
         super(TwoDimensionalArray, self).__init__(**kwargs)
         self.array = []
@@ -15,16 +16,12 @@ class TwoDimensionalArray(list):
         else:
             self.elemKwargs = {}
         self.elemKwargs['parent'] = self
-#         print('2darray self {} type {}'.format(self.elemKwargs['parent'],type(self.elemKwargs['parent'])))
-#         print("2darray elemkwargs",self.elemKwargs)
-#         print("2darray kwargs",kwargs)
-#         print("2darray create elem",createElem)
-        while(self.rows > len(self.array)):
+        while (self.rows > len(self.array)):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
                     print("creating elem", self.createElem)
-                    elem = self.createElem(customkwargs=self.elemKwargs,**kwargs)
+                    elem = self.createElem(customkwargs=self.elemKwargs, **kwargs)
                     row.append(elem)
                 else:
                     row.append(self.defaultElem)
@@ -32,55 +29,82 @@ class TwoDimensionalArray(list):
 
     def __iter__(self):
         return _TwoDimensionalArrayIterator(self.array)
-#
-#     def lookupPosition(self,row,col):
-#         print("looking up  row {} col {}".format(row,col))
-#         return self.array[row][col]
-#
-#     def __getitem__(self, item):
-#         return self.array[item]
-#
-#     def print_contents(self):
-#         if type(self.array) is list:
-#             print("Printing contents of {} x {} array".format(self.rows,self.cols))
-#             for row in self.array:
-#                 # print("row of len", len(row))
-#                 printed_row = ''
-#                 for col in row:
-#                     printed_row += str(col) + ' '
-#                 print(printed_row)
-#         else:
-#             print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
-#
-#     def search_for_cell(self,cell):
-#         for row in range(self.rows):
-#             for col in range(self.cols):
-#                 if self.lookupPosition(row=row,col=col) == cell:
-#                     return {'row': row, 'col': col}
-#
-#     def search_for_attributes(self,attrDict):
-#
-#         for row in range(self.rows):
-#             for col in range(self.cols):
-#                 cell = self.lookupPosition(row=row,col=col)
-#                 match=True
-#                 for attr, val in attrDict.items():
-#                     if cell.attr != val:
-#                         match=False
-#                         break #If one attribute doesn't work, stop comparing attributes: gets back to for loop going through the array
-#                 if match == True:
-#                     return {'row': row, 'col': col}
-#
-#     def search_for_address(self,address=None,cell=None):
-#         if address == None:
-#             if cell != None:
-#                 address = hex(id(cell))
-#             else:
-#                 return Exception
-#         for row in range(self.rows):
-#             for col in range(self.cols):
-#                 if hex(id(self.lookupPosition(row=row,col=col))) == address:
-#                     return {'row': row, 'col': col}
+
+    def __getitem__(self, item):
+        """
+        Allows retrieval of items using instance[i][j]
+        :param item:
+        :return:
+        """
+        return self.array[item]
+
+    def print_contents(self):
+        if type(self.array) is list:
+            print("Printing contents of {} x {} array".format(self.rows, self.cols))
+            for row in self.array:
+                # print("row of len", len(row))
+                printed_row = ''
+                for col in row:
+                    printed_row += str(col) + ' '
+                print(printed_row)
+        else:
+            print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
+
+    def __str__(self):
+        outstr = ""
+        if type(self.array) is list:
+            outstr += '{} by {} 2d list '.format(self.rows, self.cols)
+            outstr += '['
+            for row in self.array:
+                # print("row of len", len(row))
+                printed_row = '['
+                for col in row:
+                    printed_row += str(col) + ' '
+                printed_row += ']'
+                outstr += printed_row
+            outstr += ']'
+            return outstr
+        else:
+            return ("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
+
+    def index(self, cell, rowstart=0, rowend=None, colstart=0, colend=None):
+        if rowend is None:
+            rowend = self.rows
+        if colend is None:
+            colend = self.cols
+        for row in range(rowstart, rowend):
+            for col in range(colstart, colend):
+                if self[row][col] == cell:
+                    return [col, row]
+        return ValueError
+
+    def find_attrs(self,attrDict,rowstart=0, rowend=None, colstart=0, colend=None):
+        if rowend is None:
+            rowend = self.rows
+        if colend is None:
+            colend = self.cols
+        for row in range(rowstart, rowend):
+            for col in range(colstart, colend):
+                cell = self[row][col]
+                match=True
+                for attr, val in attrDict.items():
+                    if cell.attr != val:
+                        match=False
+                        break #If one attribute doesn't work, stop comparing attributes: gets back to for loop going through the array
+                if match == True:
+                    return [col, row]
+        return ValueError
+
+    def find_address(self,address=None,cell=None):
+        if address == None:
+            if cell != None:
+                address = hex(id(cell))
+            else:
+                return Exception
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if hex(id(self[row][col])) == address:
+                    return [col,row]
 #
 #     def swap_pos(self, originRow, originCol, destRow, destCol):
 #         temp_cell = self.remove_pos(originRow,originCol)
@@ -173,3 +197,9 @@ class _TwoDimensionalArrayIterator:
             self._index[1] += 1
             return result
         raise StopIteration
+
+# two = TwoDimensionalArray(rows=2,cols=2)
+# two[1][1]=5
+# idx = two.index(5, rowend=1,colend=1)
+# print("index of 5: {}".format(idx))
+# print(two)
