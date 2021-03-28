@@ -13,8 +13,9 @@ class Cell:
             self.worldPosition = Position()
         else:
             self.worldPosition = world_pos
+        # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
-#         self._dataStorageStructure = None
+#         self._dataStorageStructure = None # should keep references to these???
 #         self._worldStructure = None
 #
     def move(self, newWorldPosition=None, newDataStoragePosition=None):
