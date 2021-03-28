@@ -1,9 +1,18 @@
 from Position import Position
 
 class Cell:
-    def __init__(self):
-        self.dataStoragePosition = Position()
-        self.worldPosition = Position()
+    """
+    A single cell, surrounded by vertices
+    """
+    def __init__(self, ds_pos=None, world_pos=None):
+        if ds_pos is None:
+            self.dataStoragePosition = Position()
+        else:
+            self.dataStoragePosition = ds_pos
+        if world_pos is None:
+            self.worldPosition = Position()
+        else:
+            self.worldPosition = world_pos
         self.vertexPoints = set()
 #         self._dataStorageStructure = None
 #         self._worldStructure = None
@@ -11,14 +20,14 @@ class Cell:
     def move(self, newWorldPosition=None, newDataStoragePosition=None):
         """
         Change the position known by the cell in either world or data storage coordinate systems
-        :param newWorldPosition: (x,y
-        :param newDataStoragePosition:
+        :param newWorldPosition: Position object
+        :param newDataStoragePosition: Position object
         :return:
         """
         if newWorldPosition is not None:
-            self.worldPosition = newWorldPosition
+            self.worldPosition.change_position(newWorldPosition)
         if newDataStoragePosition is not None:
-            self.dataStoragePosition = newDataStoragePosition
+            self.dataStoragePosition.change_position(newDataStoragePosition)
 #
 #     def splitCellAlongVertex(self, vertexSegment):
 #         vertexSegment.splitVertex()
