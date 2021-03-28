@@ -2,9 +2,16 @@ from backendstorage.StorageMechanisms.ArrayStructure import ArrayStructure
 from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
 from backendstorage.Vertices.VertexPoint import VertexPoint
 #
-# class GridStructure(ArrayStructure):
-#     def __init__(self, width=2, height=2, **kwargs):
-#         super(GridStructure, self).__init__(**kwargs)
+class GridStructure(ArrayStructure):
+    def __init__(self, width=2, height=2, **kwargs):
+        """
+        This is an actual storage class
+        Info is stored in a grid-style array
+        :param width: The width of the array (x)
+        :param height: The height of the array (y)
+        :param kwargs:
+        """
+        super(GridStructure, self).__init__(**kwargs)
 #         self.cellShape = 'rectangle'
 #         self.cellClassName = 'GridCell'
 #         self.cellClassFile = 'backendstorage.GridCell'
