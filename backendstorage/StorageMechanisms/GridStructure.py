@@ -12,8 +12,17 @@ class GridStructure(ArrayStructure):
         :param kwargs:
         """
         super(GridStructure, self).__init__(**kwargs)
-#         self.cellShape = 'rectangle'
-#         self.cellClassName = 'GridCell'
+        self.width = width
+        self.height = height
+
+        # --------------------------------------------------------------------------------------------------------------
+        # Ability to create other classes from strings
+        # --------------------------------------------------------------------------------------------------------------
+        self.cellShape = 'rectangle'
+        self.cellClassName = 'GridCell'
+        self.cellClass = self.conf.class_for_name(self.cellClassName)
+        self.vertexClassName = 'VertexPoint'
+        self.vertexClass = self.conf.class_for_name(self.vertexClassName)
 #         self.cellClassFile = 'backendstorage.GridCell'
 #         self.cellChildName = self.conf.cellClass
 #         self.cellChildFile = self.conf.cellModule
@@ -23,8 +32,7 @@ class GridStructure(ArrayStructure):
 #         self.vertexClassName = 'VertexPoint'
 #         self.vertexClassFile = 'backendstorage.VertexPoint'
 #         self.vertexClass = self.conf.class_for_name(module_name=self.vertexClassFile, class_name=self.vertexClassName)
-#         self.width = width
-#         self.height = height
+#
 #         self._CellArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, elemKwargs=self.cellClassArgs)
 #         self._VertexArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
 #

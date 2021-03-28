@@ -6,6 +6,7 @@ import time
 import math
 
 class Conf:
+    classes = {'GridCell':'backendstorage.Cells.GridCell', 'VertexPoint':'backendstorage.Vertices.VertexPoint'}
     def __init__(self):
         self.world = None
         self.startTimeInt = self.time_id()
@@ -55,8 +56,10 @@ class Conf:
 
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
-    def class_for_name(self, module_name, class_name):
+    def class_for_name(self, class_name, module_name=None):
         try:
+            if module_name is None and class_name in Conf.classes:
+                module_name = Conf.classes[class_name]
             # load the module, will raise ImportError if module cannot be loaded
             m = importlib.import_module(module_name)
             # get the class, will raise AttributeError if class cannot be found
