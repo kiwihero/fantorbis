@@ -1,34 +1,37 @@
 # import copy
-# class TwoDimensionalArray(list):
-#     def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, elemKwargs=None, **kwargs):
-#         super(TwoDimensionalArray, self).__init__(**kwargs)
-#         self.array = []
-#         self.rows = rows
-#         self.cols = cols
-#         self.defaultElem = defaultElem
-#         self.createElem = createElem
-#         if elemKwargs is not None:
-#             self.elemKwargs = elemKwargs
-#         else:
-#             self.elemKwargs = {}
-#         self.elemKwargs['parent'] = self
+class TwoDimensionalArray(list):
+    """
+    List of lists, has some helpful functions
+    """
+    def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, elemKwargs=None, **kwargs):
+        super(TwoDimensionalArray, self).__init__(**kwargs)
+        self.array = []
+        self.rows = rows
+        self.cols = cols
+        self.defaultElem = defaultElem
+        self.createElem = createElem
+        if elemKwargs is not None:
+            self.elemKwargs = elemKwargs
+        else:
+            self.elemKwargs = {}
+        self.elemKwargs['parent'] = self
 #         print('2darray self {} type {}'.format(self.elemKwargs['parent'],type(self.elemKwargs['parent'])))
 #         print("2darray elemkwargs",self.elemKwargs)
 #         print("2darray kwargs",kwargs)
 #         print("2darray create elem",createElem)
-#         while(self.rows > len(self.array)):
-#             row = []
-#             for c in range(self.cols):
-#                 if self.createElem != None:
-#                     print("creating elem", self.createElem)
-#                     elem = self.createElem(customkwargs=self.elemKwargs,**kwargs)
-#                     row.append(elem)
-#                 else:
-#                     row.append(self.defaultElem)
-#             self.array.append(row)
-#
-#     def __iter__(self):
-#         return _TwoDimensionalArrayIterator(self.array)
+        while(self.rows > len(self.array)):
+            row = []
+            for c in range(self.cols):
+                if self.createElem != None:
+                    print("creating elem", self.createElem)
+                    elem = self.createElem(customkwargs=self.elemKwargs,**kwargs)
+                    row.append(elem)
+                else:
+                    row.append(self.defaultElem)
+            self.array.append(row)
+
+    def __iter__(self):
+        return _TwoDimensionalArrayIterator(self.array)
 #
 #     def lookupPosition(self,row,col):
 #         print("looking up  row {} col {}".format(row,col))
@@ -153,20 +156,20 @@
 #
 #
 #
-# class _TwoDimensionalArrayIterator:
-#     def __init__(self, grid, **kwargs):
-#         self._grid = grid
-#         self._index = [0, 0]
-#
-#     def __next__(self):
-#         if self._index[0] < len(self._grid) and self._index[1] < len(self._grid[self._index[0]]):
-#             result = self._grid[self._index[0]][self._index[1]]
-#             self._index[1] += 1
-#             return result
-#         elif self._index[0] + 1 < len(self._grid):
-#             self._index[0] += 1
-#             self._index[1] = 0
-#             result = self._grid[self._index[0]][self._index[1]]
-#             self._index[1] += 1
-#             return result
-#         raise StopIteration
+class _TwoDimensionalArrayIterator:
+    def __init__(self, grid, **kwargs):
+        self._grid = grid
+        self._index = [0, 0]
+
+    def __next__(self):
+        if self._index[0] < len(self._grid) and self._index[1] < len(self._grid[self._index[0]]):
+            result = self._grid[self._index[0]][self._index[1]]
+            self._index[1] += 1
+            return result
+        elif self._index[0] + 1 < len(self._grid):
+            self._index[0] += 1
+            self._index[1] = 0
+            result = self._grid[self._index[0]][self._index[1]]
+            self._index[1] += 1
+            return result
+        raise StopIteration
