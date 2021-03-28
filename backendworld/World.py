@@ -9,7 +9,7 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
         self.tectonicCells = set()
-        self._dataStructure = self.conf.class_for_name(self.conf.structureModule,self.conf.structureClass)(conf=self.conf)
+        self._dataStructure = self.conf.class_for_name('GridStructure')#(conf=self.conf)
         self.images = {}
         self.annotatedImages = {}
 

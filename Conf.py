@@ -6,7 +6,11 @@ import time
 import math
 
 class Conf:
-    classes = {'GridCell':'backendstorage.Cells.GridCell', 'VertexPoint':'backendstorage.Vertices.VertexPoint'}
+    classes = {
+        'GridCell':'backendstorage.Cells.GridCell',
+        'VertexPoint':'backendstorage.Vertices.VertexPoint',
+        'GridStructure': 'backendstorage.GridStructure'
+    }
     def __init__(self):
         self.world = None
         self.startTimeInt = self.time_id()
@@ -19,8 +23,7 @@ class Conf:
         self.resourceFolder = 'resources/'
         self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
         self.fontExtensions = ['.ttf']
-        self.structureClass = 'GridStructure'
-        self.structureModule = 'backendstorage.GridStructure'
+
 
         self.cellClass = 'TectonicCell'
         self.cellModule = 'backendworld.TectonicCell'
