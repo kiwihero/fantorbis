@@ -1,4 +1,4 @@
-# import copy
+import copy
 class TwoDimensionalArray(list):
     """
     List of lists, has some helpful functions
@@ -38,6 +38,10 @@ class TwoDimensionalArray(list):
         """
         return self.array[item]
 
+    def __setitem__(self, key, value):
+        print("setting key {}, value {}".format(key,value))
+        self.array[key] = value
+
     def print_contents(self):
         if type(self.array) is list:
             print("Printing contents of {} x {} array".format(self.rows, self.cols))
@@ -46,6 +50,20 @@ class TwoDimensionalArray(list):
                 printed_row = ''
                 for col in row:
                     printed_row += str(col) + ' '
+                print(printed_row)
+        else:
+            print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
+
+    def grid_print(self):
+        max = 0
+        if type(self.array) is list:
+            print("Printing grid of {} x {} array".format(self.rows, self.cols))
+            for row in self.array:
+                # print("row of len", len(row))
+                printed_row = '|'
+                for col in row:
+                    printed_row += '{0:>5}|'.format(str(col))
+                # printed_row += '|'
                 print(printed_row)
         else:
             print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
@@ -65,18 +83,57 @@ class TwoDimensionalArray(list):
             outstr += ']'
             return outstr
         else:
-            return ("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
+            return super(TwoDimensionalArray, self).__str__()
 
     def index(self, cell, rowstart=0, rowend=None, colstart=0, colend=None):
-        if rowend is None:
+        if rowstart > self.rows:
+            rowstart = self.rows
+        if rowend is None or rowend > self.rows or rowend < rowstart:
             rowend = self.rows
-        if colend is None:
+        if colstart > self.cols:
+            colstart = self.cols
+        if colend is None or colend > self.cols or colend < colstart:
             colend = self.cols
         for row in range(rowstart, rowend):
             for col in range(colstart, colend):
                 if self[row][col] == cell:
                     return [col, row]
         return ValueError
+
+    def clear(self):
+        self.array = []
+        self.rows = 0
+        self.cols = 0
+
+    def insert(self, index: int, row: list):
+        if len(row) == self.cols:
+            self.array.insert(index, row)
+            self.rows += 1
+        else:
+            raise ValueError
+
+    def append(self, row:list):
+        if len(row) == self.cols:
+            self.array.append(row)
+            self.rows+= 1
+        else:
+            raise ValueError
+
+    def count(self, cell, rowstart=0, rowend=None, colstart=0, colend=None):
+        count = 0
+        if rowstart > self.rows:
+            rowstart = self.rows
+        if rowend is None or rowend > self.rows or rowend < rowstart:
+            rowend = self.rows
+        if colstart > self.cols:
+            colstart = self.cols
+        if colend is None or colend > self.cols or colend < colstart:
+            colend = self.cols
+        for row in range(rowstart, rowend):
+            for col in range(colstart, colend):
+                if self[row][col] == cell:
+                    count += 1
+        return count
 
     def find_attrs(self,attrDict,rowstart=0, rowend=None, colstart=0, colend=None):
         if rowend is None:
@@ -93,7 +150,7 @@ class TwoDimensionalArray(list):
                         break #If one attribute doesn't work, stop comparing attributes: gets back to for loop going through the array
                 if match == True:
                     return [col, row]
-        return ValueError
+        raise ValueError
 
     def find_address(self,address=None,cell=None):
         if address == None:
@@ -141,42 +198,42 @@ class TwoDimensionalArray(list):
 #             self.array[row][col] = self.defaultElem
 #         return cell
 #
-#     def subdivide(self):
-#         self.subdivide_rows()
-#         self.subdivide_cols()
-#         print("size now rows {}, cols {}".format(self.rows,self.cols))
-#
-#     def subdivide_rows(self):
-#         new_array = []
-#         for row in range(self.rows):
-#             new_row = []
-#             for col in range(self.cols):
-#                 old_cell = self.array[row][col]
-#                 print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
-#                 new_cell = copy.copy(old_cell)
-#                 # new_cell = old_cell.copy()
-#                 new_row.append(new_cell)
-#             new_array.append(self.array[row])
-#             new_array.append(new_row)
-#         self.array = new_array
-#         self.rows = len(self.array)
-#
-#
-#
-#     def subdivide_cols(self):
-#         new_array = []
-#         for row in range(self.rows):
-#             new_row = []
-#             for col in range(self.cols):
-#                 cell = self.array[row][col]
-#                 new_cell = copy.copy(cell)
-#                 new_row.append(cell)
-#                 new_row.append(new_cell)
-#             new_array.append(new_row)
-#
-#         self.array = new_array
-#         self.cols = len(self.array[0])
-#
+    def subdivide(self):
+        self.subdivide_rows()
+        self.subdivide_cols()
+        # print("size now rows {}, cols {}".format(self.rows,self.cols))
+
+    def subdivide_rows(self):
+        new_array = []
+        for row in range(self.rows):
+            new_row = []
+            for col in range(self.cols):
+                old_cell = self.array[row][col]
+                # print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
+                new_cell = copy.copy(old_cell)
+                # new_cell = old_cell.copy()
+                new_row.append(new_cell)
+            new_array.append(self.array[row])
+            new_array.append(new_row)
+        self.array = new_array
+        self.rows = len(self.array)
+
+
+
+    def subdivide_cols(self):
+        new_array = []
+        for row in range(self.rows):
+            new_row = []
+            for col in range(self.cols):
+                cell = self.array[row][col]
+                new_cell = copy.copy(cell)
+                new_row.append(cell)
+                new_row.append(new_cell)
+            new_array.append(new_row)
+
+        self.array = new_array
+        self.cols = len(self.array[0])
+
 #
 #
 #
@@ -197,9 +254,10 @@ class _TwoDimensionalArrayIterator:
             self._index[1] += 1
             return result
         raise StopIteration
-
-# two = TwoDimensionalArray(rows=2,cols=2)
-# two[1][1]=5
-# idx = two.index(5, rowend=1,colend=1)
-# print("index of 5: {}".format(idx))
-# print(two)
+t1 = TwoDimensionalArray(rows=2, cols=2)
+t1[0]=[6,5]
+t1[1]=[4,3]
+t1[0][0]=9
+t1.grid_print()
+t1.subdivide()
+t1.grid_print()
