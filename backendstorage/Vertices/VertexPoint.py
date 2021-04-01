@@ -3,7 +3,7 @@ class VertexPoint:
     A VertexPoint is a single point on a vertex dividing cells
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.cells = set()
 

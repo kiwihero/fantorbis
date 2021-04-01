@@ -9,7 +9,8 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
         self.tectonicCells = set()
-        self._dataStructure = self.conf.class_for_name('GridStructure')#(conf=self.conf)
+        self._dataStructure = self.conf.class_for_name('GridStructure')(conf=self.conf)
+        print("data structure type {}".format(self._dataStructure))
         self.images = {}
         self.annotatedImages = {}
 
@@ -36,3 +37,6 @@ class World:
         relx = random.randint(-1,1)
         rely = random.randint(-1,1)
         self._dataStructure.move_cell(random_cell, relative=(relx,rely))
+
+    def access_data_struct(self):
+        return self._dataStructure

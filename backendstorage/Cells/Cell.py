@@ -4,7 +4,7 @@ class Cell:
     """
     A single cell, surrounded by vertices
     """
-    def __init__(self, ds_pos=None, world_pos=None):
+    def __init__(self, ds_pos=None, world_pos=None, **kwargs):
         if ds_pos is None:
             self.dataStoragePosition = Position()
         else:

@@ -9,18 +9,19 @@ class ArrayStructure(GeneralStructure):
     def __init__(self, **kwargs):
         super(ArrayStructure, self).__init__(**kwargs)
 #
-#     def print_contents(self):
-#         if type(self._CellArrayStorage) is list:
-#             for row in self._CellArrayStorage:
-#                 print("row of len", len(row))
-#                 printed_row = ''
-#                 for col in row:
-#                     printed_row += str(col) + ' '
-#                 print(printed_row)
-#         elif type(self._CellArrayStorage) is TwoDimensionalArray:
-#             self._CellArrayStorage.print_contents()
-#         else:
-#             raise DoesNotExistError("ArrayStorage")
+    # def print_contents(self):
+    #     print("Printing as array structure")
+    #     if type(self.CellStorage) is list:
+    #         for row in self.CellStorage:
+    #             print("row of len", len(row))
+    #             printed_row = ''
+    #             for col in row:
+    #                 printed_row += str(col) + ' '
+    #             print(printed_row)
+    #     elif type(self.CellStorage) is TwoDimensionalArray:
+    #         self.CellStorage.print_contents()
+    #     else:
+    #         raise DoesNotExistError("ArrayStorage")
 #
 #     def _lookup_position(self,row,col):
 #         return self._ArrayStorage[row][col]

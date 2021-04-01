@@ -1,5 +1,6 @@
 from backendstorage.StorageMechanisms.ArrayStructure import ArrayStructure
-# from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
+from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
+from backendstorage.CustomExceptions import *
 # from backendstorage.Vertices.VertexPoint import VertexPoint
 #
 class GridStructure(ArrayStructure):
@@ -20,10 +21,13 @@ class GridStructure(ArrayStructure):
         # --------------------------------------------------------------------------------------------------------------
         # Ability to create other classes from strings
         # --------------------------------------------------------------------------------------------------------------
-        self.cellClassName = 'GridCell'
+        # self.cellClassName = 'GridCell'
+        self.cellClassName = 'Cell'
         self.cellClass = self.conf.class_for_name(self.cellClassName)
         self.vertexClassName = 'VertexPoint'
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
+        self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass)
+        self.VertexStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
 #         self.cellClassFile = 'backendstorage.GridCell'
 #         self.cellChildName = self.conf.cellClass
 #         self.cellChildFile = self.conf.cellModule
@@ -34,9 +38,21 @@ class GridStructure(ArrayStructure):
 #         self.vertexClassFile = 'backendstorage.VertexPoint'
 #         self.vertexClass = self.conf.class_for_name(module_name=self.vertexClassFile, class_name=self.vertexClassName)
 #
-#         self._CellArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, elemKwargs=self.cellClassArgs)
-#         self._VertexArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
-#
+        # self._CellArrayStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, elemKwargs=self.cellClassArgs)
+    def print_contents(self):
+        print("Printing as array structure")
+        if type(self.CellStorage) is list:
+            for row in self.CellStorage:
+                print("row of len", len(row))
+                printed_row = ''
+                for col in row:
+                    printed_row += str(col) + ' '
+                print(printed_row)
+        elif type(self.CellStorage) is TwoDimensionalArray:
+            self.CellStorage.print_contents()
+        else:
+            raise DoesNotExistError("ArrayStorage")
+
 #     def subdivide(self):
 #         self._CellArrayStorage.subdivide()
 #         self.width = self._CellArrayStorage.cols

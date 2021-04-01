@@ -10,7 +10,9 @@ print(type(w1._dataStructure),w1._dataStructure)
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE"+'\n'+'-'*50)
 
 print('\n'+'-'*50+'\n'+"PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n')
-w1._dataStructure.print_contents()
+print("data structure type {}".format(type(w1.access_data_struct())))
+w1.access_data_struct().print_contents()
+# w1._dataStructure.print_contents()
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
 for elem in w1._dataStructure:

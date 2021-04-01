@@ -8,8 +8,10 @@ import math
 class Conf:
     classes = {
         'GridCell':'backendstorage.Cells.GridCell',
+        'Cell': 'backendstorage.Cells.Cell',
         'VertexPoint':'backendstorage.Vertices.VertexPoint',
-        'GridStructure': 'backendstorage.GridStructure'
+        'GridStructure': 'backendstorage.StorageMechanisms.GridStructure'
+
     }
     def __init__(self):
         self.world = None
