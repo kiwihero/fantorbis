@@ -16,16 +16,16 @@ class GeneralStructure:
 #         else:
 #             raise DoesNotExistError("self.conf")
 #
-    def print_contents(self):
+    # def print_contents(self):
         """
         Iterate through the contents of the structure, printing them
         :return:
         """
-        raise DoesNotExistError("ArrayStorage")
+        # raise DoesNotExistError("ArrayStorage")
 #
 #
-    def __iter__(self):
-        raise DoesNotExistError("ArrayStorage")
+    # def __iter__(self):
+    #     raise DoesNotExistError("ArrayStorage")
 #
 #
 #     def __str__(self):

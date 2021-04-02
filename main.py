@@ -15,8 +15,8 @@ w1.access_data_struct().print_contents()
 # w1._dataStructure.print_contents()
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
-for elem in w1._dataStructure:
-    print("Elem",elem)
+# for elem in w1._dataStructure:
+#     print("Elem",elem)
 
 for x in range(20):
     if x % 3 == 0 and x < 10:

@@ -4,7 +4,7 @@ class Cell:
     """
     A single cell, surrounded by vertices
     """
-    def __init__(self, ds_pos=None, world_pos=None, **kwargs):
+    def __init__(self, ds_pos=None, world_pos=None, world_cell=None, **kwargs):
         if ds_pos is None:
             self.dataStoragePosition = Position()
         else:
@@ -15,6 +15,7 @@ class Cell:
             self.worldPosition = world_pos
         # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
+        self.worldCell = world_cell
 #         self._dataStorageStructure = None # should keep references to these???
 #         self._worldStructure = None
 #

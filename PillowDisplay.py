@@ -16,8 +16,9 @@ def draw_world(world, add_text=False):
 
 
 
+
     if struct.cellShape == 'rectangle':
-        cellstruct = struct
+        cellstruct = struct.CellStorage
         gradient_ends = world.conf.ageGradient
         gradient_steps = world.age+1
         full_gradient = eris_gradient.make_gradient(gradient_ends[0], gradient_ends[1], gradient_steps)
@@ -28,7 +29,7 @@ def draw_world(world, add_text=False):
         for row in locs:
             c = 0
             for col in row:
-                ind_cell = cellstruct.lookupPosition(row=r, col=c)
+                ind_cell = cellstruct[r][c]
                 ind_cell_age = ind_cell.children[0].age
                 # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
 
@@ -219,7 +220,7 @@ def _annotate_image(drawInstance, position, caption, conf):
 
 
 def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
-    square_dims = (int(image.size[0] / rectanglestructure.width), int(image.size[1] / rectanglestructure.height))
+    square_dims = (int(image.size[0] / rectanglestructure.cols), int(image.size[1] / rectanglestructure.rows))
 
     separation = sep_fixed
     if separation == None:
@@ -247,11 +248,11 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
             sep_ratio = [0, 0]
 
         square_dims = (
-        int((image.size[0]) / ((rectanglestructure.width) + (rectanglestructure.width + 1) * sep_ratio[0])),
-        int((image.size[1]) / ((rectanglestructure.height) + (rectanglestructure.height + 1) * sep_ratio[1])))
+        int((image.size[0]) / ((rectanglestructure.cols) + (rectanglestructure.cols + 1) * sep_ratio[0])),
+        int((image.size[1]) / ((rectanglestructure.rows) + (rectanglestructure.rows + 1) * sep_ratio[1])))
         separation = (
-        int((image.size[0]-square_dims[0]*rectanglestructure.width)/(1+rectanglestructure.width)),
-        int((image.size[1]-square_dims[1]*rectanglestructure.height)/(1+rectanglestructure.height)))
+        int((image.size[0]-square_dims[0]*rectanglestructure.cols)/(1+rectanglestructure.cols)),
+        int((image.size[1]-square_dims[1]*rectanglestructure.rows)/(1+rectanglestructure.rows)))
 
     else:
         try:
@@ -273,11 +274,11 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
 
     y1=separation[1]
     y2=y1+square_dims[1]
-    for h in range(rectanglestructure.height):
+    for h in range(rectanglestructure.rows):
         location_row = []
         x1 = separation[0]
         x2 = x1 + square_dims[0]
-        for w in range(rectanglestructure.width):
+        for w in range(rectanglestructure.cols):
             location_row.append([x1,y1,x2,y2])
             x1 = x2 + separation[0]
             x2 += (separation[0] + square_dims[0])

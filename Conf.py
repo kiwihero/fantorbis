@@ -10,7 +10,8 @@ class Conf:
         'GridCell':'backendstorage.Cells.GridCell',
         'Cell': 'backendstorage.Cells.Cell',
         'VertexPoint':'backendstorage.Vertices.VertexPoint',
-        'GridStructure': 'backendstorage.StorageMechanisms.GridStructure'
+        'GridStructure': 'backendstorage.StorageMechanisms.GridStructure',
+        'TectonicCell': 'backendworld.TectonicCell'
 
     }
     def __init__(self):
@@ -27,8 +28,8 @@ class Conf:
         self.fontExtensions = ['.ttf']
 
 
-        self.cellClass = 'TectonicCell'
-        self.cellModule = 'backendworld.TectonicCell'
+        # self.cellClass = 'TectonicCell'
+        # self.cellModule = 'backendworld.TectonicCell'
 
         self.flatImageFolder = 'flatImages/'
         self.gifName = self.flatImageFolder + 'out.gif'

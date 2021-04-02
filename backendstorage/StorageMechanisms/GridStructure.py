@@ -51,10 +51,11 @@ class GridStructure(ArrayStructure):
         elif type(self.CellStorage) is TwoDimensionalArray:
             self.CellStorage.print_contents()
         else:
+            print("what did you try to print?")
             raise DoesNotExistError("ArrayStorage")
 
-#     def subdivide(self):
-#         self._CellArrayStorage.subdivide()
+    def subdivide(self):
+        self.CellStorage.subdivide()
 #         self.width = self._CellArrayStorage.cols
 #         self.height = self._CellArrayStorage.rows
 #
