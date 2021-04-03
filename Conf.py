@@ -5,6 +5,7 @@ import logging
 import time
 import math
 
+# TODO: THIS FILE NEEDS DOCSTRINGS
 class Conf:
     """
     A bunch of shared configuration stuff goes here.

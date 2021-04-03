@@ -4,6 +4,8 @@ import numbers
 import os
 import eris_gradient
 
+# TODO: THIS FILE NEEDS DOCSTRINGS
+
 
 def draw_world(world, add_text=False):
     canvas_width = world.conf.imageWidth

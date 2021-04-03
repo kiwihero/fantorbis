@@ -1,6 +1,7 @@
 from Conf import Conf
 import random
 
+# TODO: THIS FILE NEEDS DOCSTRINGS
 class World:
     def __init__(self):
         self.conf = Conf()
