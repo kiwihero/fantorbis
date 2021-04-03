@@ -1,8 +1,11 @@
-from backendstorage.GridStructure import *
-from backendstorage.NodeStructure import *
+# from backendstorage.NodeStructure import *
 from backendworld.World import *
 from PillowDisplay import draw_world, gif_world,image_world
 
+#  THIS IS NOT A CALLABLE CLASS, THIS IS EXAMPLES DEMONSTRATING FUNCTIONALITY.
+#  DO NOT CALL ANYTHING FROM HERE IN PRODUCTION.
+#  ALL CONTENTS OF THIS FILE SUBJECT TO CHANGE AT ALL TIMES,
+#  DO NOT EXPECT TO BE ABLE TO USE THIS
 
 w1 = World()
 
@@ -11,11 +14,13 @@ print(type(w1._dataStructure),w1._dataStructure)
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE"+'\n'+'-'*50)
 
 print('\n'+'-'*50+'\n'+"PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n')
-w1._dataStructure.print_contents()
+print("data structure type {}".format(type(w1.access_data_struct())))
+w1.access_data_struct().print_contents()
+# w1._dataStructure.print_contents()
 print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
-for elem in w1._dataStructure:
-    print("Elem",elem)
+# for elem in w1._dataStructure:
+#     print("Elem",elem)
 
 for x in range(20):
     if x % 3 == 0 and x < 10:

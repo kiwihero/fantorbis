@@ -5,7 +5,20 @@ import logging
 import time
 import math
 
+# TODO: THIS FILE NEEDS DOCSTRINGS
 class Conf:
+    """
+    A bunch of shared configuration stuff goes here.
+    A lot of the user's commands through UI will probably be changing these
+    """
+    classes = {
+        'GridCell':'backendstorage.Cells.GridCell',
+        'Cell': 'backendstorage.Cells.Cell',
+        'VertexPoint': 'backendstorage.Vertices.VertexPoint',
+        'GridStructure': 'backendstorage.StorageMechanisms.GridStructure',
+        'TectonicCell': 'backendworld.TectonicCell'
+
+    }
     def __init__(self):
         self.world = None
         self.startTimeInt = self.time_id()
@@ -18,11 +31,10 @@ class Conf:
         self.resourceFolder = 'resources/'
         self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
         self.fontExtensions = ['.ttf']
-        self.structureClass = 'GridStructure'
-        self.structureModule = 'backendstorage.GridStructure'
 
-        self.cellClass = 'TectonicCell'
-        self.cellModule = 'backendworld.TectonicCell'
+
+        # self.cellClass = 'TectonicCell'
+        # self.cellModule = 'backendworld.TectonicCell'
 
         self.flatImageFolder = 'flatImages/'
         self.gifName = self.flatImageFolder + 'out.gif'
@@ -55,16 +67,20 @@ class Conf:
 
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
-    def class_for_name(self, module_name, class_name):
+    def class_for_name(self, class_name, module_name=None):
         try:
+            if module_name is None and class_name in Conf.classes:
+                module_name = Conf.classes[class_name]
             # load the module, will raise ImportError if module cannot be loaded
             m = importlib.import_module(module_name)
             # get the class, will raise AttributeError if class cannot be found
             c = getattr(m, class_name)
             return c
         except ImportError as e:
+            print("{} wrong module {}".format(e, module_name))
             self.log_from_conf('error', "Module {} could not be found".format(module_name))
         except AttributeError as e:
+            print("{} wrong class {} in module {}".format(e, class_name, module_name))
             self.log_from_conf('error', "Class {} could not be found in module".format(class_name, module_name))
         return
 
