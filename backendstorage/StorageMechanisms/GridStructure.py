@@ -31,6 +31,10 @@ class GridStructure(ArrayStructure):
         self.VertexStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
 
     def print_contents(self):
+        """
+        Prints the stuff (cells/vertices) being stored
+        :return:
+        """
         print("Printing as array structure")
         if type(self.CellStorage) is list:
             for row in self.CellStorage:
@@ -46,10 +50,19 @@ class GridStructure(ArrayStructure):
             raise DoesNotExistError("ArrayStorage")
 
     def subdivide(self):
+        """
+        Subdivides every cell of the GridStructure into two both horizontally and vertically
+        (for a total of four new cells in the place of every one original cell)
+        :return:
+        """
+        # TODO: More documentation needed on attributes of newly created cells,
+        #  such as what features are inherited and what's default initialized values
         self.CellStorage.subdivide()
 
     def move_cell(self, cell, destination=None, relative=None):
-        # TODO: Functionality to move cell:
+        # TODO:
+        #  Functionality to move cell:
+        #  THIS FUNCTION DOES NOT YET EXIST, MUST BE MADE
         #  use functions from TwoDimensionalArray to change storage location (self.CellStorage),
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
         pass

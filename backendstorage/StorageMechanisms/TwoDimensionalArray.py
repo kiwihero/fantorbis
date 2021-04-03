@@ -34,21 +34,46 @@ class TwoDimensionalArray(list):
             self.array.append(row)
 
     def __iter__(self):
+        """
+        Allows for iteration
+        Iterates from 0th row to last row, and within each row from 0th to last column
+        E.G. for an array of r rows and c columns,
+        [0][0], [0][1], ..., [0][c],
+        [1][0], [1][1], ..., [1][c],
+        ...,
+        [r][0], [r][1], ..., [r][c]
+        :return:
+        """
         return _TwoDimensionalArrayIterator(self.array)
 
     def __getitem__(self, item):
         """
         Allows retrieval of items using instance[i][j]
-        :param item:
+        :param item: i
         :return:
         """
         return self.array[item]
 
-    def __setitem__(self, key, value):
-        print("setting key {}, value {}".format(key,value))
+    def __setitem__(self, key: int, value):
+        """
+        Ability to set an entire row of the array
+        :param key: integer of which row to be set, 0 <= value <= self.rows
+        :param value: A new row, of the same length as existing rows: len(key) == self.cols
+        :return:
+        """
+        # TODO: Add error checking to make sure 'value' argument is some sort of list
+        #  (e.g. 'aaa' is not a valid input when self.cols==3 despite len('aaa') == 3)
+        if key < 0 or key >= self.rows:
+            raise IndexError("Row index {} out of bounds, must be between 0 and {}".format(key, self.rows-1))
+        if len(value) != self.cols:
+            raise ValueError("New row {} must be of length {}".format(value, self.cols))
         self.array[key] = value
 
     def print_contents(self):
+        """
+        Iterate through, printing all elements as grid
+        :return:
+        """
         if type(self.array) is list:
             print("Printing contents of {} x {} array".format(self.rows, self.cols))
             for row in self.array:
@@ -61,20 +86,49 @@ class TwoDimensionalArray(list):
             print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
 
     def grid_print(self):
-        max = 0
+        """
+        The fancy ascii version of print_contents
+        :return:
+        """
         if type(self.array) is list:
+            rowstr_len = len(str(self.rows))
+            colstr_len = max(len(str(self.cols)),5)
             print("Printing grid of {} x {} array".format(self.rows, self.cols))
+            header_str = ' '*rowstr_len + '||'
+            div_str = '-'*rowstr_len + '++'
+            for c in range(self.cols):
+                sub_header = str(c)
+                while (len(sub_header) < colstr_len):
+                    if (len(sub_header)+2) < colstr_len:
+                        sub_header += ' '
+                    sub_header = ' ' + sub_header
+                header_str += sub_header
+                div_str += '-' * len(sub_header)
+                header_str += '|'
+                div_str += '+'
+            print(header_str)
+            print(div_str)
+            r = 0
             for row in self.array:
                 # print("row of len", len(row))
-                printed_row = '|'
+                printed_row = '{}|'.format(r)
+                while(len(printed_row) <= rowstr_len):
+                    printed_row = ' ' + printed_row
+                printed_row += '|'
                 for col in row:
                     printed_row += '{0:>5}|'.format(str(col))
                 # printed_row += '|'
                 print(printed_row)
+                r += 1
+            print(div_str)
         else:
             print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
 
     def __str__(self):
+        """
+        Single-line string description
+        :return:
+        """
         outstr = ""
         if type(self.array) is list:
             outstr += '{} by {} 2d list '.format(self.rows, self.cols)
@@ -92,6 +146,26 @@ class TwoDimensionalArray(list):
             return super(TwoDimensionalArray, self).__str__()
 
     def index(self, cell, rowstart=0, rowend=None, colstart=0, colend=None):
+        """
+        Returns the index of the first element with the specified value
+        Raises ValueError if cell cannot be found
+        Can specify parts of array. For example, rowstart=1 rowend=3 colstart = 2 colend = 4 on a 5x5:
+        ||   0 |   1 |   2 |   3 |   4 |
+        -++-----+-----+-----+-----+-----+
+        0||     |     |     |     |     |
+        1||     |     |    x|    x|     |
+        2||     |     |    x|    x|     |
+        3||     |     |     |     |     |
+        4||     |     |     |     |     |
+        -++-----+-----+-----+-----+-----+
+        Looks at elements where row index >=1, row index <3, column index >= 2, column index < 4
+        :param cell: Element sought
+        :param rowstart: Start of each row to search
+        :param rowend: End of each row to search
+        :param colstart: Start of each col to search
+        :param colend: End of each col to search
+        :return: List of length two, format [row,col] of first index of cell
+        """
         if rowstart > self.rows:
             rowstart = self.rows
         if rowend is None or rowend > self.rows or rowend < rowstart:
@@ -104,28 +178,53 @@ class TwoDimensionalArray(list):
             for col in range(colstart, colend):
                 if self[row][col] == cell:
                     return [col, row]
-        return ValueError
+        raise ValueError()
 
     def clear(self):
+        """Remove all elements, leaving 0x0 array"""
         self.array = []
         self.rows = 0
         self.cols = 0
 
     def insert(self, index: int, row: list):
+        """
+        Insert a new row to the array, extending the number of rows rather than replacing the existing index
+        Use __setitem__ to replace rather than extending
+        :param index: integer of which row to be set, 0 <= value <= self.rows
+        :param row: A new row, of the same length as existing rows: len(key) == self.cols
+        :return:
+        """
+        # TODO: Add checks for invalid inputs to index, row
         if len(row) == self.cols:
             self.array.insert(index, row)
             self.rows += 1
         else:
-            raise ValueError
+            raise ValueError()
 
     def append(self, row:list):
+        """
+        Similar to insert but at end of list
+        :param row: A new row, of the same length as existing rows: len(key) == self.cols
+        :return:
+        """
+        # TODO: Add checks for invalid inputs to row
         if len(row) == self.cols:
             self.array.append(row)
             self.rows+= 1
         else:
-            raise ValueError
+            raise ValueError()
 
     def count(self, cell, rowstart=0, rowend=None, colstart=0, colend=None):
+        """
+        Count all instances of cell
+        Arguments as in index(self, cell, rowstart=0, rowend=None, colstart=0, colend=None)
+        :param cell:
+        :param rowstart:
+        :param rowend:
+        :param colstart:
+        :param colend:
+        :return: Number of occurrences, 0 being a valid return if cell cannot be found
+        """
         count = 0
         if rowstart > self.rows:
             rowstart = self.rows
@@ -141,7 +240,27 @@ class TwoDimensionalArray(list):
                     count += 1
         return count
 
+    def __contains__(self, key):
+        """
+        Allows for the use of the 'in' keyword
+        :param key: Element to be tested for
+        :return: boolean
+        """
+        if self.count(key) == 0:
+            return False
+        return True
+
     def find_attrs(self,attrDict,rowstart=0, rowend=None, colstart=0, colend=None):
+        """
+        Ability to search for elements that are themselves classes with attributes and attribute values given in attrDict
+        Start and end functionality as in index(self, cell, rowstart=0, rowend=None, colstart=0, colend=None)
+        :param attrDict: A dictionary of attributes and their values an element of the array must contain to be counted
+        :param rowstart:
+        :param rowend:
+        :param colstart:
+        :param colend:
+        :return: List of length two, format [row,col] of first index of cell with all attributes of attrDict
+        """
         if rowend is None:
             rowend = self.rows
         if colend is None:
@@ -149,16 +268,22 @@ class TwoDimensionalArray(list):
         for row in range(rowstart, rowend):
             for col in range(colstart, colend):
                 cell = self[row][col]
-                match=True
+                match = True
                 for attr, val in attrDict.items():
                     if cell.attr != val:
                         match=False
                         break #If one attribute doesn't work, stop comparing attributes: gets back to for loop going through the array
                 if match == True:
                     return [col, row]
-        raise ValueError
+        raise ValueError()
 
-    def find_address(self,address=None,cell=None):
+    def find_id(self,address=None,cell=None):
+        """
+        Iteration through the array's elements to find one with the given object id
+        :param address: ID requested
+        :param cell: Can also look by the id of a given object
+        :return: List of length two, format [row,col] of first index of cell with all attributes of attrDict
+        """
         if address == None:
             if cell != None:
                 address = hex(id(cell))
@@ -168,48 +293,24 @@ class TwoDimensionalArray(list):
             for col in range(self.cols):
                 if hex(id(self[row][col])) == address:
                     return [col,row]
-#
-#     def swap_pos(self, originRow, originCol, destRow, destCol):
-#         temp_cell = self.remove_pos(originRow,originCol)
-#         self.move_pos(destRow,destCol,originRow,originCol)
-#         self.add_pos(temp_cell, destRow, destCol)
-#
-#
-#     def move_pos(self, originRow, originCol, destRow, destCol):
-#         cell = self.lookupPosition(row=originRow,col=originCol)
-#         print("moving cell in array {}".format(cell))
-#         self.add_pos(cell, destRow, destCol)
-#         if self.createElem != None:
-#             elem = self.createElem(customkwargs=self.elemKwargs)
-#             self.add_pos(elem, originRow, originCol)
-#
-#         else:
-#             self.add_pos(self.defaultElem, originRow, originCol)
-#         print("cell now at ".format(self.search_for_cell(cell)))
-#
-#
-#     def add_pos(self, cell, row, col):
-#         print("adding to pos {},{}".format(row, col))
-#         row = row % len(self.array)
-#         col = col % len(self.array[row])
-#         print("adding to moded pos {},{}".format(row,col))
-#         self.array[row][col] = cell
-#         print("array row {} col {} now {}".format(row,col,self.array[row][col]))
-#
-#     def remove_pos(self, row, col):
-#         cell = self.lookupPosition(row,col)
-#         if self.createElem != None:
-#             self.array[row][col] = self.createElem()
-#         else:
-#             self.array[row][col] = self.defaultElem
-#         return cell
-#
+
     def subdivide(self):
+        """
+        Subdivides each cell horizontally and vertically
+        :return:
+        """
+        # TODO: Add argument, functionality for possibility of deep copying of elements
         self.subdivide_rows()
         self.subdivide_cols()
-        # print("size now rows {}, cols {}".format(self.rows,self.cols))
 
     def subdivide_rows(self):
+        """
+        Within each row, the cell becomes two cells
+        Array now has twice as many cols and same number of rows
+        Elements are shallowly copied
+        :return:
+        """
+        # TODO: Add argument, functionality for possibility of deep copying of elements
         new_array = []
         for row in range(self.rows):
             new_row = []
@@ -227,6 +328,13 @@ class TwoDimensionalArray(list):
 
 
     def subdivide_cols(self):
+        """
+        Within each column, the cell becomes two cells
+        Array now has twice as many rows and same number of cols
+        Elements are shallowly copied
+        :return:
+        """
+        # TODO: Add argument, functionality for possibility of deep copying of elements
         new_array = []
         for row in range(self.rows):
             new_row = []
@@ -240,10 +348,11 @@ class TwoDimensionalArray(list):
         self.array = new_array
         self.cols = len(self.array[0])
 
-#
-#
-#
+
 class _TwoDimensionalArrayIterator:
+    """
+    Iterator helper class
+    """
     def __init__(self, grid, **kwargs):
         self._grid = grid
         self._index = [0, 0]
@@ -260,6 +369,9 @@ class _TwoDimensionalArrayIterator:
             self._index[1] += 1
             return result
         raise StopIteration
+
+# Run this class to see some examples of class methods in use
+
 t1 = TwoDimensionalArray(rows=2, cols=2)
 t1[0]=[6,5]
 t1[1]=[4,3]
@@ -267,3 +379,4 @@ t1[0][0]=9
 t1.grid_print()
 t1.subdivide()
 t1.grid_print()
+t1.print_contents()

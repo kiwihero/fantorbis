@@ -36,7 +36,3 @@ class Cell:
             self.worldPosition.change_position(newWorldPosition)
         if newDataStoragePosition is not None:
             self.dataStoragePosition.change_position(newDataStoragePosition)
-#
-#     def splitCellAlongVertex(self, vertexSegment):
-#         vertexSegment.splitVertex()
-#
