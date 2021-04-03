@@ -1,4 +1,5 @@
 import copy
+import Position
 class TwoDimensionalArray(list):
     """
     List of lists, has some helpful functions
