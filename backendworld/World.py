@@ -1,5 +1,6 @@
 from Conf import Conf
 import random
+from Position import Position
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
 class World:
@@ -38,7 +39,9 @@ class World:
         print("random cell {}: {}".format(type(random_cell),random_cell))
         relx = random.randint(-1,1)
         rely = random.randint(-1,1)
-        self._dataStructure.move_cell(random_cell, relative=(relx,rely))
+        random_position = Position(relx, rely)
+        self._dataStructure.move_cell(random_cell, destination=random_position, relative=True)
+        # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 
     def access_data_struct(self):
         return self._dataStructure

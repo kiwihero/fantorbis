@@ -21,10 +21,7 @@ class Cell:
             self.worldCell = conf.class_for_name(world_cell)()
         else:
             self.worldCell = world_cell
-        # print("WORLD CELL {} {}".format(type(self.worldCell), self.worldCell))
-#         self._dataStorageStructure = None # should keep references to these???
-#         self._worldStructure = None
-#
+
     def move(self, newWorldPosition=None, newDataStoragePosition=None):
         """
         Change the position known by the cell in either world or data storage coordinate systems
@@ -36,3 +33,6 @@ class Cell:
             self.worldPosition.change_position(newWorldPosition)
         if newDataStoragePosition is not None:
             self.dataStoragePosition.change_position(newDataStoragePosition)
+
+    def __str__(self):
+        return "Cell at storage location {} has world cell {}".format(self.dataStoragePosition, self.worldCell)

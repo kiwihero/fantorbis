@@ -2,6 +2,7 @@ from backendstorage.StorageMechanisms.ArrayStructure import ArrayStructure
 from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
 from backendstorage.CustomExceptions import *
 # from backendstorage.Vertices.VertexPoint import VertexPoint
+from backendstorage.Cells.Cell import Cell
 from Position import Position
 
 class GridStructure(ArrayStructure):
@@ -60,7 +61,7 @@ class GridStructure(ArrayStructure):
         #  such as what features are inherited and what's default initialized values
         self.CellStorage.subdivide()
 
-    def move_cell(self, cell, destination: Position = None, relative: bool = False):
+    def move_cell(self, cell: Cell, destination: Position, relative: bool = False):
         """
         Move a given cell to a position within GridStructure
         :param cell: Cell to be moved
@@ -68,10 +69,11 @@ class GridStructure(ArrayStructure):
         :param relative: Whether the destination position is relative to the current position or absolute
         :return:
         """
-        # self.CellStorage
-        # TODO:
-        #  Functionality to move cell:
-        #  THIS FUNCTION DOES NOT YET EXIST, MUST BE MADE
-        #  use functions from TwoDimensionalArray to change storage location (self.CellStorage),
+        # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
-        pass
+        old_position = cell.dataStoragePosition
+        if relative is True:
+            destination.change_position(cell.dataStoragePosition)
+        self.CellStorage[destination.y][destination.x] = cell
+        self.CellStorage[old_position.y][old_position.x] = self.cellClass(**self.cellClassArgs)
+        print("New cell {} created at {}".format(self.CellStorage[old_position.y][old_position.x], old_position))
