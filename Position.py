@@ -4,9 +4,10 @@ class Position:
     """
     The position functionality
     """
+
     def __init__(self, x: int = 0, y: int = 0):
-        self.x = 0
-        self.y = 0
+        self.x = x
+        self.y = y
 
     def change_position(self, position_object: 'Position' = None, x: int = 0, y: int = 0):
         """

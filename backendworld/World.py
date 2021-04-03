@@ -18,9 +18,12 @@ class World:
         self.annotatedImages = {}
 
     def step(self):
+        self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
-        for cell in self.tectonicCells:
-            cell.step()
+        # for cell in self.tectonicCells:
+        for cell in self._dataStructure.CellStorage:
+            print("stepping cell {}".format(cell))
+            cell.worldCell.step()
 
     def diverge(self, p1, p2, boundary):
         pass
@@ -40,7 +43,9 @@ class World:
         relx = random.randint(-1,1)
         rely = random.randint(-1,1)
         random_position = Position(relx, rely)
+        print("Moving random cell to {}".format(random_position))
         self._dataStructure.move_cell(random_cell, destination=random_position, relative=True)
+        print("New info for random cell {}".format(random_cell))
         # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 
     def access_data_struct(self):

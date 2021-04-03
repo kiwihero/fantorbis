@@ -1,5 +1,5 @@
 import copy
-import Position
+from Position import Position
 class TwoDimensionalArray(list):
     """
     List of lists, has some helpful functions
@@ -18,7 +18,8 @@ class TwoDimensionalArray(list):
         else:
             self.createElemKwargs = {}
         self.createElemKwargs['parent'] = self
-        while (self.rows > len(self.array)):
+        r = 0
+        while self.rows > len(self.array):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
@@ -27,12 +28,15 @@ class TwoDimensionalArray(list):
                     if self.createElemKwargs is None:
                         elem = self.createElem(**kwargs)
                     else:
+                        if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
+                            self.createElemKwargs['TwoDimensionalArray_pos'] = Position(c,r)
                         elem = self.createElem(**self.createElemKwargs, **kwargs)
                     print("created the elem {}".format(elem))
                     row.append(elem)
                 else:
                     row.append(self.defaultElem)
             self.array.append(row)
+            r += 1
 
     def __iter__(self):
         """

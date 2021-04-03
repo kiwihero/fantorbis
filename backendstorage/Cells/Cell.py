@@ -8,7 +8,10 @@ class Cell:
         print("initializing cell with args {} {} {} {} {}".format(ds_pos, world_pos,world_cell,world_cell_args, kwargs))
         self.conf = conf
         if ds_pos is None:
-            self.dataStoragePosition = Position()
+            if 'TwoDimensionalArray_pos' in kwargs:
+                self.dataStoragePosition = kwargs['TwoDimensionalArray_pos']
+            else:
+                self.dataStoragePosition = Position()
         else:
             self.dataStoragePosition = ds_pos
         if world_pos is None:
@@ -35,4 +38,7 @@ class Cell:
             self.dataStoragePosition.change_position(newDataStoragePosition)
 
     def __str__(self):
-        return "Cell at storage location {} has world cell {}".format(self.dataStoragePosition, self.worldCell)
+        if self.worldCell is not None:
+            return "Cell at storage location {} has world cell {}".format(self.dataStoragePosition, self.worldCell)
+        else:
+            return "Cell at storage location {} has NO world cell".format(self.dataStoragePosition)

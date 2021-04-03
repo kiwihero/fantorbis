@@ -11,6 +11,7 @@ class TectonicCell(WorldAttribute):
         super(TectonicCell, self).__init__(**kwargs)
 
     def step(self):
+        print("stepping cell {}".format(self))
         """
         Single step through time
         :return:

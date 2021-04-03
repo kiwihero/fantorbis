@@ -24,7 +24,7 @@ def draw_world(world, add_text=False):
         gradient_ends = world.conf.ageGradient
         gradient_steps = world.age+1
         full_gradient = eris_gradient.make_gradient(gradient_ends[0], gradient_ends[1], gradient_steps)
-        # print("full gradient len", len(full_gradient))
+        print("full gradient len {}, contents {}".format(len(full_gradient), full_gradient))
 
         locs = _square_cells(im,cellstruct)
         r=0
@@ -33,7 +33,8 @@ def draw_world(world, add_text=False):
             for col in row:
                 ind_cell = cellstruct[r][c]
                 ind_cell_age = ind_cell.worldCell.age
-                # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
+                print("ind cell age {} type {}".format(ind_cell_age, type(ind_cell_age)))
+                print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
 
                 draw.rectangle(col, fill=full_gradient[ind_cell_age],
                                outline=None, width=0)

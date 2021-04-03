@@ -26,7 +26,7 @@ class GridStructure(ArrayStructure):
 
         self.cellClassName = 'Cell'
         self.cellClass = self.conf.class_for_name(self.cellClassName)
-        self.cellClassArgs = {'conf': self.conf, 'world_cell': 'TectonicCell'}
+        self.cellClassArgs = {'conf': self.conf, 'world_cell': 'TectonicCell', 'include_TwoDimensionalArray_pos': True}
         self.vertexClassName = 'VertexPoint'
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
         self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, createElemKwargs = self.cellClassArgs)
@@ -69,11 +69,22 @@ class GridStructure(ArrayStructure):
         :param relative: Whether the destination position is relative to the current position or absolute
         :return:
         """
+        # TODO:
+        #  Somewhere (not in this function, possibly not even in this class),
+        #  there needs to be logic to wrap positions when moving cells
+
         # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
         old_position = cell.dataStoragePosition
+
         if relative is True:
             destination.change_position(cell.dataStoragePosition)
+        print("cell to be moved: old position {} new position {}".format(old_position, destination))
+        cell.ds_pos = destination
         self.CellStorage[destination.y][destination.x] = cell
-        self.CellStorage[old_position.y][old_position.x] = self.cellClass(**self.cellClassArgs)
+        new_cellClassArgs = self.cellClassArgs.copy()
+        if 'include_TwoDimensionalArray_pos' in self.cellClassArgs:
+            new_cellClassArgs['ds_pos'] = old_position
+        self.CellStorage[old_position.y][old_position.x] = self.cellClass(**new_cellClassArgs)
+        print("Old cell {} moved to {}".format(cell, destination))
         print("New cell {} created at {}".format(self.CellStorage[old_position.y][old_position.x], old_position))
