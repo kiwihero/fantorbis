@@ -1,12 +1,14 @@
+from typing import Union, Type
+
 class Position:
     """
     The position functionality
     """
-    def __init__(self):
+    def __init__(self, x: int = 0, y: int = 0):
         self.x = 0
         self.y = 0
 
-    def change_position(self, position_object=None, x=0, y=0):
+    def change_position(self, position_object: 'Position' = None, x: int = 0, y: int = 0):
         """
         Relative movement
         Can give either x and y, or another position object
@@ -23,7 +25,7 @@ class Position:
             self.y += y
         return self
 
-    def set_position(self, position_object=None, x=None, y=None):
+    def set_position(self, position_object: 'Position' = None, x: int = None, y: int = None):
         """
         Absolute movement
         Can give either x and y, or another position object

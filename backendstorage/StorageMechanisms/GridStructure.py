@@ -2,7 +2,8 @@ from backendstorage.StorageMechanisms.ArrayStructure import ArrayStructure
 from backendstorage.StorageMechanisms.TwoDimensionalArray import TwoDimensionalArray
 from backendstorage.CustomExceptions import *
 # from backendstorage.Vertices.VertexPoint import VertexPoint
-#
+from Position import Position
+
 class GridStructure(ArrayStructure):
     def __init__(self, width=2, height=2, **kwargs):
         """
@@ -59,7 +60,15 @@ class GridStructure(ArrayStructure):
         #  such as what features are inherited and what's default initialized values
         self.CellStorage.subdivide()
 
-    def move_cell(self, cell, destination=None, relative=None):
+    def move_cell(self, cell, destination: Position = None, relative: bool = False):
+        """
+        Move a given cell to a position within GridStructure
+        :param cell: Cell to be moved
+        :param destination: Where the cell should be moved to
+        :param relative: Whether the destination position is relative to the current position or absolute
+        :return:
+        """
+        # self.CellStorage
         # TODO:
         #  Functionality to move cell:
         #  THIS FUNCTION DOES NOT YET EXIST, MUST BE MADE
