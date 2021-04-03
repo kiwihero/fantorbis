@@ -24,9 +24,10 @@ class GridStructure(ArrayStructure):
         # self.cellClassName = 'GridCell'
         self.cellClassName = 'Cell'
         self.cellClass = self.conf.class_for_name(self.cellClassName)
+        self.cellClassArgs = {'conf': self.conf, 'childClass': 'TectonicCell'}
         self.vertexClassName = 'VertexPoint'
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
-        self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass)
+        self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, createElemKwargs = self.cellClassArgs)
         self.VertexStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
 #         self.cellClassFile = 'backendstorage.GridCell'
 #         self.cellChildName = self.conf.cellClass

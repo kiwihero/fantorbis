@@ -4,28 +4,29 @@ class TwoDimensionalArray(list):
     List of lists, has some helpful functions
     """
 
-    def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, elemKwargs=None, **kwargs):
+    def __init__(self, rows=0, cols=0, defaultElem=None, createElem=None, createElemKwargs=None, **kwargs):
         super(TwoDimensionalArray, self).__init__(**kwargs)
         self.array = []
         self.rows = rows
         self.cols = cols
         self.defaultElem = defaultElem
         self.createElem = createElem
-        if elemKwargs is not None:
-            self.elemKwargs = elemKwargs
+        print("elem kwargs {}".format(createElemKwargs))
+        if createElemKwargs is not None:
+            self.createElemKwargs = createElemKwargs
         else:
-            self.elemKwargs = {}
+            self.createElemKwargs = {}
         self.elemKwargs['parent'] = self
         while (self.rows > len(self.array)):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
-                    print("creating elem {}, with kwargs {}".format(self.createElem, self.elemKwargs))
+                    print("creating elem {}, with kwargs {}".format(self.createElem, self.createElemKwargs))
 
                     if self.elemKwargs is None:
                         elem = self.createElem(**kwargs)
                     else:
-                        elem = self.createElem(customkwargs=self.elemKwargs, **kwargs)
+                        elem = self.createElem(customkwargs=self.createElemKwargs, **kwargs)
                     row.append(elem)
                 else:
                     row.append(self.defaultElem)

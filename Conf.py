@@ -72,8 +72,10 @@ class Conf:
             c = getattr(m, class_name)
             return c
         except ImportError as e:
+            print("wrong module {}".format(module_name))
             self.log_from_conf('error', "Module {} could not be found".format(module_name))
         except AttributeError as e:
+            print("wrong class {} in module {}".format(class_name, module_name))
             self.log_from_conf('error', "Class {} could not be found in module".format(class_name, module_name))
         return
 
