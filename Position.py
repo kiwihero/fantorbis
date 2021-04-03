@@ -42,3 +42,6 @@ class Position:
         if y is not None:
             self.y = y
         return self
+
+    def __str__(self):
+        return "({}, {})".format(self.x, self.y)

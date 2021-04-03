@@ -18,7 +18,7 @@ class Cell:
         # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
         if type(world_cell) is str:
-            self.worldCell = conf.class_for_name(world_cell)()
+            self.worldCell = conf.class_for_name(world_cell)(self.dataStoragePosition)
         else:
             self.worldCell = world_cell
 

@@ -1,12 +1,13 @@
 from backendworld.WorldAttribute import WorldAttribute
+from Position import Position
 
 class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, **kwargs):
+    def __init__(self, data_structure_location: Position = None, **kwargs):
         self.age = 0
-        self._dataStructureLocation = None
+        self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
 
     def step(self):
@@ -29,5 +30,8 @@ class TectonicCell(WorldAttribute):
             self.world.conf.log_from_conf('error', 'Cell is not associated with any data structure element')
         else:
             self.world._dataStructure.move_cell(self._dataStructureLocation, relative=(dirx,diry))
+
+    def __str__(self):
+        return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)
 
 
