@@ -2,7 +2,7 @@ import backendstorage.CustomExceptions
 
 
 class Vertex:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.originVertexPoint = None
         self.destinationVertexPoint = None
         self.vertexSegments = set()
