@@ -18,7 +18,7 @@ class World:
     def step(self):
         self.age += 1
         for cell in self.tectonicCells:
-            cell.age += 1
+            cell.step()
 
     def diverge(self, p1, p2, boundary):
         pass

@@ -6,6 +6,10 @@ import time
 import math
 
 class Conf:
+    """
+    A bunch of shared configuration stuff goes here.
+    A lot of the user's commands through UI will probably be changing these
+    """
     classes = {
         'GridCell':'backendstorage.Cells.GridCell',
         'Cell': 'backendstorage.Cells.Cell',

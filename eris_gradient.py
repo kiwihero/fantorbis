@@ -1,4 +1,7 @@
 from PIL import Image, ImageDraw
+"""
+Highly adapted from Eri's code
+"""
 def gradientDraw(X,Y,startColor,endColor,steps):
     im = Image.new(mode="RGB", size=(X, Y))
     draw = ImageDraw.Draw(im)

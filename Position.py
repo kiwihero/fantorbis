@@ -7,14 +7,31 @@ class Position:
         self.y = 0
 
     def change_position(self, position_object=None, x=0, y=0):
+        """
+        Relative movement
+        Can give either x and y, or another position object
+        :param position_object:
+        :param x: self.x is changed by this much
+        :param y: self.y is changed by this much
+        :return: this Position object
+        """
         if position_object is not None:
             self.x += position_object.x
             self.y += position_object.y
         else:
             self.x += x
             self.y += y
+        return self
 
     def set_position(self, position_object=None, x=None, y=None):
+        """
+        Absolute movement
+        Can give either x and y, or another position object
+        :param position_object:
+        :param x: self.x is now this value, regardless of previous position
+        :param y: self.y is now this value, regardless of previous position
+        :return: this Position object
+        """
         if position_object is not None:
             self.x = position_object.x
             self.y = position_object.y
@@ -22,3 +39,4 @@ class Position:
             self.x = x
         if y is not None:
             self.y = y
+        return self
