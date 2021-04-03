@@ -33,7 +33,7 @@ class World:
 
         print("random row {}: {}".format(type(random_row),random_row))
         print("random col {}: {}".format(type(random_col),random_col))
-        random_cell = self._dataStructure.lookupPosition(row=random_row, col=random_col)
+        random_cell = self._dataStructure.CellStorage[random_row][random_col]
         print("random cell {}: {}".format(type(random_cell),random_cell))
         relx = random.randint(-1,1)
         rely = random.randint(-1,1)

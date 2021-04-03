@@ -30,7 +30,7 @@ def draw_world(world, add_text=False):
             c = 0
             for col in row:
                 ind_cell = cellstruct[r][c]
-                ind_cell_age = ind_cell.children[0].age
+                ind_cell_age = ind_cell.worldCell.age
                 # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
 
                 draw.rectangle(col, fill=full_gradient[ind_cell_age],

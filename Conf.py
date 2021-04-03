@@ -9,7 +9,7 @@ class Conf:
     classes = {
         'GridCell':'backendstorage.Cells.GridCell',
         'Cell': 'backendstorage.Cells.Cell',
-        'VertexPoint':'backendstorage.Vertices.VertexPoint',
+        'VertexPoint': 'backendstorage.Vertices.VertexPoint',
         'GridStructure': 'backendstorage.StorageMechanisms.GridStructure',
         'TectonicCell': 'backendworld.TectonicCell'
 
@@ -72,10 +72,10 @@ class Conf:
             c = getattr(m, class_name)
             return c
         except ImportError as e:
-            print("wrong module {}".format(module_name))
+            print("{} wrong module {}".format(e, module_name))
             self.log_from_conf('error', "Module {} could not be found".format(module_name))
         except AttributeError as e:
-            print("wrong class {} in module {}".format(class_name, module_name))
+            print("{} wrong class {} in module {}".format(e, class_name, module_name))
             self.log_from_conf('error', "Class {} could not be found in module".format(class_name, module_name))
         return
 

@@ -24,7 +24,7 @@ class GridStructure(ArrayStructure):
         # self.cellClassName = 'GridCell'
         self.cellClassName = 'Cell'
         self.cellClass = self.conf.class_for_name(self.cellClassName)
-        self.cellClassArgs = {'conf': self.conf, 'childClass': 'TectonicCell'}
+        self.cellClassArgs = {'conf': self.conf, 'world_cell': 'TectonicCell'}#, 'world_cell_args'}
         self.vertexClassName = 'VertexPoint'
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
         self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, createElemKwargs = self.cellClassArgs)
@@ -73,7 +73,9 @@ class GridStructure(ArrayStructure):
 #     #     cell2pos = self._CellArrayStorage.search_for_address(cell=cell2)
 #     #     self._ArrayStorage.swap_pos(originRow=cell1pos['row'],originCol=cell1pos['col'],destRow=cell2pos['row'], destCol=cell2pos['col'])
 #     #
-#     def move_cell(self, cell, destination=None, relative=None):
+    def move_cell(self, cell, destination=None, relative=None):
+        # TODO: INCOMPLETE
+        pass
 #         if destination==None and relative==None:
 #             self.conf.log_from_conf('error', 'No destination or relative movement known to move cell')
 #             return

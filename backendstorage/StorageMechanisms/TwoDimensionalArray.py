@@ -16,17 +16,18 @@ class TwoDimensionalArray(list):
             self.createElemKwargs = createElemKwargs
         else:
             self.createElemKwargs = {}
-        self.elemKwargs['parent'] = self
+        self.createElemKwargs['parent'] = self
         while (self.rows > len(self.array)):
             row = []
             for c in range(self.cols):
                 if self.createElem != None:
                     print("creating elem {}, with kwargs {}".format(self.createElem, self.createElemKwargs))
 
-                    if self.elemKwargs is None:
+                    if self.createElemKwargs is None:
                         elem = self.createElem(**kwargs)
                     else:
-                        elem = self.createElem(customkwargs=self.createElemKwargs, **kwargs)
+                        elem = self.createElem(**self.createElemKwargs, **kwargs)
+                    print("created the elem {}".format(elem))
                     row.append(elem)
                 else:
                     row.append(self.defaultElem)
