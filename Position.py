@@ -46,3 +46,6 @@ class Position:
 
     def __str__(self):
         return "({}, {})".format(self.x, self.y)
+
+    def __copy__(self):
+        return Position(self.x, self.y)

@@ -339,6 +339,7 @@ class TwoDimensionalArray(list):
             new_row = []
             for col in range(self.cols):
                 old_cell = self.array[row][col]
+                print("\n\n\nrow {} column {}".format(row,col))
                 print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
                 try:
                     new_cell = old_cell.copy(copy_method='subdivision')
@@ -346,11 +347,22 @@ class TwoDimensionalArray(list):
                     new_cell = copy.copy(old_cell)
                 if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
                     old_pos = Position(col, len(new_array))
-                    old_cell.ds_pos = old_pos
+                    old_cell.dataStoragePosition = old_pos
                     new_pos = Position(col, len(new_array) + 1)
-                    new_cell.ds_pos = new_pos
-                    print("subdivision old position {}, new position {}".format(old_cell.ds_pos, new_cell.ds_pos))
+                    new_cell.dataStoragePosition = new_pos
+                    print("subdivision old position {}, new position {}".format(old_cell.dataStoragePosition, new_cell.dataStoragePosition))
                 new_row.append(new_cell)
+                self.array[row][col] = old_cell
+            print("ROWS TO ADD")
+            out1 = ''
+            for elem in self.array[row]:
+                out1+= str(elem) + " "
+            out2 = ''
+            for elem in new_row:
+                out2 += str(elem) + " "
+            print(out1)
+            print(out2)
+            print("END ROWS TO ADD")
             new_array.append(self.array[row])
             new_array.append(new_row)
         self.array = new_array
@@ -379,9 +391,9 @@ class TwoDimensionalArray(list):
                 # new_cell = copy.copy(old_cell)
                 if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
                     old_pos = Position(len(new_row), row)
-                    old_cell.ds_pos = old_pos
+                    old_cell.dataStoragePosition = old_pos
                     new_pos = Position(len(new_row)+1, row)
-                    new_cell.ds_pos = new_pos
+                    new_cell.dataStoragePosition = new_pos
                     # print("column subdivision old position {}, new position {}".format(old_cell.ds_pos, new_cell.ds_pos))
                 new_row.append(old_cell)
                 new_row.append(new_cell)

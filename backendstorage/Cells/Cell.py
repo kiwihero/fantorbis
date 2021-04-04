@@ -10,7 +10,8 @@ class Cell:
         outstr = ("initializing cell with args (conf={}) (ds_pos={}) (world_pos={}) (world_cell={}) (world_cell_args={}) and {} kwargs:\n".format(conf, ds_pos, world_pos,world_cell,world_cell_args, len(kwargs)))
         for key, value in kwargs.items():
             if key == 'parent' and value is not None:
-                outstr += "({}) {}: ({}) \n{}\n".format(type(key), key, type(value), value.return_contents())
+                # outstr += "({}) {}: ({}) \n{}\n".format(type(key), key, type(value), value.return_contents())
+                outstr += "({}) {}: ({})\n".format(type(key), key, type(value))
             else:
                 outstr += "({}) {}: ({}) {}\n".format(type(key),key, type(value), value)
         print(outstr)
@@ -79,10 +80,11 @@ class Cell:
             new_cell = self.copy()
             print("made new cell {} using standard copy".format(new_cell))
             print("default world cell {}".format(new_cell.worldCell))
-            print("old world cell {}".format(self.worldCell))
+            print("old world cell (id: {}) {}".format(hex(id(self.worldCell)),self.worldCell))
             new_cell.worldCell = copy.copy(self.worldCell)
-            print("new world cell {}".format(new_cell.worldCell))
+            print("new world cell (id: {}) {}".format(hex(id(new_cell.worldCell)),new_cell.worldCell))
             new_cell.worldCell.age = self.worldCell.age
+            # new_cell.worldCell._dataStructureLocation = copy.copy(self.worldCell._dataStructureLocation)
             # if type(self.world_cell_class) is str:
             #     new_cell.worldCell = self.conf.class_for_name(self.world_cell_class_str)(self.dataStoragePosition, world=self.conf.world,world_cell_args=self.world_cell_args)
             # if type(self.world_cell_class) is None:
