@@ -21,9 +21,11 @@ class Cell:
         # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
         if type(world_cell) is str:
-            self.worldCell = conf.class_for_name(world_cell)(self.dataStoragePosition)
+            self.worldCell = conf.class_for_name(world_cell)(self.dataStoragePosition, world=self.conf.world)
         else:
             self.worldCell = world_cell
+        print("Cell {} has world cell STARTWORLDCELL {} ENDWORLDCELL ID {} WORLD {}".format(self, self.worldCell, hex(id(self.worldCell)), self.worldCell.world))
+
 
     def move(self, newWorldPosition=None, newDataStoragePosition=None):
         """
@@ -39,6 +41,6 @@ class Cell:
 
     def __str__(self):
         if self.worldCell is not None:
-            return "Cell at storage location {} has world cell {}".format(self.dataStoragePosition, self.worldCell)
+            return "Cell at storage location {} has world cell id {} {}".format(self.dataStoragePosition, hex(id(self.worldCell)), self.worldCell)
         else:
             return "Cell at storage location {} has NO world cell".format(self.dataStoragePosition)

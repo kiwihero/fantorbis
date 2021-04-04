@@ -33,8 +33,8 @@ def draw_world(world, add_text=False):
             for col in row:
                 ind_cell = cellstruct[r][c]
                 ind_cell_age = ind_cell.worldCell.age
-                print("ind cell age {} type {}".format(ind_cell_age, type(ind_cell_age)))
-                print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
+                # print("ind cell age {} type {}".format(ind_cell_age, type(ind_cell_age)))
+                # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
 
                 draw.rectangle(col, fill=full_gradient[ind_cell_age],
                                outline=None, width=0)
@@ -52,6 +52,15 @@ def draw_world(world, add_text=False):
         caption = world.conf.imageCaption.format(world.age)
         _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
         world.annotatedImages[world.age] = annotated_img
+
+
+
+def draw_detailed_step(world):
+    """
+    Slowly draw out the inner workings of a single step
+    :return:
+    """
+    prev = world.images[world.age-1]
 
 
 def image_world(world, force_current=False, current_only=False, image_type=('all', True)):

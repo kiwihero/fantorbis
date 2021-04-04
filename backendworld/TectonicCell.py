@@ -9,14 +9,22 @@ class TectonicCell(WorldAttribute):
         self.age = 0
         self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
+        if (self.world is not None) and (self not in self.world.tectonicCells):
+            self.world.tectonicCells.add(self)
 
     def step(self):
-        print("stepping cell {}".format(self))
         """
         Single step through time
         :return:
         """
-        self.age += 1
+        if self.age == self.world.age:
+            if self.world is not None:
+                self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
+            else:
+                print("ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD\nAND TO TOP IT OFF, YOU NEVER GAVE YOUR CELLS A WORLD FOR THIS MESSAGE TO BE LOGGED".format(hex(id(self))))
+            # TODO: Can a bit of world be older than the world? Meteors??? Creationists???
+        else:
+            self.age += 1
 
     def move(self, dirx, diry):
         """

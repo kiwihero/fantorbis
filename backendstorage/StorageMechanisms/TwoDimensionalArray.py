@@ -323,7 +323,12 @@ class TwoDimensionalArray(list):
                 old_cell = self.array[row][col]
                 # print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
                 new_cell = copy.copy(old_cell)
-                # new_cell = old_cell.copy()
+                if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
+                    old_pos = Position(col, len(new_array))
+                    old_cell.ds_pos = old_pos
+                    new_pos = Position(col, len(new_array) + 1)
+                    new_cell.ds_pos = new_pos
+                    print("subdivision new position {}".format(new_pos))
                 new_row.append(new_cell)
             new_array.append(self.array[row])
             new_array.append(new_row)
