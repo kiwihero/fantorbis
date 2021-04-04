@@ -1,6 +1,6 @@
 # from backendstorage.NodeStructure import *
 from backendworld.World import *
-from PillowDisplay import draw_world, gif_world,image_world
+from PillowDisplay import draw_world, gif_world,image_world, draw_detailed_step
 
 #  THIS IS NOT A CALLABLE CLASS, THIS IS EXAMPLES DEMONSTRATING FUNCTIONALITY.
 #  DO NOT CALL ANYTHING FROM HERE IN PRODUCTION.
@@ -22,6 +22,11 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 # for elem in w1._dataStructure:
 #     print("Elem",elem)
 draw_world(w1, True)
+
+# actions = [{'function':'random_wiggle','class_instance':w1,'kwargs':{}}]
+# for x in range(20):
+#     draw_detailed_step(w1,actions)
+
 for x in range(20):
     # if x >=4:
     #     break

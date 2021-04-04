@@ -84,6 +84,31 @@ class Conf:
             self.log_from_conf('error', "Class {} could not be found in module".format(class_name, module_name))
         return
 
+    def call_function(self, function: str, class_instance=None, kwargs: dict = None):
+        """
+        Can call a function from a class
+        :param function:
+        :param class_instance:
+        :param kwargs:
+        :return:
+        """
+        if kwargs is None:
+            kwargs = {}
+        if class_instance is not None:
+            method_to_call = getattr(class_instance, function)
+            print("Calling method {} using args {}".format(method_to_call,kwargs))
+            result = method_to_call(**kwargs)
+            print("got result {}".format(result))
+            return result
+        else:
+            # TODO: Need to handle functions defined outside a class
+            #  Probably using eval / locals or globals?
+            #  Try using these
+            #  https://thepythonguru.com/python-builtin-functions/eval/
+            #  https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string
+            raise NotImplementedError("Currently, can only call functions on classes!")
+
+
 
     def time_id(self):
         startTime = time.time()

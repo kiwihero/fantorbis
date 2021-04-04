@@ -55,13 +55,23 @@ def draw_world(world, add_text=False):
 
 
 
-def draw_detailed_step(world):
+def draw_detailed_step(world, actions:list):
     """
     Slowly draw out the inner workings of a single step
+    Steps at the end of the list
+    :param world: The world to be moving
+    :param actions: The actions within the step to move
     :return:
     """
-    # TODO: THIS IS ANNE'S NEXT TASK
-    prev = world.images[world.age-1]
+    if world.age not in world.images:
+        draw_world(world, True)
+    prev = world.images[world.age]
+    for action in actions:
+        print("Action",action)
+        world.conf.call_function(**action)
+        print("Action done")
+
+
 
 
 def image_world(world, force_current=False, current_only=False, image_type=('all', True)):
