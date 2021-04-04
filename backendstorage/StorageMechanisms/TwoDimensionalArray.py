@@ -59,6 +59,8 @@ class TwoDimensionalArray(list):
         :param item: i
         :return:
         """
+        # TODO: Error checking to see if index in range
+        #  If not in range, needs option to loop back around
         return self.array[item]
 
     def __setitem__(self, key: int, value):

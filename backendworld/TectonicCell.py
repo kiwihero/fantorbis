@@ -9,14 +9,23 @@ class TectonicCell(WorldAttribute):
         self.age = 0
         self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
+        self._updateWorldSet()
+
+    def _updateWorldSet(self):
+        """
+        Helper function to check if self is in world's list of TectonicCell
+        :return:
+        """
         if (self.world is not None) and (self not in self.world.tectonicCells):
             self.world.tectonicCells.add(self)
 
     def step(self):
         """
         Single step through time
+        Also double checks if in world's set of known cells
         :return:
         """
+        self._updateWorldSet()
         if self.age == self.world.age:
             if self.world is not None:
                 self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
@@ -47,6 +56,7 @@ class TectonicCell(WorldAttribute):
         new_cell = TectonicCell(data_structure_location=self._dataStructureLocation)
         super().copy_attrs(new_cell)
         new_cell.age = self.age
+        new_cell._updateWorldSet()
         return new_cell
 
 

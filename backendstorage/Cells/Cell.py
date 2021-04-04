@@ -17,13 +17,13 @@ class Cell:
         print(outstr)
         self.conf = conf
         if 'TwoDimensionalArray_pos' in kwargs:
-            print("Given 2darray pos", kwargs['TwoDimensionalArray_pos'])
+            # print("Given 2darray pos", kwargs['TwoDimensionalArray_pos'])
             self.dataStoragePosition = kwargs['TwoDimensionalArray_pos']
         elif ds_pos is None:
-            print("No ds_pos given")
+            # print("No ds_pos given")
             self.dataStoragePosition = Position()
         else:
-            print("Known ds pos", ds_pos)
+            # print("Known ds pos", ds_pos)
             self.dataStoragePosition = ds_pos
         if world_pos is None:
             self.worldPosition = Position()
@@ -33,6 +33,8 @@ class Cell:
             self.world_cell_args = {}
         else:
             self.world_cell_args = world_cell_args
+        print("world cell args", self.world_cell_args)
+        # self.world_cell_args['data_structure_location'] = self.dataStoragePosition
         # TODO: Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
         if type(world_cell) is str:
@@ -82,6 +84,7 @@ class Cell:
             print("default world cell {}".format(new_cell.worldCell))
             print("old world cell (id: {}) {}".format(hex(id(self.worldCell)),self.worldCell))
             new_cell.worldCell = copy.copy(self.worldCell)
+            new_cell.worldCell._dataStructureLocation = new_cell.dataStoragePosition
             print("new world cell (id: {}) {}".format(hex(id(new_cell.worldCell)),new_cell.worldCell))
             new_cell.worldCell.age = self.worldCell.age
             # new_cell.worldCell._dataStructureLocation = copy.copy(self.worldCell._dataStructureLocation)
