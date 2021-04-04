@@ -43,4 +43,11 @@ class TectonicCell(WorldAttribute):
     def __str__(self):
         return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)
 
+    def __copy__(self):
+        new_cell = TectonicCell(data_structure_location=self._dataStructureLocation)
+        super().copy_attrs(new_cell)
+        new_cell.age = self.age
+        return new_cell
+
+
 

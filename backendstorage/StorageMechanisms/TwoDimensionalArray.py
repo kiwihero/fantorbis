@@ -343,14 +343,7 @@ class TwoDimensionalArray(list):
                 try:
                     new_cell = old_cell.copy(copy_method='subdivision')
                 except TypeError as e:
-                    print("Trying to copy class {} returned a type error {}".format(type(old_cell),e))
-                    # raise Exception
-                    # print("Type error",e)
                     new_cell = copy.copy(old_cell)
-                # if 'custom_subdivision_copy' in self.createElemKwargs:
-                #     new_cell = old_cell.subdivision_copy()
-                # else:
-                #     new_cell = copy.copy(old_cell)
                 if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
                     old_pos = Position(col, len(new_array))
                     old_cell.ds_pos = old_pos
@@ -379,7 +372,11 @@ class TwoDimensionalArray(list):
             for col in range(self.cols):
                 # print("col {} new row (len {}): {}".format(col, len(new_row), new_row))
                 old_cell = self.array[row][col]
-                new_cell = copy.copy(old_cell)
+                try:
+                    new_cell = old_cell.copy(copy_method='subdivision')
+                except TypeError as e:
+                    new_cell = copy.copy(old_cell)
+                # new_cell = copy.copy(old_cell)
                 if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
                     old_pos = Position(len(new_row), row)
                     old_cell.ds_pos = old_pos

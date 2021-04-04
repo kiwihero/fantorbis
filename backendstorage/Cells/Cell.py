@@ -68,7 +68,7 @@ class Cell:
         """
         print("Copying Cell with method {}".format(copy_method))
         if copy_method is None:
-            new_cell = Cell(conf=self.conf, ds_pos=self.dataStoragePosition,world_pos=self.worldPosition,world_cell=self.worldCell)#,world_cell_args=self.world_cell_args)
+            new_cell = Cell(conf=self.conf, ds_pos=self.dataStoragePosition,world_pos=self.worldPosition,world_cell=self.worldCell,world_cell_args=self.world_cell_args)
             # del copy
             # new_cell = copy(self)
             return new_cell
@@ -77,14 +77,20 @@ class Cell:
             #  This can only handle if intial cell was created by defining class of TectonicCell
             #  It needs to handle finding class if instance is given
             new_cell = self.copy()
-            if type(self.world_cell_class) is str:
-                new_cell.worldCell = self.conf.class_for_name(self.world_cell_class_str)(self.dataStoragePosition, world=self.conf.world)#,world_cell_args=self.world_cell_args)
-            elif type(self.world_cell_class) is None:
-                print("knwonw world cell {}".format(self.worldCell))
-                raise Exception
-            else:
-                new_cell.worldCell = self.world_cell_class(self.dataStoragePosition, world=self.conf.world)#,world_cell_args=self.world_cell_args)
-            print("subdivision copying made {}".format(new_cell))
+            print("made new cell {} using standard copy".format(new_cell))
+            print("default world cell {}".format(new_cell.worldCell))
+            print("old world cell {}".format(self.worldCell))
+            new_cell.worldCell = copy.copy(self.worldCell)
+            print("new world cell {}".format(new_cell.worldCell))
+            new_cell.worldCell.age = self.worldCell.age
+            # if type(self.world_cell_class) is str:
+            #     new_cell.worldCell = self.conf.class_for_name(self.world_cell_class_str)(self.dataStoragePosition, world=self.conf.world,world_cell_args=self.world_cell_args)
+            # if type(self.world_cell_class) is None:
+            #     print("knwonw world cell {}".format(self.worldCell))
+            #     raise Exception
+            # else:
+            #     new_cell.worldCell = self.world_cell_class(self.dataStoragePosition, world=self.conf.world,**self.world_cell_args)
+            # print("subdivision copying made {}".format(new_cell))
             return new_cell
         else:
             # TODO: Error handling if unknown copy method
