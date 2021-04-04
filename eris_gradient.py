@@ -35,6 +35,7 @@ def make_gradient(startColor,endColor,steps):
     B = startColor[2]
     if steps == 0:
         return [(R,G,B)]
+        # return [(endColor[0],endColor[1],endColor[2])]
 
     Rdif = abs(startColor[0] - endColor[0])
     Rstep = int(Rdif / steps)

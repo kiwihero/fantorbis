@@ -17,7 +17,10 @@ class TectonicCell(WorldAttribute):
         :return:
         """
         if (self.world is not None) and (self not in self.world.tectonicCells):
+            print("cell {} had to be added to world's known".format(self))
             self.world.tectonicCells.add(self)
+        elif self.world is None:
+            print("ERROR NO WORLD")
 
     def step(self):
         """
@@ -53,10 +56,12 @@ class TectonicCell(WorldAttribute):
         return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)
 
     def __copy__(self):
-        new_cell = TectonicCell(data_structure_location=self._dataStructureLocation)
-        super().copy_attrs(new_cell)
+        new_cell = TectonicCell(data_structure_location=self._dataStructureLocation, world=self.world)
+        # new_cell = self.copy_attrs(new_cell)
         new_cell.age = self.age
+        print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
+        print("done updating after copy")
         return new_cell
 
 

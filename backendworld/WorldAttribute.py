@@ -15,10 +15,13 @@ class WorldAttribute:
         Copies all attributes of self onto another instance
         :return:
         """
+        # TODO: THIS FUNCITON DOESN'T WORK
         attrs = {}
         attrs['world'] = self.world
         for key, value in attrs.items():
+            print("key {}, value {}\ndest {} type {}".format(key, value,dest, type(dest)))
             dest.key = value
+            print("attr now {}".format(dest.key))
         return attrs
 
     class GenericError(Exception):

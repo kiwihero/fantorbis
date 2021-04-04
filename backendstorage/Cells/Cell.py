@@ -86,7 +86,8 @@ class Cell:
             new_cell.worldCell = copy.copy(self.worldCell)
             new_cell.worldCell._dataStructureLocation = new_cell.dataStoragePosition
             print("new world cell (id: {}) {}".format(hex(id(new_cell.worldCell)),new_cell.worldCell))
-            new_cell.worldCell.age = self.worldCell.age
+            # new_cell.worldCell.age = self.worldCell.age
+            new_cell.worldCell._updateWorldSet()
             # new_cell.worldCell._dataStructureLocation = copy.copy(self.worldCell._dataStructureLocation)
             # if type(self.world_cell_class) is str:
             #     new_cell.worldCell = self.conf.class_for_name(self.world_cell_class_str)(self.dataStoragePosition, world=self.conf.world,world_cell_args=self.world_cell_args)

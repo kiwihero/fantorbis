@@ -21,7 +21,7 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 
 # for elem in w1._dataStructure:
 #     print("Elem",elem)
-
+draw_world(w1, True)
 for x in range(20):
     # if x >=4:
     #     break
