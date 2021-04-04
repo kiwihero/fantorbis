@@ -31,6 +31,8 @@ class GridStructure(ArrayStructure):
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
         self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, createElemKwargs = self.cellClassArgs)
         self.VertexStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.vertexClass)
+        # self.width = self.CellStorage.cols
+        # self.height = self.CellStorage.rows
 
     def print_contents(self):
         """
@@ -59,7 +61,12 @@ class GridStructure(ArrayStructure):
         """
         # TODO: More documentation needed on attributes of newly created cells,
         #  such as what features are inherited and what's default initialized values
+
+        # TODO: Subdivide vertices as well as columns
+        #  (this may be handled when the to-do about relationships between cells and vertices is done)
         self.CellStorage.subdivide()
+        self.width = self.CellStorage.cols
+        self.height = self.CellStorage.rows
 
     def move_cell(self, cell: Cell, destination: Position, relative: bool = False):
         """

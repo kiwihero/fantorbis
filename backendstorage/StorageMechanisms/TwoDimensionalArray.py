@@ -29,7 +29,9 @@ class TwoDimensionalArray(list):
                         elem = self.createElem(**kwargs)
                     else:
                         if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
-                            self.createElemKwargs['TwoDimensionalArray_pos'] = Position(c,r)
+                            p = Position(c,r)
+                            print("INCLUDING POSITION", p)
+                            self.createElemKwargs['TwoDimensionalArray_pos'] = p
                         elem = self.createElem(**self.createElemKwargs, **kwargs)
                     print("created the elem {}".format(elem))
                     row.append(elem)
@@ -79,16 +81,28 @@ class TwoDimensionalArray(list):
         Iterate through, printing all elements as grid
         :return:
         """
+        print(self.return_contents())
+
+
+    def return_contents(self):
+        """
+        Helper function for print_contents
+        Or use on its own if you want the string instead of printed
+        :return:
+        """
+        outstr = ''
         if type(self.array) is list:
-            print("Printing contents of {} x {} array".format(self.rows, self.cols))
+            outstr += "Printing contents of {} x {} array\n".format(self.rows, self.cols)
             for row in self.array:
                 # print("row of len", len(row))
                 printed_row = ''
                 for col in row:
                     printed_row += str(col) + ' '
-                print(printed_row)
+                outstr += printed_row + "\n"
+            return outstr
         else:
-            print("Oops! Array {} not correct type {}".format(self.array, type(self.array)))
+            return "Oops! Array {} not correct type {}".format(self.array, type(self.array))
+
 
     def grid_print(self):
         """
@@ -305,8 +319,12 @@ class TwoDimensionalArray(list):
         :return:
         """
         # TODO: Add argument, functionality for possibility of deep copying of elements
+        self.grid_print()
+        print("subdivision not yet started")
         self.subdivide_rows()
         self.subdivide_cols()
+        print("subdivision done")
+        self.grid_print()
 
     def subdivide_rows(self):
         """
@@ -321,14 +339,24 @@ class TwoDimensionalArray(list):
             new_row = []
             for col in range(self.cols):
                 old_cell = self.array[row][col]
-                # print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
-                new_cell = copy.copy(old_cell)
+                print("CELL TYPE {}, cell {}".format(type(old_cell),old_cell))
+                try:
+                    new_cell = old_cell.copy(copy_method='subdivision')
+                except TypeError as e:
+                    print("Trying to copy class {} returned a type error {}".format(type(old_cell),e))
+                    # raise Exception
+                    # print("Type error",e)
+                    new_cell = copy.copy(old_cell)
+                # if 'custom_subdivision_copy' in self.createElemKwargs:
+                #     new_cell = old_cell.subdivision_copy()
+                # else:
+                #     new_cell = copy.copy(old_cell)
                 if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
                     old_pos = Position(col, len(new_array))
                     old_cell.ds_pos = old_pos
                     new_pos = Position(col, len(new_array) + 1)
                     new_cell.ds_pos = new_pos
-                    print("subdivision new position {}".format(new_pos))
+                    print("subdivision old position {}, new position {}".format(old_cell.ds_pos, new_cell.ds_pos))
                 new_row.append(new_cell)
             new_array.append(self.array[row])
             new_array.append(new_row)
@@ -349,9 +377,16 @@ class TwoDimensionalArray(list):
         for row in range(self.rows):
             new_row = []
             for col in range(self.cols):
-                cell = self.array[row][col]
-                new_cell = copy.copy(cell)
-                new_row.append(cell)
+                # print("col {} new row (len {}): {}".format(col, len(new_row), new_row))
+                old_cell = self.array[row][col]
+                new_cell = copy.copy(old_cell)
+                if 'include_TwoDimensionalArray_pos' in self.createElemKwargs:
+                    old_pos = Position(len(new_row), row)
+                    old_cell.ds_pos = old_pos
+                    new_pos = Position(len(new_row)+1, row)
+                    new_cell.ds_pos = new_pos
+                    # print("column subdivision old position {}, new position {}".format(old_cell.ds_pos, new_cell.ds_pos))
+                new_row.append(old_cell)
                 new_row.append(new_cell)
             new_array.append(new_row)
 
@@ -380,13 +415,13 @@ class _TwoDimensionalArrayIterator:
             return result
         raise StopIteration
 
-# Run this class to see some examples of class methods in use
+# Uncomment and run  class to see some examples of class methods in use
 
-t1 = TwoDimensionalArray(rows=2, cols=2)
-t1[0]=[6,5]
-t1[1]=[4,3]
-t1[0][0]=9
-t1.grid_print()
-t1.subdivide()
-t1.grid_print()
-t1.print_contents()
+# t1 = TwoDimensionalArray(rows=2, cols=2)
+# t1[0]=[6,5]
+# t1[1]=[4,3]
+# t1[0][0]=9
+# t1.grid_print()
+# t1.subdivide()
+# t1.grid_print()
+# t1.print_contents()

@@ -23,6 +23,8 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 #     print("Elem",elem)
 
 for x in range(20):
+    if x >=4:
+        break
     if x % 3 == 0 and x < 10:
         w1._dataStructure.subdivide()
     else:

@@ -33,9 +33,10 @@ class World:
     def random_wiggle(self):
         random_row = random.randint(0, self._dataStructure.height-1)
         random_col = random.randint(0, self._dataStructure.width-1)
+        print("world data structure {} type {} height {} type {} id {}".format(self._dataStructure, type(self._dataStructure), self._dataStructure.height, type(self._dataStructure.height), hex(id(self._dataStructure.height))))
 
 
-        print("random row {}: {}".format(type(random_row),random_row))
+        print("random row {}: {} max {}".format(type(random_row),random_row,self._dataStructure.height-1))
         print("random col {}: {}".format(type(random_col),random_col))
         random_cell = self._dataStructure.CellStorage[random_row][random_col]
         print("random cell {}: {}".format(type(random_cell),random_cell))
