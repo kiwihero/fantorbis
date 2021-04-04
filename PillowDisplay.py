@@ -60,6 +60,7 @@ def draw_detailed_step(world):
     Slowly draw out the inner workings of a single step
     :return:
     """
+    # TODO: THIS IS ANNE'S NEXT TASK
     prev = world.images[world.age-1]
 
 
