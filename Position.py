@@ -10,13 +10,17 @@ class Position:
         self.y = y
 
     def change_position(self, position_object: 'Position' = None, x: int = 0, y: int = 0, wrap_x: int = None,
-                        wrap_y: int = None):
+                        wrap_y: int = None, wrap_negatives: bool = True):
         """
         Relative movement
         Can give either x and y, or another position object
+        Note that by default, if a wrap value is given, negatives are also wrapped
         :param position_object:
         :param x: self.x is changed by this much
         :param y: self.y is changed by this much
+        :param wrap_x: Can request to wrap if movement brings position outside given
+        :param wrap_y: Can request to wrap if movement brings position outside given
+        :param wrap_negatives: If wrap is given, should it also wrap negatives
         :return: this Position object
         """
         if position_object is not None:
@@ -25,12 +29,12 @@ class Position:
         else:
             self.x += x
             self.y += y
-        if wrap_x is not None and self.x >= wrap_x:
+        if wrap_x is not None and (self.x >= wrap_x or (wrap_negatives is True and self.x <0)):
             # print("given x",self.x)
             self.x = self.x % wrap_x
             # print("wrapped x",self.x)
             # raise Exception
-        if wrap_y is not None and self.y >= wrap_y:
+        if wrap_y is not None and (self.y >= wrap_y or (wrap_negatives is True and self.y <0)):
             self.y = self.y % wrap_y
             # raise Exception
         return self
