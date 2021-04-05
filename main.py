@@ -23,22 +23,24 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 #     print("Elem",elem)
 draw_world(w1, True)
 
-# actions = [{'function':'random_wiggle','class_instance':w1,'kwargs':{}}]
+w1.step()
+actions = [{'function':'random_wiggle','class_instance':w1,'kwargs':{}}]
+for x in range(2):
+    draw_detailed_step(w1,actions)
+draw_world(w1, True)
+
 # for x in range(20):
-#     draw_detailed_step(w1,actions)
-
-for x in range(20):
-    # if x >=4:
-    #     break
-    if x % 3 == 0 and x < 10:
-        w1._dataStructure.subdivide()
-    else:
-        w1.random_wiggle()
-    draw_world(w1, True)
-    w1.step()
-
-    print("world cells count", len(w1.tectonicCells))
-    # print("images len {}, world age {}".format(len(w1.images),w1.age))
+#     # if x >=4:
+#     #     break
+#     if x % 3 == 0 and x < 10:
+#         w1._dataStructure.subdivide()
+#     else:
+#         w1.random_wiggle()
+#     draw_world(w1, True)
+#     w1.step()
+#
+#     print("world cells count", len(w1.tectonicCells))
+#     # print("images len {}, world age {}".format(len(w1.images),w1.age))
 
 
 gif_world(w1)

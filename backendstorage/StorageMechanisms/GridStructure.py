@@ -76,22 +76,23 @@ class GridStructure(ArrayStructure):
         :param relative: Whether the destination position is relative to the current position or absolute
         :return:
         """
-        # TODO:
-        #  Somewhere (not in this function, possibly not even in this class),
-        #  there needs to be logic to wrap positions when moving cells
-
         # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
-        old_position = cell.dataStoragePosition
+        # TODO: Removal of destroyed cells from World's list of known cells
+        old_position = cell.dataStoragePosition.__copy__()
 
         if relative is True:
             destination.change_position(cell.dataStoragePosition,wrap_x=self.width,wrap_y=self.height)
         print("cell to be moved: old position {} new position {}".format(old_position, destination))
         cell.ds_pos = destination.change_position(wrap_x=self.width,wrap_y=self.height)
+        cell.dataStoragePosition = destination
+        cell.worldPosition = destination
+        cell.worldCell._dataStructureLocation = destination
         self.CellStorage[destination.y][destination.x] = cell
         new_cellClassArgs = self.cellClassArgs.copy()
         if 'include_TwoDimensionalArray_pos' in self.cellClassArgs:
             new_cellClassArgs['ds_pos'] = old_position
+            new_cellClassArgs['TwoDimensionalArray_pos'] = old_position
         self.CellStorage[old_position.y][old_position.x] = self.cellClass(**new_cellClassArgs)
         print("Old cell {} moved to {}".format(cell, destination))
         print("New cell {} created at {}".format(self.CellStorage[old_position.y][old_position.x], old_position))

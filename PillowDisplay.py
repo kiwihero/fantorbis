@@ -3,6 +3,8 @@ from PIL import ImageFont
 import numbers
 import os
 import eris_gradient
+from Position import Position
+import math
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
 
@@ -68,8 +70,28 @@ def draw_detailed_step(world, actions:list):
     prev = world.images[world.age]
     for action in actions:
         print("Action",action)
-        world.conf.call_function(**action)
-        print("Action done")
+        action_return = world.conf.call_function(**action)
+        print("Action done, returned {}".format(action_return))
+        action_frames = action_return.action_frames
+        print("action frames",action_frames)
+        draw_arrow(None,action_frames[1]['movement'][0],action_frames[1]['movement'][1])
+
+        world.step()
+        # raise Exception
+
+def draw_arrow(draw: ImageDraw.Draw, origin: Position, destination: Position, color=(255,0,0), arrowhead_proportion=0.25):
+    print("origin",origin)
+    print("destination",destination)
+    x_length = abs(origin.x-destination.x)
+    y_length = abs(origin.y-destination.y)
+    arrow_length = math.sqrt(math.pow(x_length,2)+math.pow(y_length,2))
+    arrowhead_length = arrow_length*arrowhead_proportion
+    arrowhead_x = destination.x - (origin.x*arrowhead_proportion)
+
+    print("arrowhead x {}".format(arrowhead_x))
+
+
+    # draw.polygon([(destination.x, destination.y), vtx1, ptB], fill=color)
 
 
 
