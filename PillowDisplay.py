@@ -53,17 +53,6 @@ def draw_world(world, add_text=False):
         _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
         world.annotatedImages[world.age] = annotated_img
 
-
-
-def draw_detailed_step(world):
-    """
-    Slowly draw out the inner workings of a single step
-    :return:
-    """
-    # TODO: THIS IS ANNE'S NEXT TASK
-    prev = world.images[world.age-1]
-
-
 def image_world(world, force_current=False, current_only=False, image_type=('all', True)):
     #Image type defines if you want annotated/unannotated, and if it should be forced
     valid_type_args = ['clean', 'annotated', 'all']
