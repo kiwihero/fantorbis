@@ -1,2 +1,2 @@
 # fantorbis
-A fantasy map generator.
+An in-depth fantasy map generator.
