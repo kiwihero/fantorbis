@@ -3,6 +3,7 @@ import random
 from Position import Position
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
+#me doing this not anyone else
 class World:
     def __init__(self):
         self.conf = Conf()
