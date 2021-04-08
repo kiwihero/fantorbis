@@ -5,6 +5,7 @@ import os
 import eris_gradient
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
+#doing
 
 
 def draw_world(world, add_text=False):
