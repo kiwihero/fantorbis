@@ -101,4 +101,5 @@ class Cell:
             return new_cell
         else:
             # TODO: Error handling if unknown copy method
+            # working on this - Vito
             raise Exception
