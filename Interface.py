@@ -27,7 +27,7 @@ else:
 
     root = tk.Tk()
     root.wm_title('Fantorbis')
-    root.iconbitmap(os.path.join(sys.path[0], 'Fantorbis-Logo.ico'))
+    root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
 
 
 
