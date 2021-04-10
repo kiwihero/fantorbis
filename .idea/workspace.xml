@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="wouldn't run if no logs" />
+    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="Claiming some todos">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PillowDisplay.py" beforeDir="false" afterPath="$PROJECT_DIR$/PillowDisplay.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eris_gradient.py" beforeDir="false" afterPath="$PROJECT_DIR$/eris_gradient.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -199,7 +203,21 @@
       <option name="project" value="LOCAL" />
       <updated>1617907696731</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Claiming some todos">
+      <created>1617908029110</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1617908029110</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Claiming some todos">
+      <created>1617908253947</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1617908253947</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -221,6 +239,7 @@
     <MESSAGE value="adding comments" />
     <MESSAGE value="example" />
     <MESSAGE value="wouldn't run if no logs" />
-    <option name="LAST_COMMIT_MESSAGE" value="wouldn't run if no logs" />
+    <MESSAGE value="Claiming some todos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Claiming some todos" />
   </component>
 </project>

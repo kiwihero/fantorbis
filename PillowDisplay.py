@@ -5,10 +5,16 @@ import os
 import eris_gradient
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
-#doing
+#  Kitty doing this soon
 
 
-def draw_world(world, add_text=False):
+def draw_world(world, add_text: bool =False):
+    '''
+
+    :param world: the World object that is being drawn.
+    :param add_text: Boolean determining whether or not age should be written on the drawing.
+    :return: he draws the world, however he does not show you the world. he draws it.
+    '''
     canvas_width = world.conf.imageWidth
     canvas_height = world.conf.imageHeight
 
@@ -54,8 +60,15 @@ def draw_world(world, add_text=False):
         _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
         world.annotatedImages[world.age] = annotated_img
 
-def image_world(world, force_current=False, current_only=False, image_type=('all', True)):
-    #Image type defines if you want annotated/unannotated, and if it should be forced
+def image_world(world, force_current: bool =False, current_only: bool = False, image_type=('all', True)):
+    '''
+
+    :param world: World object
+    :param force_current: determining if should include prevs or just current
+    :param current_only: just current
+    :param image_type: defines if you want annotated/unannotated, and if it should be forced
+    :return: makes the image and plays with it. draw_world draws the image.
+    '''
     valid_type_args = ['clean', 'annotated', 'all']
     try:
         if type(image_type) is str :
@@ -147,6 +160,14 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
 
 
 def _save_image(image, filename, conf):
+
+    '''
+
+    :param image: the image being saved
+    :param filename: where he is being saved to
+    :param conf: directory
+    :return: this function saves the image of the world
+    '''
     # splitpath = filename.split()
     dirname = os.path.dirname(filename)
     # basnm = os.path.basename(filename)
@@ -165,6 +186,11 @@ def _save_image(image, filename, conf):
 
 
 def gif_world(world):
+    '''
+
+    :param world: world object
+    :return: this makes the world go weeee.
+    '''
     if len(world.images) > 0:
         fnt = world.conf.fnt
         fnt_sm = world.conf.fnt_sm
@@ -213,6 +239,14 @@ def gif_world(world):
         # (w1.images[max(w1.images.keys())]).show()
 
 def _annotate_image(drawInstance, position, caption, conf):
+    '''
+
+    :param drawInstance: the instance chosen
+    :param position: the xy coordinates
+    :param caption: the text thats there
+    :param conf: directory thing
+    :return: puts text into an image
+    '''
     # print("pos {} capt {}".format(position,caption))
     # drawInstance.text(xy=position, text=caption)
     drawInstance.text(xy=position, text=caption, anchor='lt',
@@ -223,6 +257,15 @@ def _annotate_image(drawInstance, position, caption, conf):
 
 
 def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
+
+    '''
+
+    :param image: world image working with
+    :param rectanglestructure: rectangle
+    :param sep_ratio: the ratio of seperation
+    :param sep_fixed: the seperation of the rectangles
+    :return: puts rectangles into square cells
+    '''
     square_dims = (int(image.size[0] / rectanglestructure.cols), int(image.size[1] / rectanglestructure.rows))
 
     separation = sep_fixed

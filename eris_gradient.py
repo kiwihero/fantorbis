@@ -5,6 +5,15 @@ Highly adapted from Eri's code
 # TODO: THIS FILE NEEDS DOCSTRINGS
 #doibg
 def gradientDraw(X,Y,startColor,endColor,steps):
+    '''
+
+    :param X:
+    :param Y:
+    :param startColor:
+    :param endColor:
+    :param steps:
+    :return:
+    '''
     im = Image.new(mode="RGB", size=(X, Y))
     draw = ImageDraw.Draw(im)
 
