@@ -69,6 +69,12 @@ class Conf:
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
     def class_for_name(self, class_name, module_name=None):
+        '''
+
+        :param class_name: the class we're loading
+        :param module_name: the module we're loading
+        :return: loads module and class, raises errors if wrongs
+        '''
         try:
             if module_name is None and class_name in Conf.classes:
                 module_name = Conf.classes[class_name]
@@ -87,11 +93,19 @@ class Conf:
 
 
     def time_id(self):
+        '''
+
+        :return: start time modded with the starttimeoffset
+        '''
         startTime = time.time()
         startTimeOffset = pow(10, math.ceil(math.log(7 * 24 * 60 * 60, 10)))
         return int(startTime) % (startTimeOffset)
 
     def clear_logs(self):
+        '''
+
+        :return:
+        '''
         existing_logs = os.listdir(self.logFolder)
         if len(existing_logs) == 0:
             return
@@ -170,6 +184,10 @@ class Conf:
         return fonts
 
     def _fix_fonts(self):
+        '''
+
+        :return:
+        '''
         fonts = self._search_for_fonts()
 
         self.log_from_conf('info', 'Found {} fonts'.format(len(fonts)))

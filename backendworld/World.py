@@ -20,18 +20,40 @@ class World:
         self.detailedImages = {}
 
     def step(self):
+        '''
+
+        :return: steps thru the world to get its age
+        '''
         self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
         for cell in self.tectonicCells:
             cell.step()
 
     def diverge(self, p1, p2, boundary):
+        '''
+
+        :param p1:
+        :param p2:
+        :param boundary:
+        :return:
+        '''
         pass
 
     def converge(self, p1, p2, boundary):
+        '''
+
+        :param p1:
+        :param p2:
+        :param boundary:
+        :return:
+        '''
         pass
 
     def random_wiggle(self):
+        '''
+
+        :return: mimicks the way the tectonic plates of the earth move around.
+        '''
         random_row = random.randint(0, self._dataStructure.height-1)
         random_col = random.randint(0, self._dataStructure.width-1)
         print("world data structure {} type {} height {} type {} id {}".format(self._dataStructure, type(self._dataStructure), self._dataStructure.height, type(self._dataStructure.height), hex(id(self._dataStructure.height))))
@@ -50,4 +72,8 @@ class World:
         # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 
     def access_data_struct(self):
+        '''
+
+        :return: shows us the datastructure
+        '''
         return self._dataStructure
