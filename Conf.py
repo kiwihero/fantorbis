@@ -104,7 +104,7 @@ class Conf:
     def clear_logs(self):
         '''
 
-        :return:
+        :return: removes logs starting with the oldest and removes logs that over a week old.
         '''
         existing_logs = os.listdir(self.logFolder)
         if len(existing_logs) == 0:
@@ -121,6 +121,11 @@ class Conf:
             existing_logs.remove(oldest)
 
     def make_necessary_folders(self, given_folders=None):
+        '''
+
+        :param given_folders: folder that it is given to check
+        :return: if the folders needed aren't here makes them.
+        '''
         if type(given_folders) is str:
             given_folders = [given_folders]
         elif given_folders is None:
@@ -136,6 +141,12 @@ class Conf:
                 pass
 
     def config_log(self, level=logging.DEBUG, filename=None):
+        '''
+
+        :param level: the level the config log thing is at
+        :param filename: filename checking to see if it is there
+        :return: if the log isn't there makes it
+        '''
         if filename is None:
             filename = self.logfilename
         if '.log' not in filename:
@@ -146,11 +157,23 @@ class Conf:
                             format='%(asctime)s | %(name)s | %(levelname)s | %(message)s')
 
     def log_from_conf(self, level, message):
+        '''
+
+        :param level: different levels of things that could be logged.
+        :param message: the message that goes with the thing logged that has happeend.
+        :return: checks log and shows what status and message of it are
+        '''
         levels = {'critical': logging.critical, 'error':logging.error, 'warning':logging.warning, 'info':logging.info, 'debug':logging.debug}
         if level in levels:
             levels[level](message)
 
     def set_font(self, fontfile, size):
+        '''
+
+        :param fontfile: file font is stored in
+        :param size: size of the file
+        :return: sets font does error checking if it isn't found, sets the fontfile& size.
+        '''
         try:
             fnt = ImageFont.truetype(fontfile, size)
         except OSError:
@@ -163,6 +186,13 @@ class Conf:
 
 
     def _search_for_fonts(self, given_location=None, font_extensions=None, ignore_dot_files=True):
+        '''
+
+        :param given_location: the location given that we looking in for the font
+        :param font_extensions: if there are any font extensions (there are none right now)
+        :param ignore_dot_files: files to be ignored (right now set to none)
+        :return: searches for fonts, returns errors if no fonts are found.
+        '''
         fonts = {}
         if font_extensions is None:
             font_extensions = self.fontExtensions
@@ -186,7 +216,7 @@ class Conf:
     def _fix_fonts(self):
         '''
 
-        :return:
+        :return:shows the fonts that have been found & where
         '''
         fonts = self._search_for_fonts()
 
