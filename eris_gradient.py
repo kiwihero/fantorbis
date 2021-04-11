@@ -7,12 +7,12 @@ Highly adapted from Eri's code
 def gradientDraw(X,Y,startColor,endColor,steps):
     '''
 
-    :param X:
-    :param Y:
-    :param startColor:
-    :param endColor:
-    :param steps:
-    :return:
+    :param X: x variable
+    :param Y: y variable
+    :param startColor: color starting with
+    :param endColor: color ending with
+    :param steps: how many times it divides and how long it goes to.
+    :return: draws a gradient
     '''
     im = Image.new(mode="RGB", size=(X, Y))
     draw = ImageDraw.Draw(im)
@@ -38,6 +38,13 @@ def gradientDraw(X,Y,startColor,endColor,steps):
     im.show()
 
 def make_gradient(startColor,endColor,steps):
+    '''
+
+    :param startColor: color we start it with
+    :param endColor: color ends with
+    :param steps: the amount of times it loops thru gradient
+    :return: makes and shows the gradient
+    '''
     full_gradient = []
     # print("start {}, end {}".format(startColor,endColor))
     R = startColor[0]
