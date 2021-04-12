@@ -1,11 +1,12 @@
 from backendworld.WorldAttribute import WorldAttribute
 from Position import Position
+from Vector import Vector
 
 class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: float = 0,
+    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: Vector = 0,
                  **kwargs):
         self.age = 0
         self.height = starting_height
