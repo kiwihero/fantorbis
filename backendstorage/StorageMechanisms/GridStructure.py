@@ -76,9 +76,6 @@ class GridStructure(ArrayStructure):
         :param relative: Whether the destination position is relative to the current position or absolute
         :return:
         """
-        # TODO:
-        #  Somewhere (not in this function, possibly not even in this class),
-        #  there needs to be logic to wrap positions when moving cells
 
         # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
