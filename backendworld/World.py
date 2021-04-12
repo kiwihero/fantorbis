@@ -31,7 +31,7 @@ class World:
 
     def diverge(self, p1, p2, boundary):
         '''
-        TODO
+        TODO: Divergence
         :param p1: First plate
         :param p2: Second plate
         :param boundary: Boundary of p1 and p2
@@ -41,7 +41,7 @@ class World:
 
     def converge(self, p1, p2, boundary):
         '''
-        TODO
+        TODO: Convergence
         :param p1: First plate
         :param p2: Second plate
         :param boundary: Boundary of p1 and p2

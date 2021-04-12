@@ -36,7 +36,9 @@ class Cell:
         print("world cell args", self.world_cell_args)
         self.dataStorageContainer = ds_holder
         # self.world_cell_args['data_structure_location'] = self.dataStoragePosition
-        # TODO: Keeping track of & updating cells vs vertices, in one of the other
+        # TODO:
+        #  PRIORITY 1
+        #  Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
         if type(world_cell) is str:
             self.world_cell_class = conf.class_for_name(world_cell)
