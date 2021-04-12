@@ -5,9 +5,11 @@ class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, **kwargs):
+    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: float = 0,
+                 **kwargs):
         self.age = 0
         self.height = starting_height
+        self.velocity = starting_velocity
         self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
         self._updateWorldSet()
