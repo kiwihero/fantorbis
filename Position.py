@@ -9,7 +9,8 @@ class Position:
         self.x = x
         self.y = y
 
-    def change_position(self, position_object: 'Position' = None, x: int = 0, y: int = 0):
+    def change_position(self, position_object: 'Position' = None, x: int = 0, y: int = 0, wrap_x: int = None,
+                        wrap_y: int = None):
         """
         Relative movement
         Can give either x and y, or another position object
@@ -24,6 +25,14 @@ class Position:
         else:
             self.x += x
             self.y += y
+        if wrap_x is not None and self.x >= wrap_x:
+            # print("given x",self.x)
+            self.x = self.x % wrap_x
+            # print("wrapped x",self.x)
+            # raise Exception
+        if wrap_y is not None and self.y >= wrap_y:
+            self.y = self.y % wrap_y
+            # raise Exception
         return self
 
     def set_position(self, position_object: 'Position' = None, x: int = None, y: int = None):

@@ -26,7 +26,7 @@ class GridStructure(ArrayStructure):
 
         self.cellClassName = 'Cell'
         self.cellClass = self.conf.class_for_name(self.cellClassName)
-        self.cellClassArgs = {'conf': self.conf, 'world_cell': 'TectonicCell', 'include_TwoDimensionalArray_pos': True}
+        self.cellClassArgs = {'conf': self.conf, 'world_cell': 'TectonicCell', 'include_TwoDimensionalArray_pos': True, 'ds_holder':self}
         self.vertexClassName = 'VertexPoint'
         self.vertexClass = self.conf.class_for_name(self.vertexClassName)
         self.CellStorage = TwoDimensionalArray(rows=self.height, cols=self.width, createElem=self.cellClass, createElemKwargs = self.cellClassArgs)
@@ -85,9 +85,9 @@ class GridStructure(ArrayStructure):
         old_position = cell.dataStoragePosition
 
         if relative is True:
-            destination.change_position(cell.dataStoragePosition)
+            destination.change_position(cell.dataStoragePosition,wrap_x=self.width,wrap_y=self.height)
         print("cell to be moved: old position {} new position {}".format(old_position, destination))
-        cell.ds_pos = destination
+        cell.ds_pos = destination.change_position(wrap_x=self.width,wrap_y=self.height)
         self.CellStorage[destination.y][destination.x] = cell
         new_cellClassArgs = self.cellClassArgs.copy()
         if 'include_TwoDimensionalArray_pos' in self.cellClassArgs:
