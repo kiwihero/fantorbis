@@ -1,14 +1,15 @@
 from backendworld.WorldAttribute import WorldAttribute
 from Position import Position
-from backendstorage.Vertices.VertexPoint import VertexPoint
+from backendstorage.Vertices.Vertex import Vertex
 
 class TectonicBoundary(WorldAttribute):
-    # TODO: Needs logic to maintain self._dataStorageVertices depending on Cells / TectonicCells
+    # TODO:
+    #  PRIORITY 1
+    #  Needs logic to maintain self._dataStorageVertices depending on Cells / TectonicCells
     """
         A boundary dividing TectonicPlates within a world
     """
     def __init__(self, **kwargs):
-
         self.originVertex = None
         self.destinationVertex = None
         self.tectonicCells = set()
@@ -23,7 +24,9 @@ class TectonicBoundary(WorldAttribute):
         :param dest: Boolean - setting destination
         :return:
         """
-        # TODO: Needs logic to apply this change to the rest of the data storage
+        # TODO:
+        #  PRIORITY 1
+        #  Needs logic to apply this change to the rest of the data storage
         #  Use with caution right now
         if orig == True:
             self.originVertex = pt
