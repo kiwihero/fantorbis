@@ -2,7 +2,7 @@ from Conf import Conf
 import random
 from Position import Position
 
-# TODO: THIS FILE NEEDS DOCSTRINGS
+
 #me doing this not anyone else
 class World:
     def __init__(self):
@@ -21,8 +21,8 @@ class World:
 
     def step(self):
         '''
-
-        :return: steps thru the world to get its age
+        A single step in time
+        :return:
         '''
         self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
@@ -31,28 +31,29 @@ class World:
 
     def diverge(self, p1, p2, boundary):
         '''
-
-        :param p1:
-        :param p2:
-        :param boundary:
+        TODO
+        :param p1: First plate
+        :param p2: Second plate
+        :param boundary: Boundary of p1 and p2
         :return:
         '''
         pass
 
     def converge(self, p1, p2, boundary):
         '''
-
-        :param p1:
-        :param p2:
-        :param boundary:
+        TODO
+        :param p1: First plate
+        :param p2: Second plate
+        :param boundary: Boundary of p1 and p2
         :return:
         '''
         pass
 
     def random_wiggle(self):
         '''
-
-        :return: mimicks the way the tectonic plates of the earth move around.
+        Wiggle a random cell one step
+        Testing function, not for production use
+        :return:
         '''
         random_row = random.randint(0, self._dataStructure.height-1)
         random_col = random.randint(0, self._dataStructure.width-1)
@@ -73,7 +74,7 @@ class World:
 
     def access_data_struct(self):
         '''
-
-        :return: shows us the datastructure
+        Helper function
+        :return: World._dataStructure
         '''
         return self._dataStructure
