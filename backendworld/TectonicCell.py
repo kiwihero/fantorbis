@@ -2,15 +2,19 @@ from backendworld.WorldAttribute import WorldAttribute
 from Position import Position
 from Vector import Vector
 
+
 class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: Vector = 0,
+    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: Vector = None,
                  **kwargs):
         self.age = 0
         self.height = starting_height
-        self.velocity = starting_velocity
+        if starting_velocity is None:
+            self.velocity = Vector(Position(0,0),Position(0,0))
+        else:
+            self.velocity = starting_velocity
         self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
         self._updateWorldSet()
@@ -33,12 +37,16 @@ class TectonicCell(WorldAttribute):
         :return:
         """
         self._updateWorldSet()
+        if self.velocity.magnitude() > 0:
+            print("CELL HAS EXISTING VELOCITY {}".format(self.velocity))
+            self.move(self.velocity.x_component(),self.velocity.y_component())
         if self.age == self.world.age:
             if self.world is not None:
                 self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
             else:
                 print("ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD\nAND TO TOP IT OFF, YOU NEVER GAVE YOUR CELLS A WORLD FOR THIS MESSAGE TO BE LOGGED".format(hex(id(self))))
-            # TODO: Can a bit of world be older than the world? Meteors??? Creationists???
+                raise Exception
+                # TODO: Can a bit of world be older than the world? Meteors??? Creationists???
         else:
             self.age += 1
 
@@ -54,7 +62,10 @@ class TectonicCell(WorldAttribute):
         if self._dataStructureLocation is None:
             self.world.conf.log_from_conf('error', 'Cell is not associated with any data structure element')
         else:
-            self.world._dataStructure.move_cell(self._dataStructureLocation, relative=(dirx,diry))
+            new_pos = Position(dirx, diry)
+            print("self._dataStructureLocation",self._dataStructureLocation)
+            self.world._dataStructure.move_cell(self._dataStructureLocation, destination=new_pos, relative=True)
+            # raise Exception
 
     def __str__(self):
         return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)

@@ -4,6 +4,7 @@ from backendstorage.CustomExceptions import *
 # from backendstorage.Vertices.VertexPoint import VertexPoint
 from backendstorage.Cells.Cell import Cell
 from Position import Position
+from Vector import Vector
 
 class GridStructure(ArrayStructure):
     def __init__(self, width=2, height=2, **kwargs):
@@ -68,22 +69,34 @@ class GridStructure(ArrayStructure):
         self.width = self.CellStorage.cols
         self.height = self.CellStorage.rows
 
-    def move_cell(self, cell: Cell, destination: Position, relative: bool = False):
+    def move_cell(self, cell: Cell, destination: Position, relative: bool = False, change_velocity: bool = False):
         """
         Move a given cell to a position within GridStructure
         :param cell: Cell to be moved
         :param destination: Where the cell should be moved to
         :param relative: Whether the destination position is relative to the current position or absolute
+        :param change_velocity: Should the velocity of the cell be changed by the move
         :return:
         """
 
         # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
+        if type(cell) is Position:
+            cell = self.CellStorage[cell.x][cell.y]
+            # TODO: Are my x and y backwards?
+        print("given cell {}".format(type(cell)))
         old_position = cell.dataStoragePosition
 
         if relative is True:
             destination.change_position(cell.dataStoragePosition,wrap_x=self.width,wrap_y=self.height)
         print("cell to be moved: old position {} new position {}".format(old_position, destination))
+        if change_velocity is True:
+            # print("cell old velocity {}".format(cell.worldCell.velocity))
+            new_velocity = Vector(old_position,destination)
+            # new_velocity.recenter()
+            cell.worldCell.velocity = new_velocity
+            # print("cell new velocity {}".format(new_velocity))
+            # raise Exception
         cell.ds_pos = destination.change_position(wrap_x=self.width,wrap_y=self.height)
         self.CellStorage[destination.y][destination.x] = cell
         new_cellClassArgs = self.cellClassArgs.copy()

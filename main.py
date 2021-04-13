@@ -22,13 +22,23 @@ print('\n'+"DONE PRINTING WORLD DATA STRUCTURE CONTENTS"+'\n'+'-'*50)
 # for elem in w1._dataStructure:
 #     print("Elem",elem)
 draw_world(w1, True)
+
+for x in range(3):
+    w1._dataStructure.subdivide()
+    draw_world(w1, True)
+    w1.step()
 for x in range(20):
     # if x >=4:
     #     break
+
+    # if x % 3 == 0 and x < 10:
+    #     w1._dataStructure.subdivide()
+    # else:
+    #     w1.random_wiggle()
+
     if x % 3 == 0 and x < 10:
-        w1._dataStructure.subdivide()
-    else:
         w1.random_wiggle()
+
     draw_world(w1, True)
     w1.step()
 

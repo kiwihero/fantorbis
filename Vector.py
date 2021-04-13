@@ -1,11 +1,13 @@
 import math
 from Position import Position
+
+
 class Vector:
     """
     The vector functionality
     """
 
-    def __init__(self, orig:Position, dest:Position):
+    def __init__(self, orig: Position, dest: Position):
         self.orig = orig
         self.dest = dest
 
@@ -16,8 +18,16 @@ class Vector:
         """
         x = self.x_magnitude()
         y = self.y_magnitude()
-        mag = math.sqrt(pow(x,2)+pow(y,2))
+        mag = math.sqrt(pow(x, 2) + pow(y, 2))
         return abs(mag)
+
+    def set_magnitude(self, magnitude):
+        angle = self.angle(degrees=False)
+        x_component = math.cos(angle)*magnitude
+        y_component = math.sin(angle)*magnitude
+        dest = Position(self.orig.x+x_component, self.orig.y+y_component)
+        self.dest = dest
+
 
     def x_magnitude(self):
         """
@@ -39,7 +49,7 @@ class Vector:
         """
         orig = self.orig.x
         dest = self.dest.x
-        return orig-dest
+        return orig - dest
 
     def y_component(self):
         """
@@ -48,22 +58,28 @@ class Vector:
         """
         orig = self.orig.y
         dest = self.dest.y
-        return orig-dest
+        return orig - dest
 
     def __str__(self):
-        return '{} --> {}'.format(self.orig,self.dest)
+        return '{} --> {}'.format(self.orig, self.dest)
 
-    def angle(self):
+    def angle(self, degrees: bool = True):
         """
         Angle of vector
+        :param degrees: Boolean - return as degrees or radians
         :return:
         """
-        #tangent = opposite/adjacent
+        # tangent = opposite/adjacent
+        if self.y_component() == 0 or self.x_component() == 0:
+            return 0
         tan = self.y_component() / self.x_component()
         angle = math.atan(tan)
-        return math.degrees(angle)
+        if degrees == True:
+            return math.degrees(angle)
+        else:
+            return angle
 
-    def recenter(self, origin:Position=None):
+    def recenter(self, origin: Position = None):
         """
         Recenter the origin to a given point or 0,0
         :param origin: New origin
@@ -92,19 +108,20 @@ class Vector:
 
 
 import random
+
 mag = 10
-x1 = random.randint(-1*mag,mag)
-x2 = random.randint(-1*mag,mag)
-x3 = random.randint(-1*mag,mag)
-y1 = random.randint(-1*mag,mag)
-y2 = random.randint(-1*mag,mag)
-y3 = random.randint(-1*mag,mag)
-origin = Position(x1,y1)
-dest = Position(x2,y2)
-v1 = Vector(origin,dest)
-print("V1 {}\nMagnitude {}\nAngle {}".format(v1,v1.magnitude(),v1.angle()))
+x1 = random.randint(-1 * mag, mag)
+x2 = random.randint(-1 * mag, mag)
+x3 = random.randint(-1 * mag, mag)
+y1 = random.randint(-1 * mag, mag)
+y2 = random.randint(-1 * mag, mag)
+y3 = random.randint(-1 * mag, mag)
+origin = Position(x1, y1)
+dest = Position(x2, y2)
+v1 = Vector(origin, dest)
+print("V1 {}\nMagnitude {}\nAngle {}".format(v1, v1.magnitude(), v1.angle()))
 v1.recenter()
-print("Recentered V1 {} (angle: {}, magnitude {})".format(v1,v1.angle(),v1.magnitude()))
-o1 = Position(x3,y3)
+print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))
+o1 = Position(x3, y3)
 v1.recenter(o1)
-print("Recentered V1 {} (angle: {}, magnitude {})".format(v1,v1.angle(),v1.magnitude()))
+print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))

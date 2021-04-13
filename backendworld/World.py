@@ -26,7 +26,7 @@ class World:
         '''
         self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
-        for cell in self.tectonicCells:
+        for cell in self.tectonicCells.copy():
             cell.step()
 
     def diverge(self, p1, p2, boundary):
@@ -68,7 +68,7 @@ class World:
         rely = random.randint(-1,1)
         random_position = Position(relx, rely)
         print("Moving random cell to {}".format(random_position))
-        self._dataStructure.move_cell(random_cell, destination=random_position, relative=True)
+        self._dataStructure.move_cell(random_cell, destination=random_position, relative=True, change_velocity=True)
         print("New info for random cell {}".format(random_cell))
         # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 
