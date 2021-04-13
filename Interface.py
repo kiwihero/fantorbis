@@ -48,18 +48,25 @@ else:
             area = Text(self)
             # area = Image.open(self)
             area.grid(row=1, column=0, columnspan=2, rowspan=4,
-                      padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
+                   padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
 
-            create_button = ttk.Button(self, text='Create World', command=World())
-            create_button.grid(row=1, column=3)
+            draw_icon = PhotoImage(file='images/pencil.png')
+            self.draw_icon = draw_icon
+            create_button = tk.Button(self, image=draw_icon,  width=50, height=50, command=World())
+            create_button.grid(row=2, column=3)
 
-            step_button = ttk.Button(self, text='Step World', command=World.step(w1))
+            step_button = tk.Button(self, text='Step World', command=World.step(w1))
             step_button.grid(row=3, column=3)
 
-            saveMap_button = ttk.Button(self, text='Save Map', command=gif_world(w1))
+            save_icon = PhotoImage(file='images/download.png')
+            self.save_icon = save_icon
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=gif_world(w1))
             saveMap_button.grid(row=4, column=3)
 
-            exit_button = ttk.Button(self, text='Exit', command=lambda: self.quit())
+
+            exit_icon = PhotoImage(file='images/exit.png')
+            self.exit_icon = exit_icon
+            exit_button = tk.Button(self, image=exit_icon, width=50, height=50, command=lambda: self.quit())
             exit_button.grid(row=5, column=3)
 
 
