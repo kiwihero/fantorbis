@@ -21,6 +21,14 @@ class Vector:
         mag = math.sqrt(pow(x, 2) + pow(y, 2))
         return abs(mag)
 
+    def set_magnitude(self, magnitude):
+        angle = self.angle(degrees=False)
+        x_component = math.cos(angle)*magnitude
+        y_component = math.sin(angle)*magnitude
+        dest = Position(self.orig.x+x_component, self.orig.y+y_component)
+        self.dest = dest
+
+
     def x_magnitude(self):
         """
 
@@ -62,6 +70,8 @@ class Vector:
         :return:
         """
         # tangent = opposite/adjacent
+        if self.y_component() == 0 or self.x_component() == 0:
+            return 0
         tan = self.y_component() / self.x_component()
         angle = math.atan(tan)
         if degrees == True:

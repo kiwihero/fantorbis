@@ -2,7 +2,10 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
 import os
+from Position import Position
+from Vector import Vector
 import eris_gradient
+import copy
 
 # TODO: THIS FILE NEEDS DOCSTRINGS
 #  Kitty doing this soon
@@ -50,6 +53,26 @@ def draw_world(world, add_text: bool =False):
     else:
         world.conf.log_from_conf('error', "Cell shape not known, could not draw world")
         return
+
+    vector_locs = _velocity_vectors(im, cellstruct, locs,struct.cellShape)
+    print("VECTOR LOCS {}".format(vector_locs))
+    for vector_row in vector_locs:
+        for vector in vector_row:
+            print("vector {}".format(vector),vector[1])
+            if vector[0] == 'circle':
+                # print("CIRCLE at {}".format(vector[1]))
+                radius = 10
+                bounding = [vector[1].x-radius,vector[1].y-radius,vector[1].x+radius,vector[1].y+radius]
+                # print("bounding",bounding)
+                draw.ellipse(bounding, fill=255, width=5)
+            if vector[0] == 'line':
+                print("LINE at {}".format(vector[1]))
+                bounding = [vector[1].orig.x, vector[1].orig.y, vector[1].dest.x, vector[1].dest.y]
+                print("bounding", bounding)
+                draw.line(bounding, fill=100, width=5)
+                # raise Exception
+
+    # raise Exception
 
     world.images[world.age] = im
 
@@ -335,6 +358,38 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
     print("square dims", square_dims, "separation", separation)
     print("cell locations",cell_locations)
     return cell_locations
+
+def _velocity_vectors(image, cellstructure, cell_locations, shape):
+    print("Velocity_vectors given image {}, cellstructure {} \ntype {}\nlocations {}".format(image,cellstructure, type(cellstructure),cell_locations))
+    locs = []
+    i=0
+    for loc_row in cell_locations:
+        j=0
+        vel_row = []
+        print("loc row",loc_row)
+        for loc in loc_row:
+            print("loc",loc)
+            cell = cellstructure[i][j]
+            center = Position(loc[0]+(loc[2]-loc[0])/2,loc[1]+(loc[3]-loc[1])/2)
+            print("VELOCITY",str(cell.worldCell.velocity.magnitude()))
+            if cell.worldCell.velocity.magnitude() == 0:
+                vel_row.append(['circle',center])
+            else:
+                line_vect = copy.deepcopy(cell.worldCell.velocity)
+                line_vect.recenter(center)
+                line_vect.set_magnitude(20)
+                vel_row.append(['line', line_vect])
+            print("CENTER {}\nVECTOR {}".format(center,cell.worldCell.velocity))
+            print("{},{}: cell {}\nLoc {}".format(i,j,cell,loc))
+            j += 1
+        i += 1
+        locs.append(vel_row)
+    return locs
+
+
+
+    # raise Exception
+
 
 class GenericError(Exception):
     pass
