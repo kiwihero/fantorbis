@@ -60,7 +60,9 @@ class GridStructure(ArrayStructure):
         (for a total of four new cells in the place of every one original cell)
         :return:
         """
-        # TODO: More documentation needed on attributes of newly created cells,
+        # TODO:
+        #  ANNE THIS IS YOUR PROBLEM IT'S YOUR GROSS CHOICES THAT MEAN EVEN YOU DON'T KNOW THE ANSWER TO THIS
+        #  More documentation needed on attributes of newly created cells,
         #  such as what features are inherited and what's default initialized values
 
         # TODO: Subdivide vertices as well as columns
@@ -82,7 +84,7 @@ class GridStructure(ArrayStructure):
         # TODO: Somewhere, cell needs to change in world not just data storage
         #  use (make?) functions from (TectonicCell?) to change location within world coordinates
         if type(cell) is Position:
-            cell = self.CellStorage[cell.x][cell.y]
+            cell = self.CellStorage[cell.y][cell.x]
             # TODO: Are my x and y backwards?
         print("given cell {}".format(type(cell)))
         old_position = cell.dataStoragePosition

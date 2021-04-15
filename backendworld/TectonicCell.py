@@ -63,6 +63,7 @@ class TectonicCell(WorldAttribute):
             self.world.conf.log_from_conf('error', 'Cell is not associated with any data structure element')
         else:
             new_pos = Position(dirx, diry)
+            print("Moving TectonicCell to new position {}".format(new_pos))
             print("self._dataStructureLocation",self._dataStructureLocation)
             self.world._dataStructure.move_cell(self._dataStructureLocation, destination=new_pos, relative=True)
             # raise Exception
