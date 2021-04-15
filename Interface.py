@@ -12,10 +12,10 @@ This is where the backend and ui interface
 
 from backendworld.World import *
 from PillowDisplay import draw_world, gif_world, image_world
+from tkinterGui import Login_Window
 
 import os
 import sys
-# from PIL import Image
 import PIL.Image
 import PIL.ImageTk
 from tkinter import ttk, Tk
@@ -30,12 +30,12 @@ else:
 
     # class for main window Frame
     class MainWindow(tk.Frame):
-
         def __init__(self):
             super().__init__()
 
             self.MapUI()
 
+            # area for map display
             self.map_canvas = Canvas(self)
             self.map_canvas.grid(row=1, column=0, columnspan=2, rowspan=4,
                                  padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
@@ -48,14 +48,6 @@ else:
             self.rowconfigure(3, weight=1)
             self.rowconfigure(5, pad=7)
             self.configure(bg='firebrick3')
-
-
-            # area for map display
-            # use Image.open() to load image
-            # self.map_canvas = Canvas(self)
-            # area = Image.open(self)
-            # self.map_canvas.grid(row=1, column=0, columnspan=2, rowspan=4,
-            #        padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
 
             draw_icon = PhotoImage(file='images/pencil.png')
             self.draw_icon = draw_icon
@@ -87,6 +79,18 @@ else:
             background_label = Label(self.map_canvas, image=photo_image)
             background_label.photo = photo_image
             background_label.grid()
+
+    # class for login window Frame
+    # above: from tkinterGui import Login_Window
+
+    # Still have to fix Login class so login window appears (and before interface)
+    class Login:
+        def __init__(self):
+            super().__init__(self)
+
+            self.login_win = Login_Window
+            self.login_win.mainloop()
+
 
     def main():
         root = Tk()
