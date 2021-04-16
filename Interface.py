@@ -72,7 +72,7 @@ else:
             interface_new_world = World()
             image_world(interface_new_world)
 
-            first_image_bg = PIL.Image.open('flatImages/clean/image_0.jpg')
+            first_image_bg = interface_new_world.images[0]
             first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
             photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
 
