@@ -72,7 +72,7 @@ else:
 
             save_icon = PhotoImage(file='images/download.png')
             self.save_icon = save_icon
-            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.image_world())
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: image_world(w1))
             saveMap_button.grid(row=4, column=3)
 
             exit_icon = PhotoImage(file='images/exit.png')
