@@ -38,7 +38,7 @@ else:
             # area for map display
             self.map_canvas = Canvas(self)
             self.map_canvas.grid(row=1, column=0, columnspan=2, rowspan=4,
-                                 padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
+                       padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
 
         def MapUI(self):
             self.pack(fill=tk.BOTH, expand=True)
@@ -55,12 +55,24 @@ else:
             # create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=World())
             create_button.grid(row=2, column=3)
 
+            # creating entry box
+            num_var = tk.Entry(self)
+
+            # creating a label for step value
+            step_label = tk.Label(self, text=' ', font=('calibre', 10, 'bold'))
+            step_label.grid(row=3, column=2)
+
+            # creating a entry for step value
+            step_entry = tk.Entry(self, textvariable=num_var, font=('calibre', 10, 'normal'))
+            step_entry.grid(row=3, column=3)
+
             step_button = tk.Button(self, text='Step World', command=lambda: World.step(w1))
-            step_button.grid(row=3, column=3)
+            step_button.grid(row=3, column=4)
+
 
             save_icon = PhotoImage(file='images/download.png')
             self.save_icon = save_icon
-            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: gif_world(w1))
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.image_world())
             saveMap_button.grid(row=4, column=3)
 
             exit_icon = PhotoImage(file='images/exit.png')
@@ -79,6 +91,7 @@ else:
             background_label = Label(self.map_canvas, image=photo_image)
             background_label.photo = photo_image
             background_label.grid()
+
 
     # class for login window Frame
     # above: from tkinterGui import Login_Window
