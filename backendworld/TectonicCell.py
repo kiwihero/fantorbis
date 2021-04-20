@@ -40,13 +40,14 @@ class TectonicCell(WorldAttribute):
         if self.velocity.magnitude() > 0:
             print("CELL HAS EXISTING VELOCITY {}".format(self.velocity))
             self.move(self.velocity.x_component(),self.velocity.y_component())
+        # Note the implied assumption that all elements of the world must not be older than the world
         if self.age == self.world.age:
             if self.world is not None:
                 self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
             else:
                 print("ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD\nAND TO TOP IT OFF, YOU NEVER GAVE YOUR CELLS A WORLD FOR THIS MESSAGE TO BE LOGGED".format(hex(id(self))))
                 raise Exception
-                # TODO: Can a bit of world be older than the world? Meteors??? Creationists???
+
         else:
             self.age += 1
 
