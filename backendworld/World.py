@@ -1,6 +1,9 @@
 from Conf import Conf
 import random
 from Position import Position
+# from shapely.ops import snap
+from shapely.ops import shared_paths, split
+from shapely.geometry import MultiLineString
 
 class World:
     def __init__(self):
@@ -33,6 +36,13 @@ class World:
         :param boundary: Boundary of p1 and p2
         :return:
         '''
+        forward, backward = shared_paths(p1,p2)
+        shared_bound = MultiLineString(forward,backward)
+        split_p1_bound = split(p1.boundary,shared_bound)
+        split_p2_bound = split(p2.boundary,shared_bound)
+        split_p1_bound = split_p1_bound.difference(shared_bound)
+        split_p2_bound = split_p2_bound.difference(shared_bound)
+
         pass
 
     def converge(self, p1, p2, boundary):
