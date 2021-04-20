@@ -43,7 +43,7 @@ class World:
         :param boundary: Boundary of p1 and p2
         :return:
         '''
-        pass
+        overlap = p1.intersection(p2)
 
     def random_wiggle(self):
         '''
