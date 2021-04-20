@@ -33,6 +33,9 @@ else:
         def __init__(self):
             super().__init__()
 
+            # creating entry for input
+            self.num_var = tk.Entry(self)
+
             self.MapUI()
 
             # area for map display
@@ -55,18 +58,15 @@ else:
             # create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=World())
             create_button.grid(row=2, column=3)
 
-            # creating entry box
-            num_var = tk.Entry(self)
-
             # creating a label for step value
             step_label = tk.Label(self, text=' ', font=('calibre', 10, 'bold'))
             step_label.grid(row=3, column=2)
 
             # creating a entry for step value
-            step_entry = tk.Entry(self, textvariable=num_var, font=('calibre', 10, 'normal'))
+            step_entry = tk.Entry(self, textvariable=self.num_var, font=('calibre', 10, 'normal'))
             step_entry.grid(row=3, column=3)
 
-            step_button = tk.Button(self, text='Step World', command=lambda: World.step(w1))
+            step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
             step_button.grid(row=3, column=4)
 
 
@@ -91,6 +91,14 @@ else:
             background_label = Label(self.map_canvas, image=photo_image)
             background_label.photo = photo_image
             background_label.grid()
+
+        def stepping_world(self):
+            num = self.num_var.get()
+             ## print(self.num_var.get())
+            step_world = World.step(num)
+            World.step(step_world)
+
+
 
 
     # class for login window Frame
