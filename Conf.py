@@ -17,7 +17,8 @@ class Conf:
         'Cell': 'backendstorage.Cells.Cell',
         'VertexPoint': 'backendstorage.Vertices.VertexPoint',
         'GridStructure': 'backendstorage.StorageMechanisms.GridStructure',
-        'TectonicCell': 'backendworld.TectonicCell'
+        'TectonicCell': 'backendworld.TectonicCell',
+        'ShapelyStructure': 'backendstorage.StorageMechanisms.ShapelyStructure'
 
     }
     def __init__(self):
@@ -69,12 +70,11 @@ class Conf:
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
     def class_for_name(self, class_name, module_name=None):
-        '''
-
+        """
         :param class_name: the class we're loading
         :param module_name: the module we're loading
         :return: loads module and class, raises errors if wrongs
-        '''
+        """
         try:
             if module_name is None and class_name in Conf.classes:
                 module_name = Conf.classes[class_name]

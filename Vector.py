@@ -109,19 +109,20 @@ class Vector:
 
 import random
 
-mag = 10
-x1 = random.randint(-1 * mag, mag)
-x2 = random.randint(-1 * mag, mag)
-x3 = random.randint(-1 * mag, mag)
-y1 = random.randint(-1 * mag, mag)
-y2 = random.randint(-1 * mag, mag)
-y3 = random.randint(-1 * mag, mag)
-origin = Position(x1, y1)
-dest = Position(x2, y2)
-v1 = Vector(origin, dest)
-print("V1 {}\nMagnitude {}\nAngle {}".format(v1, v1.magnitude(), v1.angle()))
-v1.recenter()
-print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))
-o1 = Position(x3, y3)
-v1.recenter(o1)
-print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))
+
+# mag = 10
+# x1 = random.randint(-1 * mag, mag)
+# x2 = random.randint(-1 * mag, mag)
+# x3 = random.randint(-1 * mag, mag)
+# y1 = random.randint(-1 * mag, mag)
+# y2 = random.randint(-1 * mag, mag)
+# y3 = random.randint(-1 * mag, mag)
+# origin = Position(x1, y1)
+# dest = Position(x2, y2)
+# v1 = Vector(origin, dest)
+# print("V1 {}\nMagnitude {}\nAngle {}".format(v1, v1.magnitude(), v1.angle()))
+# v1.recenter()
+# print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))
+# o1 = Position(x3, y3)
+# v1.recenter(o1)
+# print("Recentered V1 {} (angle: {}, magnitude {})".format(v1, v1.angle(), v1.magnitude()))

@@ -2,8 +2,6 @@ from Conf import Conf
 import random
 from Position import Position
 
-
-#me doing this not anyone else
 class World:
     def __init__(self):
         self.conf = Conf()
@@ -12,9 +10,7 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicPlates = set()
         self.tectonicCells = set()
-        print("self conf {}".format(self.conf.class_for_name('GridStructure')))
-        self._dataStructure = self.conf.class_for_name('GridStructure')(conf=self.conf)
-        print("data structure type {}".format(self._dataStructure))
+        self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf)
         self.images = {}
         self.annotatedImages = {}
         self.detailedImages = {}
