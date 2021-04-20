@@ -1,4 +1,5 @@
 from typing import Union, Type
+from copy import copy, deepcopy
 
 class Position:
     """
@@ -58,3 +59,10 @@ class Position:
 
     def __copy__(self):
         return Position(self.x, self.y)
+
+    def __deepcopy__(self, memodict=None):
+        if memodict is None:
+            memodict = dict()
+        x = deepcopy(self.x)
+        y = deepcopy(self.y)
+        return Position(x,y)

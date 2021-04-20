@@ -11,11 +11,11 @@ class TectonicCell(WorldAttribute):
                  **kwargs):
         self.age = 0
         self.height = starting_height
+        self._dataStructureLocation = data_structure_location
         if starting_velocity is None:
-            self.velocity = Vector(Position(0,0),Position(0,0))
+            self.velocity = Vector(self._dataStructureLocation,self._dataStructureLocation)
         else:
             self.velocity = starting_velocity
-        self._dataStructureLocation = data_structure_location
         super(TectonicCell, self).__init__(**kwargs)
         self._updateWorldSet()
 
@@ -39,7 +39,7 @@ class TectonicCell(WorldAttribute):
         self._updateWorldSet()
         if self.velocity.magnitude() > 0:
             print("CELL HAS EXISTING VELOCITY {}".format(self.velocity))
-            self.move(self.velocity.x_component(),self.velocity.y_component())
+            self.move(self.velocity.y_component(),self.velocity.x_component())
         # Note the implied assumption that all elements of the world must not be older than the world
         if self.age == self.world.age:
             if self.world is not None:
@@ -76,6 +76,7 @@ class TectonicCell(WorldAttribute):
         new_cell = TectonicCell(data_structure_location=self._dataStructureLocation, world=self.world)
         # new_cell = self.copy_attrs(new_cell)
         new_cell.age = self.age
+        new_cell.velocity = self.velocity.__copy__()
         print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
         print("done updating after copy")

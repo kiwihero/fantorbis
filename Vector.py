@@ -102,8 +102,8 @@ class Vector:
     def __deepcopy__(self, memodict={}):
         # TODO: Make sure the memo dict is correct to deepcopy a thing
         #  Should I still use __copy__() on the Positions?
-        orig = self.orig.__copy__()
-        dest = self.dest.__copy__()
+        orig = self.orig.__deepcopy__(memodict)
+        dest = self.dest.__deepcopy__(memodict)
         return Vector(orig, dest)
 
 

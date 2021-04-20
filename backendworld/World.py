@@ -69,6 +69,7 @@ class World:
         random_position = Position(relx, rely)
         print("Moving random cell to {}".format(random_position))
         self._dataStructure.move_cell(random_cell, destination=random_position, relative=True, change_velocity=True)
+        # raise Exception
         print("New info for random cell {}".format(random_cell))
         # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 

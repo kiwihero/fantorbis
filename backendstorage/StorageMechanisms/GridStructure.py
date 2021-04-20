@@ -93,13 +93,17 @@ class GridStructure(ArrayStructure):
             destination.change_position(cell.dataStoragePosition,wrap_x=self.width,wrap_y=self.height)
         print("cell to be moved: old position {} new position {}".format(old_position, destination))
         if change_velocity is True:
-            # print("cell old velocity {}".format(cell.worldCell.velocity))
+            print("cell old velocity {}".format(cell.worldCell.velocity))
+            # new_velocity = Vector(cell.worldCell.velocity.orig,destination)
             new_velocity = Vector(old_position,destination)
-            # new_velocity.recenter()
+            new_velocity.recenter()
             cell.worldCell.velocity = new_velocity
-            # print("cell new velocity {}".format(new_velocity))
+            print("cell new velocity {}".format(new_velocity))
             # raise Exception
         cell.ds_pos = destination.change_position(wrap_x=self.width,wrap_y=self.height)
+        print("Now that position has moved,")
+        print("cell new velocity {}".format(cell.worldCell.velocity))
+        print("Cell destination changed to {}".format(cell.ds_pos))
         self.CellStorage[destination.y][destination.x] = cell
         new_cellClassArgs = self.cellClassArgs.copy()
         if 'include_TwoDimensionalArray_pos' in self.cellClassArgs:
