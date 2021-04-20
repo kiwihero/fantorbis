@@ -14,4 +14,4 @@ class ShapelyStructure(ArrayStructure):
         :param kwargs:
         """
         super(ShapelyStructure, self).__init__(**kwargs)
-        self.CellStorage = gpd.GeoDataFrame(columns=['Name', 'Age'])
+        self.CellStorage = gpd.GeoDataFrame(columns=['TectonicCell'])
