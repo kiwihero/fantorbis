@@ -1,4 +1,5 @@
 import geopandas as gpd
+import math
 
 from backendstorage.StorageMechanisms.ArrayStructure import *
 from backendstorage.Cells.ShapelyCell import ShapelyCell
@@ -17,7 +18,8 @@ class ShapelyStructure(ArrayStructure):
         super(ShapelyStructure, self).__init__(**kwargs)
         first_cell = ShapelyCell(
             conf=self.conf,
-            shell=[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]],
+            # shell=[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]],
+            shell=[[0, 0], [0, 1], [math.sqrt(3)/2, .5], [0, 0]],
             world_cell_args=dict([('world', self.conf.world)]),
             world_cell='TectonicCell'
         )

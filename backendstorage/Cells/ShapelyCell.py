@@ -34,6 +34,7 @@ class ShapelyCell(Polygon):
         """
         print("Starting subdivision on {}".format(self))
         new_polys = self._subdivide_square()
+        new_polys = self._subdivide_triangle()
         return new_polys
         # new_world_cell = copy(self.world_cell)
         # new_cell = ShapelyCell(
@@ -122,24 +123,26 @@ class ShapelyCell(Polygon):
         for i, p in enumerate(perim.coords):
             points.append(p)
         new_points = []
+        midpoints = []
         for i in range(1,len(points)):
             midpoint = ((points[i-1][0]+points[i][0])/2,(points[i-1][1]+points[i][1])/2)
             print("midpoint {}".format(midpoint))
             print("\t{} {} {}".format(points[i-1],midpoint,points[i]))
             new_points.append(points[i-1])
             new_points.append(midpoint)
+            midpoints.append(midpoint)
             # new_points.append(points[i])
         print("NEW POINTS")
         x = -1
-        triples = []
+        triples = [midpoints]
         triple = []
         while x < len(new_points):
         # for x in range(-1,len(new_points)):
 
             print("\t{} {}".format(x, new_points[x]))
             triple.append(new_points[x])
-            if len(triple) == 2:
-                triple.append((ctr.x,ctr.y))
+            if len(triple) == 3:
+                # triple.append((ctr.x,ctr.y))
                 triples.append(triple)
                 triple = [new_points[x]]
             #     print("\t {} {}".format((x+2)%3,ctr))
