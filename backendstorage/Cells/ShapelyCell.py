@@ -11,6 +11,7 @@ class ShapelyCell(Polygon):
 
     def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, **kwargs):
         super(ShapelyCell, self).__init__(**kwargs)
+        # print("shapely cell geometry {}".format(self.BaseGeometry()))
         self.conf = conf
         if world_cell_args is None:
             self.world_cell_args = {}
@@ -32,7 +33,7 @@ class ShapelyCell(Polygon):
         :return:
         """
         print("Starting subdivision on {}".format(self))
-        new_polys = self._subdivide_triangle()
+        new_polys = self._subdivide_square()
         return new_polys
         # new_world_cell = copy(self.world_cell)
         # new_cell = ShapelyCell(
@@ -87,11 +88,18 @@ class ShapelyCell(Polygon):
             #     print("\t{} {}".format(x, new_points[x]))
             x+=1
         print("Triples")
-        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell'])
+        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell','geometry','pos'])
         new_polys = []
         for trp in triples:
-            new_poly = ShapelyCell(conf=self.conf,world_cell=self.world_cell,world_cell_args=self.world_cell_args,shell=trp)
-            new_polys.append({'ShapelyCell':new_poly,'TectonicCell':new_poly.world_cell})
+            new_poly = ShapelyCell(
+                conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
+            )
+            new_polys.append({
+                'ShapelyCell': new_poly,
+                'TectonicCell': new_poly.world_cell,
+                'geometry': self,
+                'pos': new_poly.centroid.x*new_poly.centroid.y
+            })
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2],trp[3])
         return new_polys
@@ -138,11 +146,18 @@ class ShapelyCell(Polygon):
             #     print("\t{} {}".format(x, new_points[x]))
             x+=1
         print("Triples")
-        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell'])
+        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell', 'geometry', 'pos'])
         new_polys = []
         for trp in triples:
-            new_poly = ShapelyCell(conf=self.conf,world_cell=self.world_cell,world_cell_args=self.world_cell_args,shell=trp)
-            new_polys.append({'ShapelyCell':new_poly,'TectonicCell':new_poly.world_cell})
+            new_poly = ShapelyCell(
+                conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
+            )
+            new_polys.append({
+                'ShapelyCell': new_poly,
+                'TectonicCell': new_poly.world_cell,
+                'geometry': self,
+                'pos': new_poly.centroid.x*new_poly.centroid.y
+            })
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2])
         return new_polys
@@ -150,5 +165,4 @@ class ShapelyCell(Polygon):
 
     def _to_points(self, feature, poly):
         return {feature: poly.exterior.coords}
-
 

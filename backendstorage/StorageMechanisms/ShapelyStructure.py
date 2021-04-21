@@ -22,8 +22,13 @@ class ShapelyStructure(ArrayStructure):
             world_cell='TectonicCell'
         )
         self.CellStorage = gpd.GeoDataFrame(
-            [[first_cell,first_cell.world_cell]],
-            columns=['ShapelyCell', 'TectonicCell']
+            [[
+                first_cell,
+                first_cell.world_cell,
+                first_cell,
+                first_cell.centroid.x*first_cell.centroid.y
+            ]],
+            columns=['ShapelyCell', 'TectonicCell', 'geometry', 'pos']
         )
 
 
@@ -35,7 +40,8 @@ class ShapelyStructure(ArrayStructure):
         """
         self.CellStorage = self.CellStorage.append({
             'TectonicCell': shp_cell.world_cell,
-            'ShapelyCell': shp_cell
+            'ShapelyCell': shp_cell,
+            'geometry': shp_cell._geom()
         })
 
     def subdivide(self):
@@ -45,7 +51,7 @@ class ShapelyStructure(ArrayStructure):
         :return:
         """
         n = [x.subdivide() for x in self.CellStorage['ShapelyCell']]
-        self.CellStorage = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell'])
+        self.CellStorage = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell','geometry','pos'])
         for m in n:
             print("m",len(m),m)
             self.CellStorage = self.CellStorage.append(m)
