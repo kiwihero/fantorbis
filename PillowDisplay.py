@@ -2,10 +2,22 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageFont
 import numbers
 import os
+from Position import Position
+from Vector import Vector
 import eris_gradient
+import copy
+
+# TODO: THIS FILE NEEDS DOCSTRINGS
+#  Kitty doing this soon
 
 
-def draw_world(world, add_text=False):
+def draw_world(world, add_text: bool =False):
+    '''
+
+    :param world: the World object that is being drawn.
+    :param add_text: Boolean determining whether or not age should be written on the drawing.
+    :return: he draws the world, however he does not show you the world. he draws it.
+    '''
     canvas_width = world.conf.imageWidth
     canvas_height = world.conf.imageHeight
 
@@ -16,20 +28,22 @@ def draw_world(world, add_text=False):
 
 
 
+
     if struct.cellShape == 'rectangle':
-        cellstruct = struct
+        cellstruct = struct.CellStorage
         gradient_ends = world.conf.ageGradient
         gradient_steps = world.age+1
         full_gradient = eris_gradient.make_gradient(gradient_ends[0], gradient_ends[1], gradient_steps)
-        # print("full gradient len", len(full_gradient))
+        print("full gradient len {}, contents {}".format(len(full_gradient), full_gradient))
 
         locs = _square_cells(im,cellstruct)
         r=0
         for row in locs:
             c = 0
             for col in row:
-                ind_cell = cellstruct.lookupPosition(row=r, col=c)
-                ind_cell_age = ind_cell.children[0].age
+                ind_cell = cellstruct[r][c]
+                ind_cell_age = ind_cell.worldCell.age
+                # print("ind cell age {} type {}".format(ind_cell_age, type(ind_cell_age)))
                 # print("ind cell age {}; color {}".format(ind_cell_age, full_gradient[ind_cell_age]))
 
                 draw.rectangle(col, fill=full_gradient[ind_cell_age],
@@ -40,6 +54,26 @@ def draw_world(world, add_text=False):
         world.conf.log_from_conf('error', "Cell shape not known, could not draw world")
         return
 
+    vector_locs = _velocity_vectors(im, cellstruct, locs,struct.cellShape)
+    print("VECTOR LOCS {}".format(vector_locs))
+    for vector_row in vector_locs:
+        for vector in vector_row:
+            print("vector {}".format(vector),vector[1])
+            if vector[0] == 'circle':
+                # print("CIRCLE at {}".format(vector[1]))
+                radius = 10
+                bounding = [vector[1].x-radius,vector[1].y-radius,vector[1].x+radius,vector[1].y+radius]
+                # print("bounding",bounding)
+                draw.ellipse(bounding, fill=255, width=5)
+            if vector[0] == 'line':
+                print("LINE at {}".format(vector[1]))
+                bounding = [vector[1].orig.x, vector[1].orig.y, vector[1].dest.x, vector[1].dest.y]
+                print("bounding", bounding)
+                draw.line(bounding, fill=100, width=5)
+                # raise Exception
+
+    # raise Exception
+
     world.images[world.age] = im
 
     if add_text is True:
@@ -49,9 +83,15 @@ def draw_world(world, add_text=False):
         _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
         world.annotatedImages[world.age] = annotated_img
 
+def image_world(world, force_current: bool =False, current_only: bool = False, image_type=('all', True)):
+    '''
 
-def image_world(world, force_current=False, current_only=False, image_type=('all', True)):
-    #Image type defines if you want annotated/unannotated, and if it should be forced
+    :param world: World object
+    :param force_current: determining if should include prevs or just current
+    :param current_only: just current
+    :param image_type: defines if you want annotated/unannotated, and if it should be forced
+    :return: makes the image and plays with it. draw_world draws the image.
+    '''
     valid_type_args = ['clean', 'annotated', 'all']
     try:
         if type(image_type) is str :
@@ -143,6 +183,14 @@ def image_world(world, force_current=False, current_only=False, image_type=('all
 
 
 def _save_image(image, filename, conf):
+
+    '''
+
+    :param image: the image being saved
+    :param filename: where he is being saved to
+    :param conf: directory
+    :return: this function saves the image of the world
+    '''
     # splitpath = filename.split()
     dirname = os.path.dirname(filename)
     # basnm = os.path.basename(filename)
@@ -161,6 +209,11 @@ def _save_image(image, filename, conf):
 
 
 def gif_world(world):
+    '''
+
+    :param world: world object
+    :return: this makes the world go weeee.
+    '''
     if len(world.images) > 0:
         fnt = world.conf.fnt
         fnt_sm = world.conf.fnt_sm
@@ -209,6 +262,14 @@ def gif_world(world):
         # (w1.images[max(w1.images.keys())]).show()
 
 def _annotate_image(drawInstance, position, caption, conf):
+    '''
+
+    :param drawInstance: the instance chosen
+    :param position: the xy coordinates
+    :param caption: the text thats there
+    :param conf: directory thing
+    :return: puts text into an image
+    '''
     # print("pos {} capt {}".format(position,caption))
     # drawInstance.text(xy=position, text=caption)
     drawInstance.text(xy=position, text=caption, anchor='lt',
@@ -219,7 +280,16 @@ def _annotate_image(drawInstance, position, caption, conf):
 
 
 def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
-    square_dims = (int(image.size[0] / rectanglestructure.width), int(image.size[1] / rectanglestructure.height))
+
+    '''
+
+    :param image: world image working with
+    :param rectanglestructure: rectangle
+    :param sep_ratio: the ratio of seperation
+    :param sep_fixed: the seperation of the rectangles
+    :return: puts rectangles into square cells
+    '''
+    square_dims = (int(image.size[0] / rectanglestructure.cols), int(image.size[1] / rectanglestructure.rows))
 
     separation = sep_fixed
     if separation == None:
@@ -247,11 +317,11 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
             sep_ratio = [0, 0]
 
         square_dims = (
-        int((image.size[0]) / ((rectanglestructure.width) + (rectanglestructure.width + 1) * sep_ratio[0])),
-        int((image.size[1]) / ((rectanglestructure.height) + (rectanglestructure.height + 1) * sep_ratio[1])))
+        int((image.size[0]) / ((rectanglestructure.cols) + (rectanglestructure.cols + 1) * sep_ratio[0])),
+        int((image.size[1]) / ((rectanglestructure.rows) + (rectanglestructure.rows + 1) * sep_ratio[1])))
         separation = (
-        int((image.size[0]-square_dims[0]*rectanglestructure.width)/(1+rectanglestructure.width)),
-        int((image.size[1]-square_dims[1]*rectanglestructure.height)/(1+rectanglestructure.height)))
+        int((image.size[0]-square_dims[0]*rectanglestructure.cols)/(1+rectanglestructure.cols)),
+        int((image.size[1]-square_dims[1]*rectanglestructure.rows)/(1+rectanglestructure.rows)))
 
     else:
         try:
@@ -273,11 +343,11 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
 
     y1=separation[1]
     y2=y1+square_dims[1]
-    for h in range(rectanglestructure.height):
+    for h in range(rectanglestructure.rows):
         location_row = []
         x1 = separation[0]
         x2 = x1 + square_dims[0]
-        for w in range(rectanglestructure.width):
+        for w in range(rectanglestructure.cols):
             location_row.append([x1,y1,x2,y2])
             x1 = x2 + separation[0]
             x2 += (separation[0] + square_dims[0])
@@ -288,6 +358,38 @@ def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
     print("square dims", square_dims, "separation", separation)
     print("cell locations",cell_locations)
     return cell_locations
+
+def _velocity_vectors(image, cellstructure, cell_locations, shape):
+    print("Velocity_vectors given image {}, cellstructure {} \ntype {}\nlocations {}".format(image,cellstructure, type(cellstructure),cell_locations))
+    locs = []
+    i=0
+    for loc_row in cell_locations:
+        j=0
+        vel_row = []
+        print("loc row",loc_row)
+        for loc in loc_row:
+            print("loc",loc)
+            cell = cellstructure[i][j]
+            center = Position(loc[0]+(loc[2]-loc[0])/2,loc[1]+(loc[3]-loc[1])/2)
+            print("VELOCITY",str(cell.worldCell.velocity.magnitude()))
+            if cell.worldCell.velocity.magnitude() == 0:
+                vel_row.append(['circle',center])
+            else:
+                line_vect = copy.deepcopy(cell.worldCell.velocity)
+                line_vect.recenter(center)
+                line_vect.set_magnitude(20)
+                vel_row.append(['line', line_vect])
+            print("CENTER {}\nVECTOR {}".format(center,cell.worldCell.velocity))
+            print("{},{}: cell {}\nLoc {}".format(i,j,cell,loc))
+            j += 1
+        i += 1
+        locs.append(vel_row)
+    return locs
+
+
+
+    # raise Exception
+
 
 class GenericError(Exception):
     pass

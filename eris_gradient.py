@@ -1,5 +1,19 @@
 from PIL import Image, ImageDraw
+"""
+Highly adapted from Eri's code
+"""
+# TODO: THIS FILE NEEDS DOCSTRINGS
+#doibg
 def gradientDraw(X,Y,startColor,endColor,steps):
+    '''
+
+    :param X: x variable
+    :param Y: y variable
+    :param startColor: color starting with
+    :param endColor: color ending with
+    :param steps: how many times it divides and how long it goes to.
+    :return: draws a gradient
+    '''
     im = Image.new(mode="RGB", size=(X, Y))
     draw = ImageDraw.Draw(im)
 
@@ -24,6 +38,13 @@ def gradientDraw(X,Y,startColor,endColor,steps):
     im.show()
 
 def make_gradient(startColor,endColor,steps):
+    '''
+
+    :param startColor: color we start it with
+    :param endColor: color ends with
+    :param steps: the amount of times it loops thru gradient
+    :return: makes and shows the gradient
+    '''
     full_gradient = []
     # print("start {}, end {}".format(startColor,endColor))
     R = startColor[0]
@@ -31,6 +52,7 @@ def make_gradient(startColor,endColor,steps):
     B = startColor[2]
     if steps == 0:
         return [(R,G,B)]
+        # return [(endColor[0],endColor[1],endColor[2])]
 
     Rdif = abs(startColor[0] - endColor[0])
     Rstep = int(Rdif / steps)
