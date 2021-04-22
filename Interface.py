@@ -34,7 +34,7 @@ else:
             super().__init__()
 
             # creating entry for input
-            self.num_var = tk.Entry(self)
+            self.num_entry = tk.Entry(self)
 
             self.MapUI()
 
@@ -63,7 +63,7 @@ else:
             step_label.grid(row=3, column=2)
 
             # creating a entry for step value
-            step_entry = tk.Entry(self, textvariable=self.num_var, font=('calibre', 10, 'normal'))
+            step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
             step_entry.grid(row=3, column=3)
 
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
@@ -93,8 +93,8 @@ else:
             background_label.grid()
 
         def stepping_world(self):
-            num = self.num_var.get()
-             ## print(self.num_var.get())
+            num = self.num_entry.get()
+            ## print(num)
             step_world = World.step(num)
             World.step(step_world)
 
