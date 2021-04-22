@@ -63,8 +63,8 @@ else:
             step_label.grid(row=3, column=2)
 
             # creating a entry for step value
-            step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
-            step_entry.grid(row=3, column=3)
+            self.step_entry = tk.Entry(self, font=('calibre', 10, 'normal'))
+            self.step_entry.grid(row=3, column=3)
 
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
             step_button.grid(row=3, column=4)
@@ -94,7 +94,7 @@ else:
 
         def stepping_world(self):
             num = self.num_entry.get()
-            ## print(num)
+            print(num)
             step_world = World.step(num)
             World.step(step_world)
 
