@@ -10,9 +10,8 @@ WIDTH = 500
 HEIGHT = 400
 # USERNAME_LENGTH = 24
 # PASSWORD_LENGTH = 128
-title_bar_icon_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis-old-backend\images\Fantorbis-Logo.ico'
-logo_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis-old-backend\images\Fantorbis-Logo.png'
-
+title_bar_icon_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis\images\Fantorbis-Logo.ico'
+logo_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis\images\Fantorbis-Logo.png'
 
 # TODO: Add delete account button (with some "are you sure" prompt- tkinter.messagebox)
 #       Show create account window on startup if no accounts found (not crucial)
@@ -171,16 +170,18 @@ class User:
             messagebox.showerror('Error', 'Username or password cannot contain spaces')
 
         else:
+            hashed_pass = hash_pass(self.password)
+
             #  create folder for accounts if it doesn't exist
             if not os.path.exists(os.path.join(os.path.dirname(sys.path[0]) +
-                                               fr'\fantorbis-old-backend\accounts')):
-                os.mkdir(os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis-old-backend\accounts')
+                                               fr'\fantorbis\accounts')):
+                os.mkdir(os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis\accounts')
 
             #  create folder called the current username if it doesn't exist
             if not os.path.exists(os.path.join(os.path.dirname(sys.path[0]) +
-                                               fr'\fantorbis-old-backend\accounts\{self.username}')):
+                                               fr'\fantorbis\accounts\{self.username}')):
                 os.mkdir(
-                    os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis-old-backend\accounts\{self.username}')
+                    os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis\accounts\{self.username}')
 
             connection = sqlite3.connect('creds.db')  # creates database if it doesn't exist
             cursor = connection.cursor()
@@ -195,7 +196,7 @@ class User:
             insert_query = "INSERT INTO accounts(username, password) VALUES(?,?);"
 
             try:
-                cursor.execute(insert_query, (self.username, self.password))
+                cursor.execute(insert_query, (self.username, hashed_pass))
                 messagebox.showinfo('Account created', f'Account {self.username} created')
 
             except sqlite3.Error as error:
