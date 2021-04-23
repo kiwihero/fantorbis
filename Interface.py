@@ -20,6 +20,7 @@ import PIL.Image
 import PIL.ImageTk
 from tkinter import ttk, Tk
 from tkinter import *
+from tkinter import filedialog
 # check if user has a older version of python
 if sys.version_info[0] == 2:
     import Tkinter as tk
@@ -55,7 +56,6 @@ else:
             draw_icon = PhotoImage(file='images/pencil.png')
             self.draw_icon = draw_icon
             create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=lambda: self.create_world())
-            # create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=World())
             create_button.grid(row=2, column=3)
 
             # creating a label for step value
@@ -72,8 +72,11 @@ else:
 
             save_icon = PhotoImage(file='images/download.png')
             self.save_icon = save_icon
-            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: image_world(w1))
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.save_world())
             saveMap_button.grid(row=4, column=3)
+
+            help_button = Button(self, text="Help")
+            help_button.grid(row=5, column=0, padx=5)
 
             exit_icon = PhotoImage(file='images/exit.png')
             self.exit_icon = exit_icon
@@ -97,6 +100,12 @@ else:
             print(num)
             step_world = World.step(num)
             World.step(step_world)
+
+        def save_world(self):
+             filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+             if not filename:
+                 return
+             self.save(filename)
 
 
 
