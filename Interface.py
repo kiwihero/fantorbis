@@ -20,7 +20,6 @@ import PIL.Image
 import PIL.ImageTk
 from tkinter import ttk, Tk
 from tkinter import *
-from tkinter import filedialog
 # check if user has a older version of python
 if sys.version_info[0] == 2:
     import Tkinter as tk
@@ -63,8 +62,8 @@ else:
             step_label.grid(row=3, column=2)
 
             # creating a entry for step value
-            self.step_entry = tk.Entry(self, font=('calibre', 10, 'normal'))
-            self.step_entry.grid(row=3, column=3)
+            step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
+            step_entry.grid(row=3, column=3)
 
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
             step_button.grid(row=3, column=4)
@@ -72,11 +71,8 @@ else:
 
             save_icon = PhotoImage(file='images/download.png')
             self.save_icon = save_icon
-            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.save_world())
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: image_world(w1))
             saveMap_button.grid(row=4, column=3)
-
-            help_button = Button(self, text="Help")
-            help_button.grid(row=5, column=0, padx=5)
 
             exit_icon = PhotoImage(file='images/exit.png')
             self.exit_icon = exit_icon
@@ -97,32 +93,25 @@ else:
 
         def stepping_world(self):
             num = self.num_entry.get()
-            print(num)
+            # print(num)
             step_world = World.step(num)
             World.step(step_world)
 
-        def save_world(self):
-             filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
-             if not filename:
-                 return
-             self.save(filename)
-
-
-
-
     # class for login window Frame
-    # above: from tkinterGui import Login_Window
 
-    # Still have to fix Login class so login window appears (and before interface)
-    class Login:
+    class Login(Frame):
         def __init__(self):
-            super().__init__(self)
+            Frame.__init__(self)
 
-            self.login_win = Login_Window
+            self.login_win = Login_Window.LoginWindow(self.master)
+
+        def create_login(self):
+            self.login_win.window_properties(self.master)
             self.login_win.mainloop()
 
 
     def main():
+        Login().create_login()
         root = Tk()
         root.title('Fantorbis')
         app = MainWindow()
