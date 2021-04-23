@@ -55,7 +55,6 @@ else:
             draw_icon = PhotoImage(file='images/pencil.png')
             self.draw_icon = draw_icon
             create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=lambda: self.create_world())
-            # create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=World())
             create_button.grid(row=2, column=3)
 
             # creating a label for step value
@@ -94,26 +93,25 @@ else:
 
         def stepping_world(self):
             num = self.num_entry.get()
-            ## print(num)
+            # print(num)
             step_world = World.step(num)
             World.step(step_world)
 
-
-
-
     # class for login window Frame
-    # above: from tkinterGui import Login_Window
 
-    # Still have to fix Login class so login window appears (and before interface)
-    class Login:
+    class Login(Frame):
         def __init__(self):
-            super().__init__(self)
+            Frame.__init__(self)
 
-            self.login_win = Login_Window
+            self.login_win = Login_Window.LoginWindow(self.master)
+
+        def create_login(self):
+            self.login_win.window_properties(self.master)
             self.login_win.mainloop()
 
 
     def main():
+        Login().create_login()
         root = Tk()
         root.title('Fantorbis')
         app = MainWindow()
