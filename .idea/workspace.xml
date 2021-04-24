@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="more docstrings">
+    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="more x2 docstrings">
+      <change afterPath="$PROJECT_DIR$/backendworld/pillowtime.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/Conf.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <favorite-branches>
@@ -251,7 +258,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618101566441</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="more x2 docstrings">
+      <created>1618103085832</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1618103085832</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -277,6 +291,7 @@
     <MESSAGE value="Merge remote-tracking branch 'origin/old-backend' into old-backend" />
     <MESSAGE value="docstrings" />
     <MESSAGE value="more docstrings" />
-    <option name="LAST_COMMIT_MESSAGE" value="more docstrings" />
+    <MESSAGE value="more x2 docstrings" />
+    <option name="LAST_COMMIT_MESSAGE" value="more x2 docstrings" />
   </component>
 </project>
