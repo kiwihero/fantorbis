@@ -12,7 +12,7 @@ This is where the backend and ui interface
 
 from backendworld.World import *
 from PillowDisplay import draw_world, gif_world, image_world
-from tkinterGui import Login_Window
+##from tkinterGui import Login_Window
 
 import os
 import sys
@@ -75,7 +75,9 @@ else:
             saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.save_world())
             saveMap_button.grid(row=4, column=3)
 
-            help_button = Button(self, text="Help")
+            help_icon = PhotoImage(file='images/help.png')
+            self.help_icon = help_icon
+            help_button = Button(self, image=help_icon,  width=50, height=50,  command=lambda: self.help())
             help_button.grid(row=5, column=0, padx=5)
 
             exit_icon = PhotoImage(file='images/exit.png')
@@ -107,7 +109,8 @@ else:
                 return
             self.save(filename)
 
-
+        def help(self):
+          os.system('notepad resources/About.txt')
 
     # class for login window Frame
 
@@ -115,21 +118,20 @@ else:
         def __init__(self):
             Frame.__init__(self)
 
-            self.login_win = Login_Window.LoginWindow(self.master)
+            ##self.login_win = Login_Window.LoginWindow(self.master)
 
-        def create_login(self):
-            self.login_win.window_properties(self.master)
-            self.login_win.mainloop()
-
-
-    def main():
-        Login().create_login()
-        root = Tk()
-        root.title('Fantorbis')
-        app = MainWindow()
-        root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
-        root.mainloop()
+        ##def create_login(self):
+            ##self.login_win.window_properties(self.master)
+            ##self.login_win.mainloop()
 
 
-    if __name__ == '__main__':
-        main()
+def main():
+      ##Login().create_login()
+     root = Tk()
+     root.title('Fantorbis')
+     app = MainWindow()
+     root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
+     root.mainloop()
+
+if __name__ == '__main__':
+             main()
