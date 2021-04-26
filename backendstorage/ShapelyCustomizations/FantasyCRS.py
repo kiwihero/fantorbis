@@ -5,6 +5,8 @@ from backendstorage.ShapelyCustomizations._FantasyCRS import _FantasyCRS
 
 from shapely.geometry import Point,Polygon
 import matplotlib.pyplot as plt
+from shapely.affinity import affine_transform
+import copy
 
 class FantasyCRS(CRS):
     def __init__(self, width, height, **kwargs):
@@ -55,11 +57,13 @@ fcrs = FantasyCRS(10,10)
 print("Custom CRS: {}".format(fcrs))
 
 random_points = dict()
-a_polygon = Polygon(([1000,5000],[-50000000,-50000000],[30000000,-30000000],[5000000000,5000000000]))
+a_polygon = Polygon(([10,5,1],[5,-5,5],[-10,-5,2],[-5,5,7]))
+# a_polygon = Polygon(([10,5],[5,-5],[-10,-5],[-5,5]))
 random_points['geometry'] = a_polygon
 random_points['title'] = "a_point"
 gdf = gpd.GeoDataFrame(geometry=[a_polygon],crs=fcrs)
-gdf.set_crs(fcrs,allow_override=True,inplace=True)
+# gdf.set_crs(fcrs,allow_override=True,inplace=True)
+gdf.set_crs(fcrs)
 # gdf = gdf.append(random_points,ignore_index=True)
 print("gdf {}".format(gdf))
 print("gdf crs {}".format(gdf.crs))
@@ -81,11 +85,42 @@ gdf.plot()
 plt.savefig('pyplot')
 plt.show()
 
+gdf_translate = copy.deepcopy(gdf)
+print("gdf",gdf.loc[0])
+gdf_translate.loc[0] = affine_transform(gdf_translate.loc[0]['geometry'], matrix=(1,0,0,0,1,0,0,0,1,3,7,5))
+print("gdf",gdf.loc[0])
+print("gdf translate",gdf_translate.loc[0])
+gdf_translate.plot()
+plt.savefig('pyplot')
+plt.show()
+fig, ax = plt.subplots()
+gdf.plot(ax=ax,color='magenta')
+gdf_translate.plot(ax=ax,color='gray')
+plt.show()
+for pt in gdf.loc[0]['geometry'].exterior.coords:
+    print("gdf round pt {}".format(pt))
+for pt in gdf_translate.loc[0]['geometry'].exterior.coords:
+    print("gdf trans round pt {}".format(pt))
+
 print("gdf crs {}".format(gdf.crs))
 round_crs = gdf.to_crs("EPSG:3395")
 round_crs.plot()
 print(round_crs)
-for pt in round_crs.loc[0]['geometry'].exterior.coords.xy:
-    print("pt {}".format(pt))
+for pt in round_crs.loc[0]['geometry'].exterior.coords:
+    print("round pt {}".format(pt))
+plt.savefig('pyplot')
+plt.show()
+fig, ax = plt.subplots()
+shifted_round = copy.deepcopy(round_crs)
+shifted_round.loc[0] = affine_transform(shifted_round.loc[0]['geometry'], matrix=(1,0,0,0,1,0,0,0,1,3000000,7000000,5000000))
+shifted_round.plot(ax=ax,color='purple')
+for pt in shifted_round.loc[0]['geometry'].exterior.coords:
+    print("shifted pt {}".format(pt))
+round_crs_trans = gdf_translate.to_crs("EPSG:3395")
+for pt in round_crs_trans.loc[0]['geometry'].exterior.coords:
+    print("trans round pt {}".format(pt))
+round_crs.plot(ax=ax,color='red')
+round_crs_trans.plot(ax=ax,color='green')
+print(round_crs)
 plt.savefig('pyplot')
 plt.show()
