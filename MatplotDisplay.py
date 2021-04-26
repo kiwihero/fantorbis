@@ -10,6 +10,8 @@ def plt_to_file(world: World):
     # print(gdf['geometry'].head(0))
     # print("end geom")
     fig, ax = plt.subplots(1, 1)
-    gdf.plot(column='pos', ax=ax) #column='ShapelyCell'
+    gdf.boundary.plot(ax=ax,color='gray',zorder=2)
+    gdf.plot(column='stack_size', ax=ax)
+    # gdf.plot(column='pos', ax=ax) #column='ShapelyCell'
     plt.savefig('pyplot')
     plt.show()

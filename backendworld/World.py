@@ -55,6 +55,32 @@ class World:
         '''
         overlap = p1.intersection(p2)
 
+    def converge_cells(self, t1, t2):
+        print("converging cells into {}".format(t1))
+        try:
+            iter(t2)
+            t1.stack_size += len(t2)
+            new_ages = []
+            new_velocities = []
+            new_heights = []
+            total = 1
+            for t in t2:
+                new_ages.append(t.age)
+                new_velocities.append(t.velocity)
+                new_heights.append(t.height)
+                total += 1
+
+            t1.age = (t1.age + sum(new_ages)) / total
+            t1.velocity = t1.velocity.average(new_velocities)
+            t1.height = (t1.height + sum(new_heights))/total
+            t2 = t1
+            print("done converging cells into {}".format(t1))
+            return t1
+        except TypeError:
+            return self.converge_cells(t1,[t2])
+
+
+
     def random_wiggle(self):
         '''
         Wiggle a random cell one step

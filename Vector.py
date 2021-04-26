@@ -96,6 +96,43 @@ class Vector:
         self.dest.x -= x_disp
         self.dest.y -= y_disp
 
+    def average(self, additional_velocities):
+        # TODO: Break this out into a few more reusable functions
+        #  For example, adding velocities, dividing velocities, finding the average of two velocities, etc
+        #  Please remember to put docstrings in functions you create
+        try:
+            iter(additional_velocities)
+            new_orig_x = self.orig.x
+            new_orig_y = self.orig.y
+            new_dest_x = self.dest.x
+            new_dest_y = self.dest.y
+            qty = 1
+            for vel in additional_velocities:
+                new_orig_x += vel.orig.x
+                new_orig_y += vel.orig.y
+                new_dest_x += vel.dest.x
+                new_dest_y += vel.dest.y
+                qty += 1
+            self.orig = Position(new_orig_x / qty, new_orig_y / qty)
+            self.dest = Position(new_dest_x / qty, new_dest_y / qty)
+            for vel in additional_velocities:
+                vel.orig = self.orig
+                vel.dest = self.dest
+        except TypeError:
+            new_orig_x = self.orig.x + additional_velocities.orig.x
+            new_orig_y = self.orig.y + additional_velocities.orig.y
+            new_dest_x = self.dest.x + additional_velocities.dest.x
+            new_dest_y = self.dest.y + additional_velocities.dest.y
+            qty = 2
+            self.orig = Position(new_orig_x/qty, new_orig_y/qty)
+            self.dest = Position(new_dest_x/qty, new_dest_y/qty)
+            additional_velocities.orig = self.orig
+            additional_velocities.dest = self.dest
+        return self
+
+
+
+
     def __copy__(self):
         return Vector(self.orig, self.dest)
 

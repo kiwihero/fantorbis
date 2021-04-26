@@ -1,19 +1,24 @@
 from backendworld.WorldAttribute import WorldAttribute
 from Position import Position
 from Vector import Vector
-
+import copy
 
 class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: Vector = None,
-                 **kwargs):
+    def __init__(self, data_structure_location: Position = None, starting_height: int = 0,
+                 starting_velocity: Vector = None, stack_size: int = 1, **kwargs):
         self.age = 0
+        self.stack_size = stack_size
         self.height = starting_height
         self._dataStructureLocation = data_structure_location
+        print("Tectoniccell Data structure location {}".format(self._dataStructureLocation))
         if starting_velocity is None:
-            self.velocity = Vector(self._dataStructureLocation,self._dataStructureLocation)
+            if self._dataStructureLocation is None:
+                self.velocity = Vector(Position(0,0),Position(0,0))
+            else:
+                self.velocity = Vector(self._dataStructureLocation,self._dataStructureLocation)
         else:
             self.velocity = starting_velocity
         super(TectonicCell, self).__init__(**kwargs)
@@ -70,13 +75,26 @@ class TectonicCell(WorldAttribute):
             # raise Exception
 
     def __str__(self):
-        return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)
+        return "Tectonic cell age {}, height {}, stack {}, velocity {}; at {} in data structure".format(self.age, self.height,self.stack_size,self.velocity, self._dataStructureLocation)
 
     def __copy__(self):
         new_cell = TectonicCell(data_structure_location=self._dataStructureLocation, world=self.world)
         # new_cell = self.copy_attrs(new_cell)
         new_cell.age = self.age
-        new_cell.velocity = self.velocity.__copy__()
+        new_cell.velocity = copy.copy(self.velocity)
+        new_cell.stack_size = self.stack_size
+        new_cell.height = self.height
+        print("updating after copy, new cell world now {}".format(new_cell.world))
+        new_cell._updateWorldSet()
+        print("done updating after copy")
+        return new_cell
+
+    def __deepcopy__(self, memodict={}):
+        new_cell = TectonicCell(data_structure_location=copy.deepcopy(self._dataStructureLocation), world=self.world)
+        new_cell.age = self.age
+        new_cell.velocity = copy.deepcopy(self.velocity)
+        new_cell.stack_size = copy.deepcopy(self.stack_size)
+        new_cell.height = copy.deepcopy(self.height)
         print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
         print("done updating after copy")

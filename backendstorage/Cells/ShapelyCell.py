@@ -4,6 +4,7 @@ import pandas as pd
 from shapely.geometry.polygon import Polygon
 from shapely.affinity import affine_transform
 from backendworld.TectonicCell import TectonicCell
+import copy
 
 
 class ShapelyCell:
@@ -127,8 +128,9 @@ class ShapelyCell:
         new_polys = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
         new_polys = []
         for trp in triples:
+            new_world_cell = copy.deepcopy(self.world_cell)
             new_poly = ShapelyCell(
-                conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
+                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args, shell=trp
             )
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
@@ -183,7 +185,7 @@ class ShapelyCell:
         new_polys = []
         for trp in triples:
             new_poly = ShapelyCell(
-                conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
+                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args, shell=trp
             )
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
@@ -195,7 +197,9 @@ class ShapelyCell:
         return {feature: poly.exterior.coords}
 
     def move(self, x_offset, y_offset):
+        print("Called ShapelyCell.move() on the cell {}".format(self))
         self.polygon = affine_transform(self.polygon, matrix=(1,0,0,1,x_offset,y_offset))
+        return self
 
     def _cell_to_structure_columns(self):
         """
@@ -207,7 +211,10 @@ class ShapelyCell:
             'TectonicCell':self.world_cell,
             'polygon':self.polygon,
             'geometry':self.polygon,
-            'pos':self.centroid.x*self.centroid.y
+            'pos':self.centroid.x*self.centroid.y,
+            'age_diff':self.conf.world.age-self.world_cell.age,
+            'pos_point':self.centroid,
+            'stack_size':self.world_cell.stack_size
         }
         requested_values = self.conf.ShapelyStructureColumns
         cell_values = dict()
@@ -224,3 +231,31 @@ class ShapelyCell:
         new_df = pd.DataFrame.from_dict(cell_values)
         print("New dataframe\n{}\nEnd new dataframe".format(new_df))
         return new_df
+
+    def update_structure(self,containing_structure):
+        print("Initial structure\n{}\nEnd initial structure".format(containing_structure))
+        new_dataframe = self._cell_to_structure_df()
+        altered_structure = containing_structure.append(new_dataframe)
+        print("Altered structure\n{}\nEnd altered structure".format(containing_structure))
+        matching_rows = containing_structure.loc[containing_structure['pos_point'] == self.centroid]
+        if len(matching_rows) > 0:
+            print("Multiple rows")
+            raise Exception
+        return altered_structure
+
+    def join_cells(self, additional_cells):
+        # print("Joining cells \n{}\nend cells\nto cell\n{}\nend cell".format(additional_cells,self))
+        world = self.world_cell.world
+        # print("world {}".format(world))
+        # print("old world cell {}".format(self.world_cell))
+        for cell in additional_cells:
+            self.world_cell = world.converge_cells(self.world_cell,cell.world_cell)
+            cell.world_cell = self.world_cell
+
+        # print("new world cells\n{}\n{}\nEnd new world cells".format(self.world_cell,cell.world_cell))
+        #
+        # print("new world cell ids\n{}\n{}\nEnd new world cell ids".format(hex(id(self.world_cell)),hex(id(cell.world_cell))))
+
+            # print("\tadditional cell {}".format(cell))
+        return self._cell_to_structure_df()
+
