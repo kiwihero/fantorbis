@@ -64,17 +64,17 @@ class ShapelyStructure(ArrayStructure):
         """
         n = [x.subdivide() for x in self.CellStorage['ShapelyCell']]
         self.CellStorage = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
-        print("After subdivide, n length {}".format(len(n)))
+        # print("After subdivide, n length {}".format(len(n)))
         for m1 in n:
-            print("m1", len(m1), m1)
+            # print("m1", len(m1), m1)
             for m in m1:
-                print("m",len(m),m)
+                # print("m",len(m),m)
                 self.CellStorage = self.CellStorage.append(m, ignore_index=True)
-                print("Cell storage ShapelyCell column\n{}\nEnd Cell storage ShapelyCell column".format(self.CellStorage['ShapelyCell']))
-                print("Cell storage pos column\n{}\nEnd Cell storage pos column".format(
-                    self.CellStorage['pos']))
-                print("Cell storage age diff column\n{}\nEnd Cell storage age diff column".format(
-                    self.CellStorage['age_diff']))
+                # print("Cell storage ShapelyCell column\n{}\nEnd Cell storage ShapelyCell column".format(self.CellStorage['ShapelyCell']))
+                # print("Cell storage pos column\n{}\nEnd Cell storage pos column".format(
+                #     self.CellStorage['pos']))
+                # print("Cell storage age diff column\n{}\nEnd Cell storage age diff column".format(
+                #     self.CellStorage['age_diff']))
 
     def update_cells(self):
         print("Cell storage pre-update len {}, contents\n{}\nEnd cell storage pre-update".format(len(self.CellStorage),self.CellStorage))
@@ -82,27 +82,27 @@ class ShapelyStructure(ArrayStructure):
         n = [x.update_structure(new_structure) for x in self.CellStorage['ShapelyCell']]
         # self.CellStorage = new_structure
         for m in n:
-            print("m", type(m), m)
+            # print("m", type(m), m)
             new_structure = new_structure.append(m, ignore_index=True)
-            print("New structure with-duplicates len {}, contents\n{}\nEnd new structure with-duplicates".format(len(new_structure), new_structure))
+            # print("New structure with-duplicates len {}, contents\n{}\nEnd new structure with-duplicates".format(len(new_structure), new_structure))
 
             if len(m) != 1:
                 raise Exception("Somehow, you got {} rows when updating the values for one row of ShapelyStructure!".format(len(m)))
             new_pos = m.iloc[0]['pos_point']
-            print("new_pos {} {}".format(type(new_pos),new_pos))
+            # print("new_pos {} {}".format(type(new_pos),new_pos))
             matching_rows = new_structure.loc[new_structure['pos_point'] == new_pos]
-            print("matching rows\n{}\nEnd matching rows".format(matching_rows))
+            # print("matching rows\n{}\nEnd matching rows".format(matching_rows))
             if len(matching_rows) > 1:
                 new_matching_rows = matching_rows.loc[matching_rows['ShapelyCell'] != m.iloc[0]['ShapelyCell']]
-                print("new matching rows\n{}\nEnd new matching rows".format(new_matching_rows))
+                # print("new matching rows\n{}\nEnd new matching rows".format(new_matching_rows))
                 new_structure.drop(matching_rows.index, inplace=True)
                 updated_m = m.iloc[0]['ShapelyCell'].join_cells(new_matching_rows['ShapelyCell'])
                 # updated_m = m.iloc[0]['ShapelyCell'].update_structure(new_structure)
-                print("Updated m\n{}\nend updated m".format(updated_m))
+                # print("Updated m\n{}\nend updated m".format(updated_m))
                 new_structure = new_structure.append(updated_m, ignore_index=True)
                 # new_structure = new_structure.append(m, ignore_index=True)
 
-                print("New structure NO duplicates len {}, contents\n{}\nEnd new structure NO duplicates".format(len(new_structure), new_structure))
+                # print("New structure NO duplicates len {}, contents\n{}\nEnd new structure NO duplicates".format(len(new_structure), new_structure))
                 # raise Exception
 
             # print("Cell storage ShapelyCell column\n{}\nEnd Cell storage ShapelyCell column".format(
