@@ -23,15 +23,24 @@ class ShapelyStructure(ArrayStructure):
             world_cell_args=dict([('world', self.conf.world)]),
             world_cell='TectonicCell'
         )
-        self.CellStorage = gpd.GeoDataFrame(
-            [[
-                first_cell,
-                first_cell.world_cell,
-                first_cell,
-                first_cell.centroid.x*first_cell.centroid.y
-            ]],
-            columns=['ShapelyCell', 'TectonicCell', 'geometry', 'pos']
-        )
+        self.CellStorage = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
+        # gpd.GeoDataFrame(
+        #     [[
+        #         first_cell,
+        #         first_cell.world_cell,
+        #         first_cell,
+        #         first_cell.polygon.centroid.x*first_cell.polygon.centroid.y
+        #     ]],
+        #     columns=self.conf.ShapelyStructureColumns
+        # )
+        first_cell_structure = first_cell._cell_to_structure_columns()
+        print("first cell structure {}".format(first_cell_structure))
+        first_cell_df = first_cell._cell_to_structure_df()
+        print("first cell dataframe {}".format(first_cell_df))
+        self.CellStorage = self.CellStorage.append(first_cell_df)
+        print("Cell storage\n{}\nEnd cell storage".format(self.CellStorage))
+        # raise Exception
+
 
 
     def add_cell(self, shp_cell: ShapelyCell):
@@ -53,11 +62,14 @@ class ShapelyStructure(ArrayStructure):
         :return:
         """
         n = [x.subdivide() for x in self.CellStorage['ShapelyCell']]
-        self.CellStorage = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell','geometry','pos'])
-        for m in n:
-            print("m",len(m),m)
-            self.CellStorage = self.CellStorage.append(m)
-            print(self.CellStorage['ShapelyCell'])
+        self.CellStorage = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
+        print("After subdivide, n length {}".format(len(n)))
+        for m1 in n:
+            print("m1", len(m1), m1)
+            for m in m1:
+                print("m",len(m),m)
+                self.CellStorage = self.CellStorage.append(m, ignore_index=True)
+                print("Cell storage ShapelyCell column\n{}\nEnd Cell storage ShapelyCell column".format(self.CellStorage['ShapelyCell']))
 
 
     def __str__(self):

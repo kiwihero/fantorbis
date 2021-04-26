@@ -11,3 +11,13 @@ struct.subdivide()
 struct.subdivide()
 struct.subdivide()
 plt_to_file(w1)
+
+
+print("Shapely structure {}".format(struct.CellStorage))
+print("Shapely type {}".format(type(struct.CellStorage)))
+
+print("Shapely shpcell {}".format(struct.CellStorage['ShapelyCell']))
+print("Shapely shpcell type {}".format(type(struct.CellStorage['ShapelyCell'])))
+print(struct.CellStorage['ShapelyCell'][0])
+struct.CellStorage['ShapelyCell'][0].move(1,1)
+print(struct.CellStorage['ShapelyCell'][0])

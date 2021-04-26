@@ -48,6 +48,8 @@ class Conf:
 
         self.ageGradient = ((130, 245, 0), (244,0,245))
 
+        # self.ShapelyStructureColumns = ['ShapelyCell', 'TectonicCell','geometry','pos']
+        self.ShapelyStructureColumns = ['ShapelyCell', 'TectonicCell', 'geometry', 'pos']
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)

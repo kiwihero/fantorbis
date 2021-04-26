@@ -1,18 +1,53 @@
 from copy import copy, deepcopy
 import geopandas as gpd
+import pandas as pd
 from shapely.geometry.polygon import Polygon
+from shapely.affinity import affine_transform
 from backendworld.TectonicCell import TectonicCell
 
 
-class ShapelyCell(Polygon):
+class ShapelyCell:
     """
     Custom class extending a Shapely polygon
     """
 
-    def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, **kwargs):
-        super(ShapelyCell, self).__init__(**kwargs)
+    @property
+    def exterior(self):
+        return self.polygon.exterior
+
+    @property
+    def centroid(self):
+        return self.polygon.centroid
+
+    @property
+    def bounds(self):
+        return self.polygon.bounds
+
+    @property
+    def area(self):
+        return self.polygon.area
+
+    @property
+    def length(self):
+        return self.polygon.length
+
+    @property
+    def interiors(self):
+        return self.polygon.interiors
+
+
+    def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, cell_veolocity: float = 0, **kwargs):
+        self.polygon = Polygon(**kwargs)
+        print("ShapelyCell.polygon {} {}".format(type(self.polygon),self.polygon))
+        # print("super polygon {}".format(super_polygon))
+        # print("_geom {}".format(self.polygon._geom))
+        # print("area {}".format(self.polygon.area))
+        # print("exterior {}".format(self.polygon.exterior))
+        # raise Exception
+        # self.polygon = super().from_bounds(shell)
         # print("shapely cell geometry {}".format(self.BaseGeometry()))
         self.conf = conf
+        self.velocity = cell_veolocity
         if world_cell_args is None:
             self.world_cell_args = {}
         else:
@@ -89,18 +124,13 @@ class ShapelyCell(Polygon):
             #     print("\t{} {}".format(x, new_points[x]))
             x+=1
         print("Triples")
-        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell','geometry','pos'])
+        new_polys = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
         new_polys = []
         for trp in triples:
             new_poly = ShapelyCell(
                 conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
             )
-            new_polys.append({
-                'ShapelyCell': new_poly,
-                'TectonicCell': new_poly.world_cell,
-                'geometry': self,
-                'pos': new_poly.centroid.x*new_poly.centroid.y
-            })
+            new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2],trp[3])
         return new_polys
@@ -149,18 +179,13 @@ class ShapelyCell(Polygon):
             #     print("\t{} {}".format(x, new_points[x]))
             x+=1
         print("Triples")
-        new_polys = gpd.GeoDataFrame(columns=['ShapelyCell', 'TectonicCell', 'geometry', 'pos'])
+        new_polys = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
         new_polys = []
         for trp in triples:
             new_poly = ShapelyCell(
                 conf=self.conf, world_cell=self.world_cell, world_cell_args=self.world_cell_args, shell=trp
             )
-            new_polys.append({
-                'ShapelyCell': new_poly,
-                'TectonicCell': new_poly.world_cell,
-                'geometry': self,
-                'pos': new_poly.centroid.x*new_poly.centroid.y
-            })
+            new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2])
         return new_polys
@@ -169,3 +194,33 @@ class ShapelyCell(Polygon):
     def _to_points(self, feature, poly):
         return {feature: poly.exterior.coords}
 
+    def move(self, x_offset, y_offset):
+        self.polygon = affine_transform(self.polygon, matrix=(1,0,0,1,x_offset,y_offset))
+
+    def _cell_to_structure_columns(self):
+        """
+        Contains definitions for how to get the individual ShapelyCell value of each column of ShapelyStructure
+        :return: Dictionary of columns and values used by ShapelyStructure
+        """
+        cell_value_templates = {
+            'ShapelyCell':self,
+            'TectonicCell':self.world_cell,
+            'polygon':self.polygon,
+            'geometry':self.polygon,
+            'pos':self.centroid.x*self.centroid.y
+        }
+        requested_values = self.conf.ShapelyStructureColumns
+        cell_values = dict()
+        for column_name in requested_values:
+            if column_name not in cell_value_templates:
+                raise Exception("No known association between a ShapelyCell and the column {}".format(column_name))
+            cell_values[column_name] = cell_value_templates[column_name]
+        return cell_values
+
+    def _cell_to_structure_df(self):
+        cell_values = self._cell_to_structure_columns()
+        for key, value in cell_values.items():
+            cell_values[key] = [value]
+        new_df = pd.DataFrame.from_dict(cell_values)
+        print("New dataframe\n{}\nEnd new dataframe".format(new_df))
+        return new_df
