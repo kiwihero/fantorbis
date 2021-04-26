@@ -34,7 +34,7 @@ class ShapelyCell(Polygon):
         """
         print("Starting subdivision on {}".format(self))
         new_polys = self._subdivide_square()
-        new_polys = self._subdivide_triangle()
+        # new_polys = self._subdivide_triangle()
         return new_polys
         # new_world_cell = copy(self.world_cell)
         # new_cell = ShapelyCell(
