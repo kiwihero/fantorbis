@@ -59,12 +59,14 @@ for x in range(2):
     struct.move_random_cell()
     struct.update_cells()
     w1.step()
-# for x in range(5):
-#     struct.move_random_cell()
-#     struct.update_cells()
-#     w1.step()
+for x in range(5):
+    struct.move_random_cell()
+    struct.update_cells()
+    w1.step()
 struct.subdivide()
 struct.update_cells()
 w1.step()
+print(struct.CellStorage['age_diff'])
+print(struct.CellStorage['speed'])
 
 plt_to_file(w1)

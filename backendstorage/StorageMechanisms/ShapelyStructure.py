@@ -153,6 +153,8 @@ class ShapelyStructure(ArrayStructure):
         # raise Exception
 
     def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False):
+        old_move_x = move_x
+        old_move_y = move_y
         if self.wrap is True:
 
             print("Wrapping movement ({},{})".format(move_x,move_y))
@@ -176,7 +178,10 @@ class ShapelyStructure(ArrayStructure):
         print("cell row to be moved type: {}, individual: {}".format(type(cell_row),cell_row))
         shapely_cell = cell_row['ShapelyCell']
         print("move single cell cell: {}, move_x: {}, move_y: {}".format(shapely_cell,move_x,move_y))
-        moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity)
+        if self.wrap is True and (move_x != old_move_x or move_y != old_move_y):
+            moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity,velocity_offset=(old_move_x, old_move_y))
+        else:
+            moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity)
         print("Moved cell\n{}\nend moved cell".format(moved_cell))
         print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
         cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
@@ -279,7 +284,12 @@ class ShapelyStructure(ArrayStructure):
         if fill_gap is True:
             old_cell = cellrow['ShapelyCell']
             old_perim = old_cell.exterior
+            fill_cell = ShapelyCell(conf=old_cell.conf, world_cell_args=old_cell.world_cell_args,shell=old_perim)
             print("Old perimeter {}".format(old_perim))
+            fill_row = fill_cell._cell_to_structure_df()
+            print("fill row {}, vel {}, pos {}, age {}".format(fill_row, fill_cell.velocity, fill_cell.centroid, fill_cell.world_cell.age))
+            self.CellStorage = self.CellStorage.append(fill_row, ignore_index=True)
+            # raise Exception
         self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)
 
         # raise Exception

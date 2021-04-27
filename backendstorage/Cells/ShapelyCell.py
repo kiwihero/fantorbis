@@ -214,29 +214,41 @@ class ShapelyCell:
     def _to_points(self, feature, poly):
         return {feature: poly.exterior.coords}
 
-    def move(self, x_offset, y_offset, change_velocity: bool = False):
+    def move(self, x_offset, y_offset, change_velocity: bool = False, velocity_offset = None):
         print("Called ShapelyCell.move() on the cell {}".format(self))
         old_pos = self.centroid
         old_vel = self.velocity
         print("old position {}".format(old_pos))
+
         self.polygon = affine_transform(self.polygon, matrix=(1,0,0,1,x_offset,y_offset))
         new_pos = self.centroid
         print("new position {}".format(new_pos))
         pos_chg = LineString([old_pos,new_pos])
         if change_velocity is True:
+            if velocity_offset is not None:
+                velocity_polygon = affine_transform(self.polygon,
+                                                    matrix=(1, 0, 0, 1, velocity_offset[0], velocity_offset[1]))
+                new_vel_pos = velocity_polygon.centroid
+                pos_vel_chg = LineString([old_pos,new_vel_pos])
+            else:
+                pos_vel_chg = pos_chg
             vel_chg = []
             print("position change {}".format(pos_chg))
             print("old vel coords {}: {}".format(type(old_vel.coords), old_vel.coords))
-            for coord in range(min(len(old_vel.coords), len(pos_chg.coords))):
-                print("{} old vel = {}, pos chg = {}".format(coord, old_vel.coords[coord], pos_chg.coords[coord]))
-                vel_chg.append((old_vel.coords[coord][0] + pos_chg.coords[coord][0],
-                                old_vel.coords[coord][1] + pos_chg.coords[coord][1]))
+            for coord in range(min(len(old_vel.coords), len(pos_vel_chg.coords))):
+                print("{} old vel = {}, pos chg = {}".format(coord, old_vel.coords[coord], pos_vel_chg.coords[coord]))
+                vel_chg.append((old_vel.coords[coord][0] + pos_vel_chg.coords[coord][0],
+                                old_vel.coords[coord][1] + pos_vel_chg.coords[coord][1]))
             new_vel = LineString(vel_chg)
             print("old velocity {}".format(old_vel))
             print("new velocity {}".format(new_vel))
             print("velocity change {}".format(vel_chg))
             self.velocity = new_vel
-            # raise Exception
+            # if velocity_offset is not None:
+                # raise Exception
+
+
+
         return self
 
     def _cell_to_structure_columns(self):

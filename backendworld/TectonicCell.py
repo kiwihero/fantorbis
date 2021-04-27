@@ -52,7 +52,6 @@ class TectonicCell(WorldAttribute):
             else:
                 print("ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD\nAND TO TOP IT OFF, YOU NEVER GAVE YOUR CELLS A WORLD FOR THIS MESSAGE TO BE LOGGED".format(hex(id(self))))
                 raise Exception
-
         else:
             self.age += 1
 
