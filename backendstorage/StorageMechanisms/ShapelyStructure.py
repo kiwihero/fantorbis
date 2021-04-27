@@ -96,6 +96,7 @@ class ShapelyStructure(ArrayStructure):
             # print("new_pos {} {}".format(type(new_pos),new_pos))
             new_shpcell = m.iloc[0]['ShapelyCell']
             # print("new_shpcell {} {} {}".format(type(new_shpcell), new_shpcell,new_shpcell.bounds))
+            print("NEW AGE {}".format(m.iloc[0]['age_diff']))
             m_bounds = new_shpcell.bounds
             if update_bounds is False:
                 pass
@@ -300,6 +301,7 @@ class ShapelyStructure(ArrayStructure):
             print("Old perimeter {}".format(old_perim))
             fill_row = fill_cell._cell_to_structure_df()
             print("fill row {}, vel {}, pos {}, age {}".format(fill_row, fill_cell.velocity, fill_cell.centroid, fill_cell.world_cell.age))
+            print("age diff {}".format(fill_row['age_diff']))
             self.CellStorage = self.CellStorage.append(fill_row, ignore_index=True)
             # raise Exception
         self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)
