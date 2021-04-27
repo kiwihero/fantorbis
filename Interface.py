@@ -44,6 +44,8 @@ else:
             self.map_canvas = Canvas(self)
             self.map_canvas.grid(row=1, column=0, columnspan=2, rowspan=4,
                        padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
+            self.world = None
+            self.backgroundphoto = None
 
         def MapUI(self):
             self.pack(fill=tk.BOTH, expand=True)
@@ -91,22 +93,54 @@ else:
             frame.tkraise()
 
         def create_world(self):
+            print("creating world")
             interface_new_world = World()
-            image_world(interface_new_world)
+            self.world = interface_new_world
+            image_world(self.world)
 
-            first_image_bg = interface_new_world.images[0]
+            last_key = max(self.world.images.keys())
+            first_image_bg = self.world.images[last_key]
             first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
             photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+
 
             background_label = Label(self.map_canvas, image=photo_image)
             background_label.photo = photo_image
             background_label.grid()
+            print("Canvas has {}".format(self.map_canvas))
+            print("Background has {}".format(background_label.photo))
+            self.backgroundphoto = background_label
+
+
+
 
         def stepping_world(self):
+            print("CALLED STEPPING WORLD")
+            image_world(self.world)
             num = self.num_entry.get()
+            self.world.access_data_struct().subdivide()
             # print(num)
-            step_world = World.step(num)
-            World.step(step_world)
+            self.world.random_wiggle()
+            step_world = self.world.step()
+            draw_world(self.world)
+            print("world age {}".format(self.world.age))
+            # World.step(step_world)
+            # World.random_wiggle()
+            last_key =max(self.world.images.keys())
+            print("last key {}".format(last_key))
+            first_image_bg = self.world.images[max(self.world.images.keys())]
+            # self.world.images[max(self.world.images.keys())].show()
+            first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+            # photo_image.show()
+            # photo_image.grid(row=1,column=1)
+
+
+            # background_label = Label(self.map_canvas, image=photo_image)
+            # background_label.photo = photo_image
+            # background_label.grid()
+            self.backgroundphoto.configure(image=photo_image)
+            self.backgroundphoto.image = photo_image
 
         def save_world(self):
             save_world_image = World()
@@ -153,13 +187,15 @@ else:
 
 
 
+
 def main():
       ##Login().create_login()
-     root = Tk()
-     root.title('Fantorbis')
-     app = MainWindow()
-     root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
-     root.mainloop()
+    root = Tk()
+    root.title('Fantorbis')
+    app = MainWindow()
+    root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
+    root.mainloop()
+
 
 if __name__ == '__main__':
              main()
