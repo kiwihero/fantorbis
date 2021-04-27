@@ -18,6 +18,7 @@ import os
 import sys
 import PIL.Image
 import PIL.ImageTk
+from PIL import ImageGrab
 from tkinter import ttk, Tk
 from tkinter import *
 from tkinter import filedialog
@@ -85,6 +86,10 @@ else:
             exit_button = tk.Button(self, image=exit_icon, width=50, height=50, command=lambda: self.quit())
             exit_button.grid(row=5, column=3)
 
+        def show_frame(self, cont):
+            frame = self.frames[cont]
+            frame.tkraise()
+
         def create_world(self):
             interface_new_world = World()
             image_world(interface_new_world)
@@ -104,13 +109,21 @@ else:
             World.step(step_world)
 
         def save_world(self):
-            filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+            save_world_image = World()
+            gif_world(save_world_image)
+            myFormats = [('Portable Network Graphics', '*.png'),
+                         ('JPEG', '*.jpg'), ('GIF', '*.gif'), ]
+            filename = filedialog.asksaveasfilename(filetypes=myFormats)
             if not filename:
                 return
-            self.save(filename)
+            ##self.grabcanvas.save("flatImages/out.gif")
+            #save(gif_world(save_world_image))
 
         def help(self):
-          os.system('notepad resources/About.txt')
+         os.system('notepad resources/About.txt')
+
+
+
 
     # class for login window Frame
 
@@ -123,6 +136,21 @@ else:
         ##def create_login(self):
             ##self.login_win.window_properties(self.master)
             ##self.login_win.mainloop()
+
+    class Help(tk.Frame):
+        def __init__(self):
+            Frame.__init__(self)
+
+            # text area
+            text_area = tk.Text(self, height=12)
+            text_area.grid(column=0, row=0, sticky='nsew')
+
+
+            tf = open('resources/About.txt', 'r')  # or tf = open(tf, 'r')
+            data = tf.read()
+            text_area.insert(END, data)
+            tf.close()
+
 
 
 def main():
