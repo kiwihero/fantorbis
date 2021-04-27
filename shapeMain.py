@@ -10,7 +10,7 @@ print("Shapely structure {}".format(struct))
 w1.step()
 struct.subdivide()
 struct.update_cells()
-w1.step()
+# w1.step()
 # struct.subdivide()
 # w1.step()
 # struct.subdivide()
@@ -32,25 +32,39 @@ w1.step()
 # print("Column polygon now {}".format(struct.CellStorage['geometry'][0]))
 # plt_to_file(w1)
 
-struct.move_cell_in_structure('pos',0.1875,.25,.125)
-w1.step()
-for col in w1.conf.ShapelyStructureColumns:
-    print("Column {}".format(col))
-    print(struct.CellStorage[col])
+# struct.move_cell_in_structure('pos',0.1875,.25,.125)
+# w1.step()
+# for col in w1.conf.ShapelyStructureColumns:
+#     print("Column {}".format(col))
+#     print(struct.CellStorage[col])
+# struct.subdivide()
+# struct.update_cells()
+# w1.step()
+# struct.subdivide()
+# struct.update_cells()
+# w1.step()
+# print("Structure position points")
+#
+# print(struct.CellStorage['pos_point'])
+# for i in range(len(struct.CellStorage)):
+#     matching_rows = struct.CellStorage.loc[struct.CellStorage['pos_point']== struct.CellStorage['pos_point'][i]]
+#     if len(matching_rows) > 1:
+#         print(struct.CellStorage['pos_point'][i])
+#         print("{} matching rows".format(len(matching_rows)))
+#         print(matching_rows)
+for x in range(2):
+    struct.subdivide()
+    struct.update_cells()
+    w1.step()
+    struct.move_random_cell()
+    struct.update_cells()
+    w1.step()
+# for x in range(5):
+#     struct.move_random_cell()
+#     struct.update_cells()
+#     w1.step()
 struct.subdivide()
 struct.update_cells()
 w1.step()
-struct.subdivide()
-struct.update_cells()
-w1.step()
-print("Structure position points")
-
-print(struct.CellStorage['pos_point'])
-for i in range(len(struct.CellStorage)):
-    matching_rows = struct.CellStorage.loc[struct.CellStorage['pos_point']== struct.CellStorage['pos_point'][i]]
-    if len(matching_rows) > 1:
-        print(struct.CellStorage['pos_point'][i])
-        print("{} matching rows".format(len(matching_rows)))
-        print(matching_rows)
 
 plt_to_file(w1)

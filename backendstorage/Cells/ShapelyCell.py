@@ -40,6 +40,14 @@ class ShapelyCell:
     def speed(self):
         return self.calculate_speed()
 
+    @property
+    def x_size(self):
+        return self.bounds[2]-self.bounds[0]
+
+    @property
+    def y_size(self):
+        return self.bounds[3]-self.bounds[1]
+
 
     def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, cell_veolocity=None, **kwargs):
         self.polygon = Polygon(**kwargs)

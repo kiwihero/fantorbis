@@ -1,6 +1,7 @@
 import geopandas as gpd
 import math
 import copy
+import random
 
 from backendstorage.StorageMechanisms.ArrayStructure import *
 from backendstorage.Cells.ShapelyCell import ShapelyCell
@@ -11,7 +12,7 @@ class ShapelyStructure(ArrayStructure):
     Not a real structure either, don't use this itself
     Structures that use arrays instead of pointers to hold information
     """
-    def __init__(self, **kwargs):
+    def __init__(self, wrap: bool = True, **kwargs):
         """
         This is an actual structure
         :param kwargs:
@@ -25,6 +26,8 @@ class ShapelyStructure(ArrayStructure):
             world_cell='TectonicCell'
         )
         self.CellStorage = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
+        self.wrap = wrap
+        self.bounds = first_cell.bounds
         # gpd.GeoDataFrame(
         #     [[
         #         first_cell,
@@ -76,11 +79,12 @@ class ShapelyStructure(ArrayStructure):
                 # print("Cell storage age diff column\n{}\nEnd Cell storage age diff column".format(
                 #     self.CellStorage['age_diff']))
 
-    def update_cells(self):
+    def update_cells(self,update_bounds: bool = True):
         print("Cell storage pre-update len {}, contents\n{}\nEnd cell storage pre-update".format(len(self.CellStorage),self.CellStorage))
         new_structure = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
         n = [x.update_structure(new_structure) for x in self.CellStorage['ShapelyCell']]
         # self.CellStorage = new_structure
+        new_bounds = None
         for m in n:
             # print("m", type(m), m)
             new_structure = new_structure.append(m, ignore_index=True)
@@ -90,6 +94,20 @@ class ShapelyStructure(ArrayStructure):
                 raise Exception("Somehow, you got {} rows when updating the values for one row of ShapelyStructure!".format(len(m)))
             new_pos = m.iloc[0]['pos_point']
             # print("new_pos {} {}".format(type(new_pos),new_pos))
+            new_shpcell = m.iloc[0]['ShapelyCell']
+            # print("new_shpcell {} {} {}".format(type(new_shpcell), new_shpcell,new_shpcell.bounds))
+            m_bounds = new_shpcell.bounds
+            if update_bounds is False:
+                pass
+            elif new_bounds is None:
+                new_bounds = list(m_bounds)
+            else:
+                for bound in range(max(len(new_bounds),len(m_bounds))):
+                    new_bounds[bound] = max(new_bounds[bound],m_bounds[bound])
+                    # print("bound {}, {}".format(new_bounds[bound],m_bounds[bound]))
+                # print("new bounds {}".format(new_bounds))
+
+                # raise Exception
             matching_rows = new_structure.loc[new_structure['pos_point'] == new_pos]
             # print("matching rows\n{}\nEnd matching rows".format(matching_rows))
             if len(matching_rows) > 1:
@@ -135,6 +153,25 @@ class ShapelyStructure(ArrayStructure):
         # raise Exception
 
     def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False):
+        if self.wrap is True:
+
+            print("Wrapping movement ({},{})".format(move_x,move_y))
+            print("Cell perimeter {}".format(cell_row['ShapelyCell'].exterior))
+            cell_perimeter = cell_row['ShapelyCell'].exterior
+            cell_coords = list(cell_perimeter.coords)
+            cell_bounds = [cell_coords[0][0],cell_coords[0][1],cell_coords[0][0],cell_coords[0][1]]
+            print("Cell perimeter {}\ncoords {}\nbounds {}".format(cell_perimeter,cell_coords,cell_bounds))
+            for pt in cell_coords:
+                print("cell coords point {}".format(pt))
+                cell_bounds[0] = min(cell_bounds[0],pt[0])
+                cell_bounds[1] = min(cell_bounds[1], pt[1])
+                cell_bounds[2] = max(cell_bounds[2], pt[0])
+                cell_bounds[3] = max(cell_bounds[3], pt[1])
+            print("cell bounds {}".format(cell_bounds))
+            wrapped_pos = self._wrap_position((move_x, move_y),cell_bounds)
+            move_x = wrapped_pos[0]
+            move_y = wrapped_pos[1]
+        print("Movement ({},{})".format(move_x, move_y))
         print("Original structure\n{}\n{}\nend original structure".format(self,self.CellStorage['geometry']))
         print("cell row to be moved type: {}, individual: {}".format(type(cell_row),cell_row))
         shapely_cell = cell_row['ShapelyCell']
@@ -164,8 +201,88 @@ class ShapelyStructure(ArrayStructure):
         #     raise Exception
         return moved_cell
 
+    def _wrap_position(self,pos,cell_bounds):
+        x = pos[0]
+        y = pos[1]
+        print("Wrapping movement ({},{})".format(x, y))
+        print("cell bounds {}".format(cell_bounds))
+        print("Bounds {}".format(self.bounds))
+        old_x = x
+        old_y = y
+        bound_x_width = (self.bounds[2] - self.bounds[0])
+        bound_y_width = (self.bounds[3] - self.bounds[1])
+        print("Bound x width {}, y width {}".format(bound_x_width,bound_y_width))
+        mod_x = x % bound_x_width
+        mod_y = y % bound_y_width
+        print("Modded x {}, y {}".format(mod_x,mod_y))
+        x = mod_x + self.bounds[0]
+        y = mod_y + self.bounds[1]
+        print("Wrapped x {}, y {}".format(x, y))
+        if cell_bounds is not None:
+            min_x = x - (cell_bounds[2]-cell_bounds[0])/2
+            max_x = x + (cell_bounds[2]-cell_bounds[0])/2
+            min_y = y - (cell_bounds[3]-cell_bounds[1])/2
+            max_y = y + (cell_bounds[3]-cell_bounds[1])/2
+            print("Position with bounds ({} {} {} {})".format(min_x,min_y,max_x,max_y))
+            min_x = cell_bounds[0] + x
+            max_x = cell_bounds[2] + x
+            min_y = cell_bounds[1] + y
+            max_y = cell_bounds[3] + y
+            print("Position with bounds ({} {} {} {})".format(min_x, min_y, max_x, max_y))
+            if min_x < self.bounds[0]:
+                if max_x > self.bounds[2]:
+                    raise Exception("Cell is larger than bounds, cannot be placed")
+                else:
+                    x += (self.bounds[2] - self.bounds[0])
+                    print("Had to reposition x right to {}".format(x))
+            if max_x > self.bounds[2]:
+                x -= (self.bounds[2] - self.bounds[0])
+                print("Had to reposition x left to {}".format(x))
+            if min_y < self.bounds[1]:
+                if max_y > self.bounds[3]:
+                    raise Exception("Cell is larger than bounds, cannot be placed")
+                else:
+                    y += (self.bounds[3] - self.bounds[1])
+                    print("Had to reposition y right to {}".format(y))
+            if max_y > self.bounds[3]:
+                y -= (self.bounds[3] - self.bounds[1])
+                print("Had to reposition y left to {}".format(y))
+            # raise Exception
+        print("New move ({}, {})".format(x, y))
+        if old_x != x or old_y != y:
+            print("Old move ({}, {})".format(x, y))
+        return (x,y)
+
     def random_cell(self):
         print("Cell storage is len {}".format(len(self.CellStorage)))
+        randint = random.randint(0,len(self.CellStorage)-1)
+        print("Random number {}".format(randint))
+        randomrow = self.CellStorage.loc[randint]
+        # randomcell = randomrow['ShapelyCell']
+        # print("Random cell {}".format(randomcell))
+        # raise Exception
+        return randomrow
+
+    def move_random_cell(self, fill_gap: bool = True, force_movement: bool = True):
+        cellrow = self.random_cell()
+        shpcell = cellrow['ShapelyCell']
+        x_movement = random.randint(-1,1)
+        y_movement = random.randint(-1,1)
+        if force_movement is True:
+            while x_movement == 0 and y_movement ==0:
+                x_movement = random.randint(-1, 1)
+                y_movement = random.randint(-1, 1)
+        x_movement *= shpcell.x_size
+        y_movement *= shpcell.y_size
+        print("shpcell {} bounds {}".format(shpcell, shpcell.bounds))
+        print("x {}, y {}".format(shpcell.x_size, shpcell.y_size))
+        if fill_gap is True:
+            old_cell = cellrow['ShapelyCell']
+            old_perim = old_cell.exterior
+            print("Old perimeter {}".format(old_perim))
+        self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)
+
+        # raise Exception
 
     def __str__(self):
         return str(self.CellStorage)
