@@ -153,8 +153,8 @@ class ShapelyStructure(ArrayStructure):
         # raise Exception
 
     def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False):
-        old_move_x = move_x
-        old_move_y = move_y
+        old_move_x = copy.deepcopy(move_x)
+        old_move_y = copy.deepcopy(move_y)
         if self.wrap is True:
 
             print("Wrapping movement ({},{})".format(move_x,move_y))
@@ -179,9 +179,20 @@ class ShapelyStructure(ArrayStructure):
         shapely_cell = cell_row['ShapelyCell']
         print("move single cell cell: {}, move_x: {}, move_y: {}".format(shapely_cell,move_x,move_y))
         if self.wrap is True and (move_x != old_move_x or move_y != old_move_y):
-            moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity,velocity_offset=(old_move_x, old_move_y))
+            velocity_offset = [0,0]
+            if move_x > old_move_x:
+                velocity_offset[0] = self.bounds[2]-self.bounds[0]
+            elif move_x < old_move_x:
+                velocity_offset[0] = self.bounds[0]-self.bounds[2]
+            if move_y > old_move_y:
+                velocity_offset[1] = self.bounds[3] - self.bounds[1]
+            elif move_y < old_move_y:
+                velocity_offset[1] = self.bounds[1] - self.bounds[3]
+            moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity,velocity_offset=velocity_offset)
+            # raise Exception
         else:
             moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity)
+        # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
         print("Moved cell\n{}\nend moved cell".format(moved_cell))
         print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
         cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
@@ -268,7 +279,7 @@ class ShapelyStructure(ArrayStructure):
         # raise Exception
         return randomrow
 
-    def move_random_cell(self, fill_gap: bool = True, force_movement: bool = True):
+    def move_random_cell(self, fill_gap: bool = True, force_movement: bool = True, scale_movement: bool = True):
         cellrow = self.random_cell()
         shpcell = cellrow['ShapelyCell']
         x_movement = random.randint(-1,1)
@@ -277,8 +288,9 @@ class ShapelyStructure(ArrayStructure):
             while x_movement == 0 and y_movement ==0:
                 x_movement = random.randint(-1, 1)
                 y_movement = random.randint(-1, 1)
-        x_movement *= shpcell.x_size
-        y_movement *= shpcell.y_size
+        if scale_movement is True:
+            x_movement *= shpcell.x_size
+            y_movement *= shpcell.y_size
         print("shpcell {} bounds {}".format(shpcell, shpcell.bounds))
         print("x {}, y {}".format(shpcell.x_size, shpcell.y_size))
         if fill_gap is True:

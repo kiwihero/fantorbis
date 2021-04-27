@@ -225,13 +225,7 @@ class ShapelyCell:
         print("new position {}".format(new_pos))
         pos_chg = LineString([old_pos,new_pos])
         if change_velocity is True:
-            if velocity_offset is not None:
-                velocity_polygon = affine_transform(self.polygon,
-                                                    matrix=(1, 0, 0, 1, velocity_offset[0], velocity_offset[1]))
-                new_vel_pos = velocity_polygon.centroid
-                pos_vel_chg = LineString([old_pos,new_vel_pos])
-            else:
-                pos_vel_chg = pos_chg
+            pos_vel_chg = pos_chg
             vel_chg = []
             print("position change {}".format(pos_chg))
             print("old vel coords {}: {}".format(type(old_vel.coords), old_vel.coords))
@@ -239,13 +233,25 @@ class ShapelyCell:
                 print("{} old vel = {}, pos chg = {}".format(coord, old_vel.coords[coord], pos_vel_chg.coords[coord]))
                 vel_chg.append((old_vel.coords[coord][0] + pos_vel_chg.coords[coord][0],
                                 old_vel.coords[coord][1] + pos_vel_chg.coords[coord][1]))
+            if velocity_offset is not None:
+                print("velocity offset {}".format(velocity_offset))
+                print("old vel chg {}".format(vel_chg))
+                new_vel_chg = [
+                    (vel_chg[0][0]+velocity_offset[0],vel_chg[0][1]+velocity_offset[1]),
+                    (vel_chg[1][0], vel_chg[1][1])
+                    ]
+                print("new vel chg {}".format(new_vel_chg))
+                vel_chg = new_vel_chg
+                # raise Exception
+            # if abs(vel_chg[0][1] - vel_chg[1][1]) >= 0.5 or abs(vel_chg[0][0] - vel_chg[1][0]) >= 0.5:
+            #     print("Vel chg {}".format(vel_chg))
+            #     raise Exception
             new_vel = LineString(vel_chg)
             print("old velocity {}".format(old_vel))
             print("new velocity {}".format(new_vel))
             print("velocity change {}".format(vel_chg))
             self.velocity = new_vel
-            # if velocity_offset is not None:
-                # raise Exception
+
 
 
 
