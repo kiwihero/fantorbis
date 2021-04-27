@@ -1,1 +1,7 @@
 Fantorbis is a fantasy map generator.
+
+How to use:
+
+First draw a world click on the pencil icon.
+Input numerical value to step through the world.
+To save world click on the save icon.
