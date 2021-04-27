@@ -11,7 +11,8 @@ def plt_to_file(world: World):
     # print("end geom")
     fig, ax = plt.subplots(1, 1)
     gdf.boundary.plot(ax=ax,color='gray',zorder=2)
-    gdf.plot(column='stack_size', ax=ax)
+    gdf.plot(column='speed', ax=ax)
+    # gdf.plot(column='stack_size', ax=ax)
     # gdf.plot(column='pos', ax=ax) #column='ShapelyCell'
     plt.savefig('pyplot')
     plt.show()

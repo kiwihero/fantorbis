@@ -52,4 +52,5 @@ for i in range(len(struct.CellStorage)):
         print(struct.CellStorage['pos_point'][i])
         print("{} matching rows".format(len(matching_rows)))
         print(matching_rows)
+
 plt_to_file(w1)

@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry.polygon import Polygon
+from shapely.geometry.polygon import Polygon, LineString
 from shapely.affinity import affine_transform
 from backendworld.TectonicCell import TectonicCell
 import copy
@@ -36,8 +36,12 @@ class ShapelyCell:
     def interiors(self):
         return self.polygon.interiors
 
+    @property
+    def speed(self):
+        return self.calculate_speed()
 
-    def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, cell_veolocity: float = 0, **kwargs):
+
+    def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, cell_veolocity=None, **kwargs):
         self.polygon = Polygon(**kwargs)
         print("ShapelyCell.polygon {} {}".format(type(self.polygon),self.polygon))
         # print("super polygon {}".format(super_polygon))
@@ -48,7 +52,11 @@ class ShapelyCell:
         # self.polygon = super().from_bounds(shell)
         # print("shapely cell geometry {}".format(self.BaseGeometry()))
         self.conf = conf
-        self.velocity = cell_veolocity
+        if cell_veolocity is None:
+            self.velocity = LineString([(0, 0), (0, 0)])
+        else:
+            # TODO: Handle velocities not centered on cell
+            self.velocity = cell_veolocity
         if world_cell_args is None:
             self.world_cell_args = {}
         else:
@@ -130,7 +138,8 @@ class ShapelyCell:
         for trp in triples:
             new_world_cell = copy.deepcopy(self.world_cell)
             new_poly = ShapelyCell(
-                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args, shell=trp
+                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args,
+                shell=trp, cell_veolocity=self.velocity
             )
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
@@ -185,7 +194,8 @@ class ShapelyCell:
         new_polys = []
         for trp in triples:
             new_poly = ShapelyCell(
-                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args, shell=trp
+                conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args,
+                shell=trp, cell_veolocity=self.velocity
             )
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
@@ -196,9 +206,29 @@ class ShapelyCell:
     def _to_points(self, feature, poly):
         return {feature: poly.exterior.coords}
 
-    def move(self, x_offset, y_offset):
+    def move(self, x_offset, y_offset, change_velocity: bool = False):
         print("Called ShapelyCell.move() on the cell {}".format(self))
+        old_pos = self.centroid
+        old_vel = self.velocity
+        print("old position {}".format(old_pos))
         self.polygon = affine_transform(self.polygon, matrix=(1,0,0,1,x_offset,y_offset))
+        new_pos = self.centroid
+        print("new position {}".format(new_pos))
+        pos_chg = LineString([old_pos,new_pos])
+        if change_velocity is True:
+            vel_chg = []
+            print("position change {}".format(pos_chg))
+            print("old vel coords {}: {}".format(type(old_vel.coords), old_vel.coords))
+            for coord in range(min(len(old_vel.coords), len(pos_chg.coords))):
+                print("{} old vel = {}, pos chg = {}".format(coord, old_vel.coords[coord], pos_chg.coords[coord]))
+                vel_chg.append((old_vel.coords[coord][0] + pos_chg.coords[coord][0],
+                                old_vel.coords[coord][1] + pos_chg.coords[coord][1]))
+            new_vel = LineString(vel_chg)
+            print("old velocity {}".format(old_vel))
+            print("new velocity {}".format(new_vel))
+            print("velocity change {}".format(vel_chg))
+            self.velocity = new_vel
+            # raise Exception
         return self
 
     def _cell_to_structure_columns(self):
@@ -214,7 +244,8 @@ class ShapelyCell:
             'pos':self.centroid.x*self.centroid.y,
             'age_diff':self.conf.world.age-self.world_cell.age,
             'pos_point':self.centroid,
-            'stack_size':self.world_cell.stack_size
+            'stack_size':self.world_cell.stack_size,
+            'speed':self.speed
         }
         requested_values = self.conf.ShapelyStructureColumns
         cell_values = dict()
@@ -248,9 +279,37 @@ class ShapelyCell:
         world = self.world_cell.world
         # print("world {}".format(world))
         # print("old world cell {}".format(self.world_cell))
+        velocity_sum = [
+            [self.velocity.coords[0][0],self.velocity.coords[0][1]],
+            [self.velocity.coords[1][0],self.velocity.coords[1][1]]
+        ]
+        uneven_velocities = False
         for cell in additional_cells:
+            for pt in range(min(len(self.velocity.coords),len(cell.velocity.coords))):
+                velocity_sum[pt][0] += cell.velocity.coords[pt][0]
+                velocity_sum[pt][1] += cell.velocity.coords[pt][1]
+                print("pt {}".format(pt))
+            if self.velocity != cell.velocity:
+                print("Uneven velocities {}, {}".format(self.velocity, cell.velocity))
+                print("velocity sum {}".format(velocity_sum))
+                uneven_velocities = True
+                # raise Exception
             self.world_cell = world.converge_cells(self.world_cell,cell.world_cell)
             cell.world_cell = self.world_cell
+
+        if uneven_velocities == True:
+            new_vel_points = []
+            for pt in range(len(velocity_sum)):
+                velocity_sum[pt][0] /= (1 + len(additional_cells))
+                velocity_sum[pt][1] /= (1 + len(additional_cells))
+                new_vel_points.append((velocity_sum[pt][0],velocity_sum[pt][1]))
+
+            # print("New velocity {}".format(velocity_sum))
+            # print("New velocity points {} {}".format(new_vel_points,LineString(new_vel_points)))
+            self.velocity = LineString(new_vel_points)
+            # print("new velocity attribute {}".format(self.velocity))
+            # raise Exception
+
 
         # print("new world cells\n{}\n{}\nEnd new world cells".format(self.world_cell,cell.world_cell))
         #
@@ -258,4 +317,8 @@ class ShapelyCell:
 
             # print("\tadditional cell {}".format(cell))
         return self._cell_to_structure_df()
+
+    def calculate_speed(self):
+        print("Velocity {} = speed {}".format(self.velocity, self.velocity.length))
+        return self.velocity.length
 

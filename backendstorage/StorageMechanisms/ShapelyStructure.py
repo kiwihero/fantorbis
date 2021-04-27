@@ -130,16 +130,16 @@ class ShapelyStructure(ArrayStructure):
         # self.CellStorage.drop(self.CellStorage[column_title] == cell_value)
         print("Matching rows\n{}\nend matching rows".format(matching_rows))
         # lambda_results  = self.CellStorage.assign(Percentage = lambda x: (x['Total_Marks'] /500 * 100))
-        lambda_results = matching_rows.apply(lambda x: self.move_single_cell(x,move_x,move_y), axis=1)
+        lambda_results = matching_rows.apply(lambda x: self.move_single_cell(x,move_x,move_y,change_velocity=True), axis=1)
         print("lambda results\n{}\nend lambda results".format(lambda_results))
         # raise Exception
 
-    def move_single_cell(self,cell_row,move_x,move_y):
+    def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False):
         print("Original structure\n{}\n{}\nend original structure".format(self,self.CellStorage['geometry']))
         print("cell row to be moved type: {}, individual: {}".format(type(cell_row),cell_row))
         shapely_cell = cell_row['ShapelyCell']
         print("move single cell cell: {}, move_x: {}, move_y: {}".format(shapely_cell,move_x,move_y))
-        moved_cell = shapely_cell.move(move_x,move_y)
+        moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity)
         print("Moved cell\n{}\nend moved cell".format(moved_cell))
         print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
         cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
@@ -163,6 +163,9 @@ class ShapelyStructure(ArrayStructure):
         #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
         #     raise Exception
         return moved_cell
+
+    def random_cell(self):
+        print("Cell storage is len {}".format(len(self.CellStorage)))
 
     def __str__(self):
         return str(self.CellStorage)
