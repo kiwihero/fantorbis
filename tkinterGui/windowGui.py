@@ -1,7 +1,11 @@
 from tkinter import *
 import os
 import sys
-import tk
+# check if user has a older version of python
+if sys.version_info[0] == 2:
+    import Tkinter as tk
+else:
+    import tkinter as tk
 from tkinter.ttk import *
 
 class Window(Frame):

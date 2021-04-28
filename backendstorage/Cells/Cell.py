@@ -6,7 +6,7 @@ class Cell:
     """
     A single cell, surrounded by vertices
     """
-    def __init__(self, conf=None, ds_pos=None, world_pos=None, world_cell=None, world_cell_args=None, **kwargs):
+    def __init__(self, conf=None, ds_pos=None, world_pos=None, world_cell=None, world_cell_args=None, ds_holder=None, **kwargs):
         outstr = ("initializing cell with args (conf={}) (ds_pos={}) (world_pos={}) (world_cell={}) (world_cell_args={}) and {} kwargs:\n".format(conf, ds_pos, world_pos,world_cell,world_cell_args, len(kwargs)))
         for key, value in kwargs.items():
             if key == 'parent' and value is not None:
@@ -34,8 +34,11 @@ class Cell:
         else:
             self.world_cell_args = world_cell_args
         print("world cell args", self.world_cell_args)
+        self.dataStorageContainer = ds_holder
         # self.world_cell_args['data_structure_location'] = self.dataStoragePosition
-        # TODO: Keeping track of & updating cells vs vertices, in one of the other
+        # TODO:
+        #  PRIORITY 1
+        #  Keeping track of & updating cells vs vertices, in one of the other
         self.vertexPoints = set()
         if type(world_cell) is str:
             self.world_cell_class = conf.class_for_name(world_cell)
@@ -56,7 +59,7 @@ class Cell:
         if newWorldPosition is not None:
             self.worldPosition.change_position(newWorldPosition)
         if newDataStoragePosition is not None:
-            self.dataStoragePosition.change_position(newDataStoragePosition)
+            self.dataStoragePosition.change_position(newDataStoragePosition, wrap_x=self.dataStorageContainer.width, wrap_y=self.dataStorageContainer.height)
 
     def __str__(self):
         if self.worldCell is not None:

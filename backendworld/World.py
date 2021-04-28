@@ -2,7 +2,7 @@ from Conf import Conf
 import random
 from Position import Position
 
-# TODO: THIS FILE NEEDS DOCSTRINGS
+
 #me doing this not anyone else
 class World:
     def __init__(self):
@@ -21,38 +21,39 @@ class World:
 
     def step(self):
         '''
-
-        :return: steps thru the world to get its age
+        A single step in time
+        :return:
         '''
         self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
-        for cell in self.tectonicCells:
+        for cell in self.tectonicCells.copy():
             cell.step()
 
     def diverge(self, p1, p2, boundary):
         '''
-
-        :param p1:
-        :param p2:
-        :param boundary:
+        TODO: Divergence
+        :param p1: First plate
+        :param p2: Second plate
+        :param boundary: Boundary of p1 and p2
         :return:
         '''
         pass
 
     def converge(self, p1, p2, boundary):
         '''
-
-        :param p1:
-        :param p2:
-        :param boundary:
+        TODO: Convergence
+        :param p1: First plate
+        :param p2: Second plate
+        :param boundary: Boundary of p1 and p2
         :return:
         '''
         pass
 
     def random_wiggle(self):
         '''
-
-        :return: mimicks the way the tectonic plates of the earth move around.
+        Wiggle a random cell one step
+        Testing function, not for production use
+        :return:
         '''
         random_row = random.randint(0, self._dataStructure.height-1)
         random_col = random.randint(0, self._dataStructure.width-1)
@@ -67,13 +68,14 @@ class World:
         rely = random.randint(-1,1)
         random_position = Position(relx, rely)
         print("Moving random cell to {}".format(random_position))
-        self._dataStructure.move_cell(random_cell, destination=random_position, relative=True)
+        self._dataStructure.move_cell(random_cell, destination=random_position, relative=True, change_velocity=True)
+        # raise Exception
         print("New info for random cell {}".format(random_cell))
         # self._dataStructure.move_cell(random_cell, relative=(relx,rely))
 
     def access_data_struct(self):
         '''
-
-        :return: shows us the datastructure
+        Helper function
+        :return: World._dataStructure
         '''
         return self._dataStructure

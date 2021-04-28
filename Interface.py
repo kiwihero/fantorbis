@@ -11,12 +11,17 @@ This is where the backend and ui interface
 #  use something like the gif_world(World) function in PillowDisplay?
 
 from backendworld.World import *
-from PillowDisplay import draw_world, gif_world,image_world
+from PillowDisplay import draw_world, gif_world, image_world
+##from tkinterGui import Login_Window
+
 import os
 import sys
-import tkinter as tk
+import PIL.Image
+import PIL.ImageTk
+from PIL import ImageGrab
+from tkinter import ttk, Tk
 from tkinter import *
-from tkinter import ttk
+from tkinter import filedialog
 # check if user has a older version of python
 if sys.version_info[0] == 2:
     import Tkinter as tk
@@ -25,14 +30,172 @@ else:
 
     w1 = World()
 
-    root = tk.Tk()
-    root.wm_title('Fantorbis')
+    # class for main window Frame
+    class MainWindow(tk.Frame):
+        def __init__(self):
+            super().__init__()
+
+            # creating entry for input
+            self.num_entry = tk.Entry(self)
+
+            self.MapUI()
+
+            # area for map display
+            self.map_canvas = Canvas(self)
+            self.map_canvas.grid(row=1, column=0, columnspan=2, rowspan=4,
+                       padx=5, sticky=tk.E + tk.W + tk.S + tk.N)
+            self.world = None
+            self.backgroundphoto = None
+
+        def MapUI(self):
+            self.pack(fill=tk.BOTH, expand=True)
+
+            self.columnconfigure(1, weight=1)
+            self.columnconfigure(3, pad=7)
+            self.rowconfigure(3, weight=1)
+            self.rowconfigure(5, pad=7)
+            self.configure(bg='firebrick3')
+
+            draw_icon = PhotoImage(file='images/pencil.png')
+            self.draw_icon = draw_icon
+            create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=lambda: self.create_world())
+            create_button.grid(row=2, column=3)
+
+            # creating a label for step value
+            step_label = tk.Label(self, text=' ', font=('calibre', 10, 'bold'))
+            step_label.grid(row=3, column=2)
+
+            # creating a entry for step value
+            step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
+            step_entry.grid(row=3, column=3)
+
+            step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
+            step_button.grid(row=3, column=4)
+
+
+            save_icon = PhotoImage(file='images/download.png')
+            self.save_icon = save_icon
+            saveMap_button = tk.Button(self, image=save_icon,  width=50, height=50, command=lambda: self.save_world())
+            saveMap_button.grid(row=4, column=3)
+
+            help_icon = PhotoImage(file='images/help.png')
+            self.help_icon = help_icon
+            help_button = Button(self, image=help_icon,  width=50, height=50,  command=lambda: self.help())
+            help_button.grid(row=5, column=0, padx=5)
+
+            exit_icon = PhotoImage(file='images/exit.png')
+            self.exit_icon = exit_icon
+            exit_button = tk.Button(self, image=exit_icon, width=50, height=50, command=lambda: self.quit())
+            exit_button.grid(row=5, column=3)
+
+        def show_frame(self, cont):
+            frame = self.frames[cont]
+            frame.tkraise()
+
+        def create_world(self):
+            print("creating world")
+            interface_new_world = World()
+            self.world = interface_new_world
+            image_world(self.world)
+
+            last_key = max(self.world.images.keys())
+            first_image_bg = self.world.images[last_key]
+            first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+
+
+            background_label = Label(self.map_canvas, image=photo_image)
+            background_label.photo = photo_image
+            background_label.grid()
+            print("Canvas has {}".format(self.map_canvas))
+            print("Background has {}".format(background_label.photo))
+            self.backgroundphoto = background_label
+
+
+
+
+        def stepping_world(self):
+            print("CALLED STEPPING WORLD")
+            image_world(self.world)
+            num = self.num_entry.get()
+            self.world.access_data_struct().subdivide()
+            # print(num)
+            self.world.random_wiggle()
+            step_world = self.world.step()
+            draw_world(self.world)
+            print("world age {}".format(self.world.age))
+            # World.step(step_world)
+            # World.random_wiggle()
+            last_key =max(self.world.images.keys())
+            print("last key {}".format(last_key))
+            first_image_bg = self.world.images[max(self.world.images.keys())]
+            # self.world.images[max(self.world.images.keys())].show()
+            first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+            # photo_image.show()
+            # photo_image.grid(row=1,column=1)
+
+
+            # background_label = Label(self.map_canvas, image=photo_image)
+            # background_label.photo = photo_image
+            # background_label.grid()
+            self.backgroundphoto.configure(image=photo_image)
+            self.backgroundphoto.image = photo_image
+
+        def save_world(self):
+            save_world_image = World()
+            gif_world(save_world_image)
+            myFormats = [('Portable Network Graphics', '*.png'),
+                         ('JPEG', '*.jpg'), ('GIF', '*.gif'), ]
+            filename = filedialog.asksaveasfilename(filetypes=myFormats)
+            if not filename:
+                return
+            ##self.grabcanvas.save("flatImages/out.gif")
+            #save(gif_world(save_world_image))
+
+        def help(self):
+         os.system('notepad resources/About.txt')
+
+
+
+
+    # class for login window Frame
+
+    class Login(Frame):
+        def __init__(self):
+            Frame.__init__(self)
+
+            ##self.login_win = Login_Window.LoginWindow(self.master)
+
+        ##def create_login(self):
+            ##self.login_win.window_properties(self.master)
+            ##self.login_win.mainloop()
+
+    class Help(tk.Frame):
+        def __init__(self):
+            Frame.__init__(self)
+
+            # text area
+            text_area = tk.Text(self, height=12)
+            text_area.grid(column=0, row=0, sticky='nsew')
+
+
+            tf = open('resources/About.txt', 'r')  # or tf = open(tf, 'r')
+            data = tf.read()
+            text_area.insert(END, data)
+            tf.close()
+
+
+
+
+def main():
+      ##Login().create_login()
+    root = Tk()
+    root.title('Fantorbis')
+    app = MainWindow()
     root.iconbitmap(os.path.join(sys.path[0], 'images/Fantorbis-Logo.ico'))
+    root.mainloop()
 
 
-
-
-    saveMap_button = ttk.Button(root, text='Save Map', command=gif_world(w1)).grid(row=0, column=0)
-    exit_button = ttk.Button(root,text='Exit',command=lambda: root.quit()).grid(row=0, column=3)
-
-root.mainloop()
+if __name__ == '__main__':
+             main()
