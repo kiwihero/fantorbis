@@ -49,7 +49,7 @@ class ShapelyCell:
         return self.bounds[3]-self.bounds[1]
 
 
-    def __init__(self, conf=None, world_cell=None, world_cell_args: dict = None, cell_veolocity=None, **kwargs):
+    def __init__(self, conf=None, age=None, world_cell=None, world_cell_args: dict = None, cell_veolocity=None, **kwargs):
         self.polygon = Polygon(**kwargs)
         print("ShapelyCell.polygon {} {}".format(type(self.polygon),self.polygon))
         # print("super polygon {}".format(super_polygon))
@@ -60,6 +60,11 @@ class ShapelyCell:
         # self.polygon = super().from_bounds(shell)
         # print("shapely cell geometry {}".format(self.BaseGeometry()))
         self.conf = conf
+        if age is None:
+            self.creation_age = int(self.conf.world.age)
+        else:
+            self.creation_age = int(age)
+        self.creation_age_list = [self.creation_age]
         if cell_veolocity is None:
             self.velocity = LineString([(0, 0), (0, 0)])
         else:
@@ -75,9 +80,11 @@ class ShapelyCell:
             print("world cell input str")
             self.world_cell_class = conf.class_for_name(world_cell)
             self.world_cell = self.world_cell_class(**self.world_cell_args)
+            print("world cell args {}".format(self.world_cell_args))
         else:
             self.world_cell_class = type(world_cell)
             self.world_cell = world_cell
+        self.world_cell.age = self.creation_age
 
     def subdivide(self):
         """
@@ -147,8 +154,9 @@ class ShapelyCell:
             new_world_cell = copy.deepcopy(self.world_cell)
             new_poly = ShapelyCell(
                 conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args,
-                shell=trp, cell_veolocity=self.velocity
+                shell=trp, cell_veolocity=self.velocity,age=self.creation_age
             )
+            # TODO: Remove purged cells from World's tectonic cell list
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2],trp[3])
@@ -203,8 +211,9 @@ class ShapelyCell:
         for trp in triples:
             new_poly = ShapelyCell(
                 conf=self.conf, world_cell=copy.deepcopy(self.world_cell), world_cell_args=self.world_cell_args,
-                shell=trp, cell_veolocity=self.velocity
+                shell=trp, cell_veolocity=self.velocity, age=self.creation_age
             )
+            # TODO: Remove purged cells from World's tectonic cell list
             new_polys.append(new_poly._cell_to_structure_columns())
             print("new poly",new_poly)
             print(trp[0],trp[1],trp[2])
@@ -268,7 +277,10 @@ class ShapelyCell:
             'polygon':self.polygon,
             'geometry':self.polygon,
             'pos':self.centroid.x*self.centroid.y,
-            'age_diff':self.conf.world.age-self.world_cell.age,
+            'age_diff': sum(self.creation_age_list)/len(self.creation_age_list),
+            # 'age_diff': self.world_cell.age,
+            # 'age_diff': self.creation_age,
+            # 'age_diff':self.conf.world.age-self.world_cell.age,
             'pos_point':self.centroid,
             'stack_size':self.world_cell.stack_size,
             'speed':self.speed
@@ -311,10 +323,11 @@ class ShapelyCell:
         ]
         uneven_velocities = False
         for cell in additional_cells:
+            self.creation_age_list += cell.creation_age_list
             for pt in range(min(len(self.velocity.coords),len(cell.velocity.coords))):
                 velocity_sum[pt][0] += cell.velocity.coords[pt][0]
                 velocity_sum[pt][1] += cell.velocity.coords[pt][1]
-                print("pt {}".format(pt))
+                print("pt {} = {}".format(pt,velocity_sum[pt]))
             if self.velocity != cell.velocity:
                 print("Uneven velocities {}, {}".format(self.velocity, cell.velocity))
                 print("velocity sum {}".format(velocity_sum))
@@ -322,6 +335,7 @@ class ShapelyCell:
                 # raise Exception
             self.world_cell = world.converge_cells(self.world_cell,cell.world_cell)
             cell.world_cell = self.world_cell
+        #TODO: Remove purged cells from World's tectonic cell list
 
         if uneven_velocities == True:
             new_vel_points = []

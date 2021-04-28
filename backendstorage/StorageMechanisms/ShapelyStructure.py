@@ -292,16 +292,19 @@ class ShapelyStructure(ArrayStructure):
         if scale_movement is True:
             x_movement *= shpcell.x_size
             y_movement *= shpcell.y_size
-        print("shpcell {} bounds {}".format(shpcell, shpcell.bounds))
+        print("shpcell {} bounds {} age".format(shpcell, shpcell.bounds,shpcell.creation_age))
         print("x {}, y {}".format(shpcell.x_size, shpcell.y_size))
         if fill_gap is True:
             old_cell = cellrow['ShapelyCell']
             old_perim = old_cell.exterior
-            fill_cell = ShapelyCell(conf=old_cell.conf, world_cell_args=old_cell.world_cell_args,shell=old_perim)
+            print("old cell age {}".format(old_cell.creation_age))
+            fill_cell = ShapelyCell(conf=old_cell.conf,shell=old_perim)
+            print("fill cell age {}".format(fill_cell.creation_age))
             print("Old perimeter {}".format(old_perim))
             fill_row = fill_cell._cell_to_structure_df()
             print("fill row {}, vel {}, pos {}, age {}".format(fill_row, fill_cell.velocity, fill_cell.centroid, fill_cell.world_cell.age))
             print("age diff {}".format(fill_row['age_diff']))
+            print("World age {}".format(self.conf.world.age))
             self.CellStorage = self.CellStorage.append(fill_row, ignore_index=True)
             # raise Exception
         self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)

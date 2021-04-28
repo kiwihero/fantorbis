@@ -25,6 +25,8 @@ class World:
         '''
         self.conf.log_from_conf(level='info', message='World age {} step by one'.format(self.age))
         self.age += 1
+        print("When stepping world to age {}, know of {} tectonic cells".format(self.age,len(self.tectonicCells)))
+        # for cell in self.tectonicCells.copy():
         for cell in self.tectonicCells.copy():
             cell.step()
 

@@ -7,6 +7,8 @@ print("World created {}".format(w1))
 struct = w1.access_data_struct()
 # plt_to_file(w1)
 print("Shapely structure {}".format(struct))
+print("world id {}, shp conf id {}".format(hex(id(w1)), hex(id(struct.conf.world))))
+# raise Exception
 w1.step()
 struct.subdivide()
 struct.update_cells()
@@ -66,6 +68,9 @@ for x in range(5):
 struct.subdivide()
 struct.update_cells()
 w1.step()
+
+# print("world id {}, shp conf id {}".format(hex(id(w1)), hex(id(struct.conf.world))))
+# raise Exception
 print(struct.CellStorage['age_diff'])
 print(struct.CellStorage['speed'])
 

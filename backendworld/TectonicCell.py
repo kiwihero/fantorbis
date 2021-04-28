@@ -41,12 +41,13 @@ class TectonicCell(WorldAttribute):
         Also double checks if in world's set of known cells
         :return:
         """
-        self._updateWorldSet()
+        # self._updateWorldSet()
         if self.velocity.magnitude() > 0:
             print("CELL HAS EXISTING VELOCITY {}".format(self.velocity))
             self.move(self.velocity.y_component(),self.velocity.x_component())
         # Note the implied assumption that all elements of the world must not be older than the world
         if self.age == self.world.age:
+            # raise Exception
             if self.world is not None:
                 self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
             else:
@@ -89,6 +90,7 @@ class TectonicCell(WorldAttribute):
         return new_cell
 
     def __deepcopy__(self, memodict={}):
+        # TODO: Handling deep copy in memo dict
         new_cell = TectonicCell(data_structure_location=copy.deepcopy(self._dataStructureLocation), world=self.world)
         new_cell.age = self.age
         new_cell.velocity = copy.deepcopy(self.velocity)
