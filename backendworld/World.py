@@ -29,6 +29,7 @@ class World:
         # for cell in self.tectonicCells.copy():
         for cell in self.tectonicCells.copy():
             cell.step()
+        self._dataStructure.step_move()
 
     def diverge(self, p1, p2, boundary):
         '''

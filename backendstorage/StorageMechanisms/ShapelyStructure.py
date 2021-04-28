@@ -274,7 +274,7 @@ class ShapelyStructure(ArrayStructure):
         print("Cell storage is len {}".format(len(self.CellStorage)))
         randint = random.randint(0,len(self.CellStorage)-1)
         print("Random number {}".format(randint))
-        randomrow = self.CellStorage.loc[randint]
+        randomrow = self.CellStorage.iloc[randint]
         # randomcell = randomrow['ShapelyCell']
         # print("Random cell {}".format(randomcell))
         # raise Exception
@@ -299,6 +299,7 @@ class ShapelyStructure(ArrayStructure):
             old_perim = old_cell.exterior
             print("old cell age {}".format(old_cell.creation_age))
             fill_cell = ShapelyCell(conf=old_cell.conf,shell=old_perim)
+            fill_cell.world_cell.setWorld(old_cell.world_cell.world)
             print("fill cell age {}".format(fill_cell.creation_age))
             print("Old perimeter {}".format(old_perim))
             fill_row = fill_cell._cell_to_structure_df()
@@ -309,6 +310,41 @@ class ShapelyStructure(ArrayStructure):
             # raise Exception
         self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)
 
+        # raise Exception
+
+    def step_move(self):
+        matching_rows = self.CellStorage.loc[self.CellStorage['speed'] > 0]
+        print("Cells with a velocity")
+        print(matching_rows)
+        moved_cells = matching_rows.apply(lambda x: self.move_existing_velocity(x),axis=1)
+        # if len(matching_rows) > 0:
+            # raise Exception
+
+    def move_existing_velocity(self, cellrow, fill_gap: bool = True):
+        print("Moving with existing velocity cell {}".format(cellrow))
+        existing_velocity = cellrow['ShapelyCell'].velocity
+        move_x = (existing_velocity.coords[1][0]-existing_velocity.coords[0][0])
+        move_y = (existing_velocity.coords[1][1]-existing_velocity.coords[0][1])
+        print("Move x {}, y {}".format(move_x,move_y))
+        # raise Exception
+
+        if fill_gap is True:
+            old_cell = cellrow['ShapelyCell']
+            old_perim = old_cell.exterior
+            print("old cell age {}".format(old_cell.creation_age))
+            fill_cell = ShapelyCell(conf=old_cell.conf,shell=old_perim)
+            fill_cell.world_cell.setWorld(old_cell.world_cell.world)
+            print("fill cell age {}".format(fill_cell.creation_age))
+            print("Old perimeter {}".format(old_perim))
+            fill_row = fill_cell._cell_to_structure_df()
+            print("fill row {}, vel {}, pos {}, age {}".format(fill_row, fill_cell.velocity, fill_cell.centroid, fill_cell.world_cell.age))
+            print("age diff {}".format(fill_row['age_diff']))
+            print("World age {}".format(self.conf.world.age))
+            self.CellStorage = self.CellStorage.append(fill_row, ignore_index=True)
+            # raise Exception
+
+
+        return self.move_single_cell(cellrow, move_x, move_y, change_velocity=False)
         # raise Exception
 
     def __str__(self):
