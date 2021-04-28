@@ -28,7 +28,6 @@ if sys.version_info[0] == 2:
 else:
     import tkinter as tk
 
-    w1 = World()
 
     # class for main window Frame
     class MainWindow(tk.Frame):
@@ -69,8 +68,15 @@ else:
             step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
             step_entry.grid(row=3, column=3)
 
+
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
             step_button.grid(row=3, column=4)
+
+            subdivide_button = tk.Button(self, text='Subdivide', command=lambda: self.stepping_world())
+            subdivide_button.grid(row=3, column=5)
+
+            move_button = tk.Button(self, text='Move', command=lambda: self.stepping_world())
+            move_button.grid(row=3, column=6)
 
 
             save_icon = PhotoImage(file='images/download.png')
