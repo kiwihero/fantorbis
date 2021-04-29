@@ -60,23 +60,14 @@ else:
             create_button = tk.Button(self, image=draw_icon, width=50, height=50, command=lambda: self.create_world())
             create_button.grid(row=2, column=3)
 
-            # creating a label for step value
-            step_label = tk.Label(self, text=' ', font=('calibre', 10, 'bold'))
-            step_label.grid(row=3, column=2)
-
-            # creating a entry for step value
-            step_entry = tk.Entry(self, textvariable=self.num_entry, font=('calibre', 10, 'normal'))
-            step_entry.grid(row=3, column=3)
-
-
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
-            step_button.grid(row=3, column=4)
+            step_button.grid(row=3, column=3)
 
             subdivide_button = tk.Button(self, text='Subdivide', command=lambda: self.subdivide_world())
-            subdivide_button.grid(row=3, column=5)
+            subdivide_button.grid(row=3, column=4)
 
             move_button = tk.Button(self, text='Move', command=lambda: self.move_world())
-            move_button.grid(row=3, column=6)
+            move_button.grid(row=3, column=5)
 
 
             save_icon = PhotoImage(file='images/download.png')
@@ -123,7 +114,6 @@ else:
         def stepping_world(self):
             print("CALLED STEPPING WORLD")
             image_world(self.world)
-            num = self.num_entry.get()
             #self.world.access_data_struct().subdivide()
             #self.world.random_wiggle()
             step_world = self.world.step()
@@ -191,7 +181,7 @@ else:
             text_area.grid(column=0, row=0, sticky='nsew')
 
 
-            tf = open('resources/About.txt', 'r')  # or tf = open(tf, 'r')
+            tf = open('resources/About.txt', 'r')
             data = tf.read()
             text_area.insert(END, data)
             tf.close()
