@@ -74,4 +74,8 @@ w1.step()
 print(struct.CellStorage['age_diff'])
 print(struct.CellStorage['speed'])
 
+
+random_cell_row = struct.random_cell()
+overlap = struct.find_overlap(random_cell_row)
+
 plt_to_file(w1)

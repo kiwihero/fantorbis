@@ -1,4 +1,5 @@
 import geopandas as gpd
+import pandas as pd
 import math
 import copy
 import random
@@ -346,6 +347,33 @@ class ShapelyStructure(ArrayStructure):
 
         return self.move_single_cell(cellrow, move_x, move_y, change_velocity=False)
         # raise Exception
+
+    def find_overlap(self, cellrow):
+        print("given cellrow {}".format(cellrow))
+        # TODO: Convert to gpd
+        lambda_results = pd.DataFrame()
+        lambda_results['overlap'] = self.CellStorage.apply(lambda x: self.overlap_type(x, cellrow), axis=1)
+        print("lambda results \n{}\nEnd lambda results".format(lambda_results))
+        overlapping_rows = lambda_results.loc[lambda_results['overlap'] != False]
+        print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows),overlapping_rows['overlap']))
+
+    def overlap_type(self,c1_row, c2_row):
+        c1 = c1_row['ShapelyCell'].polygon
+        c2 = c2_row['ShapelyCell'].polygon
+        if c1.almost_equals(c2):
+            print("{} and {} fully overlap".format(c1,c2))
+            return 1
+        if c1.touches(c2):
+            print("{} touches {}".format(c1,c2))
+            print("Touches along {}".format(c1.intersection(c2)))
+            return 2
+        if c1.intersects(c2):
+            print("{} intersects {}".format(c1,c2))
+            print("Intersection size {}".format(c1.intersection(c2).area))
+            print("Polygon areas {}, {}".format(c1.area,c2.area))
+            return 3
+        return False
+
 
     def __str__(self):
         return str(self.CellStorage)
