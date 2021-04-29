@@ -11,7 +11,7 @@ This is where the backend and ui interface
 #  use something like the gif_world(World) function in PillowDisplay?
 
 from backendworld.World import *
-from PillowDisplay import draw_world, gif_world, image_world
+from PillowDisplay import draw_world, gif_world, image_world, _save_image
 ##from tkinterGui import Login_Window
 
 import os
@@ -72,10 +72,10 @@ else:
             step_button = tk.Button(self, text='Step World', command=lambda: self.stepping_world())
             step_button.grid(row=3, column=4)
 
-            subdivide_button = tk.Button(self, text='Subdivide', command=lambda: self.stepping_world())
+            subdivide_button = tk.Button(self, text='Subdivide', command=lambda: self.subdivide_world())
             subdivide_button.grid(row=3, column=5)
 
-            move_button = tk.Button(self, text='Move', command=lambda: self.stepping_world())
+            move_button = tk.Button(self, text='Move', command=lambda: self.move_world())
             move_button.grid(row=3, column=6)
 
 
@@ -124,9 +124,8 @@ else:
             print("CALLED STEPPING WORLD")
             image_world(self.world)
             num = self.num_entry.get()
-            self.world.access_data_struct().subdivide()
-            # print(num)
-            self.world.random_wiggle()
+            #self.world.access_data_struct().subdivide()
+            #self.world.random_wiggle()
             step_world = self.world.step()
             draw_world(self.world)
             print("world age {}".format(self.world.age))
@@ -148,16 +147,22 @@ else:
             self.backgroundphoto.configure(image=photo_image)
             self.backgroundphoto.image = photo_image
 
+        def subdivide_world(self):
+            image_world(self.world)
+            self.world.access_data_struct().subdivide()
+
+        def move_world(self):
+            print("MOVE WORLD")
+            image_world(self.world)
+            self.world.random_wiggle()
+            World.random_wiggle()
+
+
+
         def save_world(self):
-            save_world_image = World()
-            gif_world(save_world_image)
-            myFormats = [('Portable Network Graphics', '*.png'),
-                         ('JPEG', '*.jpg'), ('GIF', '*.gif'), ]
-            filename = filedialog.asksaveasfilename(filetypes=myFormats)
-            if not filename:
-                return
-            ##self.grabcanvas.save("flatImages/out.gif")
-            #save(gif_world(save_world_image))
+            first_image_bg = self.world.images[max(self.world.images.keys())]
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+            _save_image(photo_image,)
 
         def help(self):
          os.system('notepad resources/About.txt')
