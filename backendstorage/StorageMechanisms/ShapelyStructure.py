@@ -3,9 +3,12 @@ import pandas as pd
 import math
 import copy
 import random
+from shapely.geometry.linestring import LineString
+from shapely.geometry.point import Point
 
 from backendstorage.StorageMechanisms.ArrayStructure import *
 from backendstorage.Cells.ShapelyCell import ShapelyCell
+from MatplotDisplay import plt_geoms
 
 
 class ShapelyStructure(ArrayStructure):
@@ -197,6 +200,48 @@ class ShapelyStructure(ArrayStructure):
         # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
         print("Moved cell\n{}\nend moved cell".format(moved_cell))
         print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
+        overlapping_rows = self.find_overlap(cell_row)
+        print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows), overlapping_rows['overlap']))
+        fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
+        print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
+        line_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+        print("{} Adjacent results \n{}\nEnd adjacent results".format(len(line_adjacent_overlapping_rows), line_adjacent_overlapping_rows['overlap']))
+        pt_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+        print("{} Diagonally adjacent results \n{}\nEnd diagonally adjacent results".format(len(pt_adjacent_overlapping_rows), pt_adjacent_overlapping_rows['overlap']))
+        prob1 = overlapping_rows['overlap'] >= 2
+        prob2 = overlapping_rows['overlap'] < 3
+        # print("prob1\n{}\nend prob1".format(prob1))
+        # print("prob2\n{}\nend prob2".format(prob2))
+        prob3 = prob1 & prob2
+        # print("prob3\n{}\nend prob3".format(prob3))
+        problematic_rows = overlapping_rows.loc[prob3]
+        print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows['overlap']))
+        print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
+        print("Path of last skew\n{}\nEnd path of last skew".format(moved_cell.last_skew_path))
+        # plt_geoms(moved_cell.last_skew_path)
+
+
+
+
+
+
+
+
+
+
+
+
+        # raise Exception
+
+
+
+
+
+
+
+
+
+
         cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
         print("Cells at position\n{}\nend cells at position".format(cells_at_position))
         if len(cells_at_position) > 0:
@@ -217,6 +262,7 @@ class ShapelyStructure(ArrayStructure):
         #     moved_cell.world_cell.stack_size += len(cells_at_position)-1
         #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
         #     raise Exception
+
         return moved_cell
 
     def _wrap_position(self,pos,cell_bounds):
@@ -229,7 +275,7 @@ class ShapelyStructure(ArrayStructure):
         old_y = y
         bound_x_width = (self.bounds[2] - self.bounds[0])
         bound_y_width = (self.bounds[3] - self.bounds[1])
-        print("Bound x width {}, y width {}".format(bound_x_width,bound_y_width))
+        print("Figure bounds x width {}, y width {}".format(bound_x_width,bound_y_width))
         mod_x = x % bound_x_width
         mod_y = y % bound_y_width
         print("Modded x {}, y {}".format(mod_x,mod_y))
@@ -237,34 +283,45 @@ class ShapelyStructure(ArrayStructure):
         y = mod_y + self.bounds[1]
         print("Wrapped x {}, y {}".format(x, y))
         if cell_bounds is not None:
-            min_x = x - (cell_bounds[2]-cell_bounds[0])/2
-            max_x = x + (cell_bounds[2]-cell_bounds[0])/2
-            min_y = y - (cell_bounds[3]-cell_bounds[1])/2
-            max_y = y + (cell_bounds[3]-cell_bounds[1])/2
-            print("Position with bounds ({} {} {} {})".format(min_x,min_y,max_x,max_y))
-            min_x = cell_bounds[0] + x
+            cell_bound_x_width = cell_bounds[2]-cell_bounds[0]
+            half_cell_bound_x_width = cell_bound_x_width/2
+            cell_bound_y_width = cell_bounds[3]-cell_bounds[1]
+            half_cell_bound_y_width = cell_bound_y_width / 2
+            print("Cell bounds x width {}, y width {}".format(half_cell_bound_x_width, half_cell_bound_y_width))
+            # TODO: THESE AREN'T CORRECT. NEED TO FIX.
+            # min_x = x - (cell_bounds[2]-cell_bounds[0])/2
+            # max_x = x + (cell_bounds[2]-cell_bounds[0])/2
+            # min_y = y - (cell_bounds[3]-cell_bounds[1])/2
+            # max_y = y + (cell_bounds[3]-cell_bounds[1])/2
+            # print("Position with bounds ({} {} {} {})".format(min_x,min_y,max_x,max_y))
+            min_x = x + cell_bounds[0]
             max_x = cell_bounds[2] + x
-            min_y = cell_bounds[1] + y
+            min_y = y + cell_bounds[1]
             max_y = cell_bounds[3] + y
             print("Position with bounds ({} {} {} {})".format(min_x, min_y, max_x, max_y))
-            if min_x < self.bounds[0]:
-                if max_x > self.bounds[2]:
-                    raise Exception("Cell is larger than bounds, cannot be placed")
-                else:
-                    x += (self.bounds[2] - self.bounds[0])
-                    print("Had to reposition x right to {}".format(x))
             if max_x > self.bounds[2]:
-                x -= (self.bounds[2] - self.bounds[0])
-                print("Had to reposition x left to {}".format(x))
-            if min_y < self.bounds[1]:
-                if max_y > self.bounds[3]:
+                if min_x < self.bounds[0]:
                     raise Exception("Cell is larger than bounds, cannot be placed")
                 else:
-                    y += (self.bounds[3] - self.bounds[1])
-                    print("Had to reposition y right to {}".format(y))
+                    x -= bound_x_width
+                    print("Had to reposition x right to {}".format(x))
+            if min_x < self.bounds[0]:
+                x += bound_x_width
+                print("Had to reposition x left to {}".format(x))
             if max_y > self.bounds[3]:
-                y -= (self.bounds[3] - self.bounds[1])
+                if min_y < self.bounds[1]:
+                    raise Exception("Cell is larger than bounds, cannot be placed")
+                else:
+                    y -= bound_y_width
+                    print("Had to reposition y right to {}".format(y))
+            if min_y < self.bounds[1]:
+                y += bound_y_width
                 print("Had to reposition y left to {}".format(y))
+            min_x = x + cell_bounds[0]
+            max_x = cell_bounds[2] + x
+            min_y = y + cell_bounds[1]
+            max_y = cell_bounds[3] + y
+            print("Repositioned with bounds ({} {} {} {})".format(min_x, min_y, max_x, max_y))
             # raise Exception
         print("New move ({}, {})".format(x, y))
         if old_x != x or old_y != y:
@@ -353,26 +410,31 @@ class ShapelyStructure(ArrayStructure):
         # TODO: Convert to gpd
         lambda_results = pd.DataFrame()
         lambda_results['overlap'] = self.CellStorage.apply(lambda x: self.overlap_type(x, cellrow), axis=1)
-        print("lambda results \n{}\nEnd lambda results".format(lambda_results))
-        overlapping_rows = lambda_results.loc[lambda_results['overlap'] != False]
-        print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows),overlapping_rows['overlap']))
+        # print("lambda results \n{}\nEnd lambda results".format(lambda_results))
+        overlapping_rows = lambda_results.loc[lambda_results['overlap'] != 0]
+        # print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows),overlapping_rows['overlap']))
+        return overlapping_rows
 
     def overlap_type(self,c1_row, c2_row):
         c1 = c1_row['ShapelyCell'].polygon
         c2 = c2_row['ShapelyCell'].polygon
         if c1.almost_equals(c2):
             print("{} and {} fully overlap".format(c1,c2))
-            return 1
+            return 1.3
         if c1.touches(c2):
-            print("{} touches {}".format(c1,c2))
+            # print("{} touches {}".format(c1,c2))
             print("Touches along {}".format(c1.intersection(c2)))
-            return 2
+            print("Type of intersection {}".format(type(c1.intersection(c2))))
+            if type(c1.intersection(c2)) is LineString:
+                return 3.1
+            else:
+                return 3.2
         if c1.intersects(c2):
-            print("{} intersects {}".format(c1,c2))
+            # print("{} intersects {}".format(c1,c2))
             print("Intersection size {}".format(c1.intersection(c2).area))
             print("Polygon areas {}, {}".format(c1.area,c2.area))
-            return 3
-        return False
+            return 2.3
+        return 0
 
 
     def __str__(self):

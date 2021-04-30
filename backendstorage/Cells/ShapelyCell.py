@@ -1,10 +1,15 @@
 from copy import copy, deepcopy
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry.polygon import Polygon, LineString
-from shapely.affinity import affine_transform
+from shapely.geometry.polygon import Polygon, LineString, LinearRing
+from shapely.geometry.multipolygon import MultiPolygon
+from shapely.geometry.point import Point
+from shapely.geometry.linestring import LineString
+from shapely.affinity import affine_transform, skew
 from backendworld.TectonicCell import TectonicCell
 import copy
+
+from MatplotDisplay import plt_geoms
 
 
 class ShapelyCell:
@@ -85,6 +90,7 @@ class ShapelyCell:
             self.world_cell_class = type(world_cell)
             self.world_cell = world_cell
         self.world_cell.age = self.creation_age
+        self.last_skew_path = gpd.GeoDataFrame(columns=['geometry'])
 
     def subdivide(self):
         """
@@ -225,14 +231,19 @@ class ShapelyCell:
 
     def move(self, x_offset, y_offset, change_velocity: bool = False, velocity_offset = None):
         print("Called ShapelyCell.move() on the cell {}".format(self))
-        old_pos = self.centroid
-        old_vel = self.velocity
-        print("old position {}".format(old_pos))
+        old_pos = Point(self.centroid)
+        old_vel = LineString(self.velocity)
+        print("old position {} {} {}".format(old_pos,old_pos.coords.xy,old_pos.coords.xy[0]))
+        old_bounds = LinearRing(self.exterior)
+        old_polygon = Polygon(self.polygon)
+        print("old velocity {}".format(old_vel))
 
-        self.polygon = affine_transform(self.polygon, matrix=(1,0,0,1,x_offset,y_offset))
+        self.polygon = affine_transform(self.polygon, matrix=(1, 0, 0, 1, x_offset, y_offset))
         new_pos = self.centroid
         print("new position {}".format(new_pos))
         pos_chg = LineString([old_pos,new_pos])
+        old_offset_polygon = Polygon(old_polygon)
+        new_offset_polygon = Polygon(self.polygon)
         if change_velocity is True:
             pos_vel_chg = pos_chg
             vel_chg = []
@@ -251,15 +262,46 @@ class ShapelyCell:
                     ]
                 print("new vel chg {}".format(new_vel_chg))
                 vel_chg = new_vel_chg
+                print("old polygon {}".format(old_offset_polygon))
+                print("new polygon {}".format(new_offset_polygon))
+                old_offset_polygon = affine_transform(old_offset_polygon, matrix=(1, 0, 0, 1, velocity_offset[0], velocity_offset[1]))
+                new_offset_polygon = affine_transform(new_offset_polygon, matrix=(1, 0, 0, 1, -1*velocity_offset[0], -1*velocity_offset[1]))
+                print("old offset polygon {}".format(old_offset_polygon))
+                print("new offset polygon {}".format(new_offset_polygon))
                 # raise Exception
             # if abs(vel_chg[0][1] - vel_chg[1][1]) >= 0.5 or abs(vel_chg[0][0] - vel_chg[1][0]) >= 0.5:
             #     print("Vel chg {}".format(vel_chg))
             #     raise Exception
             new_vel = LineString(vel_chg)
-            print("old velocity {}".format(old_vel))
+
+
+
             print("new velocity {}".format(new_vel))
             print("velocity change {}".format(vel_chg))
             self.velocity = new_vel
+            print("offsets {}, {}".format(x_offset, y_offset))
+            old_multi_polys = MultiPolygon([self.polygon, old_offset_polygon])
+            new_multi_polys = MultiPolygon([new_offset_polygon, old_polygon])
+            old_min_rot = old_multi_polys.minimum_rotated_rectangle
+            new_min_rot = new_multi_polys.minimum_rotated_rectangle
+            old_min_env = old_multi_polys.envelope
+            new_min_env = new_multi_polys.envelope
+            old_min_around = old_min_rot.intersection(old_min_env)
+            new_min_around = new_min_rot.intersection(new_min_env)
+            print("minimum around {}, {}".format(old_min_around,new_min_around))
+            min_rot_df = gpd.GeoDataFrame([[old_min_around], [new_min_around], [self.polygon], [old_polygon]], columns=['geometry'])
+            new_min_rot_df = gpd.GeoDataFrame([[new_min_around], [old_polygon], [new_offset_polygon]], columns=['geometry'])
+            old_min_rot_df = gpd.GeoDataFrame([[old_min_around], [old_offset_polygon], [self.polygon]], columns=['geometry'])
+            skew_positions = gpd.GeoDataFrame([[new_min_around], [old_min_around]], columns=['geometry'])
+            self.last_skew_path = skew_positions
+
+            skewed_pos = self.skew(old_polygon, x_offset + self.x_size, y_offset + self.y_size)
+
+            skewed_pos = skewed_pos.append({'geometry': self.polygon, 'color_scale': 3}, ignore_index=True)
+            # plt_geoms(min_rot_df)
+            # plt_geoms(new_min_rot_df)
+            # plt_geoms(old_min_rot_df)
+            # plt_geoms(skewed_pos)
 
 
 
@@ -361,4 +403,16 @@ class ShapelyCell:
     def calculate_speed(self):
         print("Velocity {} = speed {}".format(self.velocity, self.velocity.length))
         return self.velocity.length
+
+    def skew(self,poly,dx,dy):
+        print("dx {}, dy {}".format(dx,dy))
+        print("skewing polygon {}".format(poly))
+        skewed_poly = affine_transform(poly,[1,dx,dy,1,0,0])
+        # skewed_poly_y = affine_transform(skewed_poly_x,[1,0,dy,1,0,0])
+        new_skew_poly = skewed_poly.difference(poly)
+        print("skewed polygon {}".format(skewed_poly))
+        skewed_gdf = gpd.GeoDataFrame([[poly,1],[skewed_poly,2]],columns=['geometry','color_scale'])
+        # skewed_gdf = gpd.GeoDataFrame([[new_skew_poly, 2]], columns=['geometry', 'color_scale'])
+
+        return skewed_gdf
 

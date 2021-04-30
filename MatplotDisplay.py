@@ -30,3 +30,13 @@ def plt_to_file(world: World):
     # fig.colorbar(ScalarMappable(), ax=ax)
     plt.savefig('pyplot_speed')
     plt.show()
+
+def plt_geoms(gdf):
+    fig, ax = plt.subplots(1, 1)
+    print(gdf['geometry'])
+    gdf.boundary.plot(ax=ax, color='gray', zorder=2)
+    if 'color_scale' in gdf.columns:
+        gdf.plot(ax=ax, column='color_scale',legend=True)
+    else:
+        gdf.plot(ax=ax, legend=True)
+    plt.show()
