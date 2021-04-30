@@ -19,7 +19,7 @@ import sys
 import PIL.Image
 import PIL.ImageTk
 from PIL import ImageGrab
-from tkinter import ttk, Tk
+from tkinter import ttk, Tk, messagebox
 from tkinter import *
 from tkinter import filedialog
 # check if user has a older version of python
@@ -34,9 +34,6 @@ else:
         def __init__(self):
             super().__init__()
 
-            # creating entry for input
-            self.num_entry = tk.Entry(self)
-
             self.MapUI()
 
             # area for map display
@@ -46,14 +43,25 @@ else:
             self.world = None
             self.backgroundphoto = None
 
+            # master is referring to the base widget
+            settings_menu = Menu(self.master)
+            self.master.config(menu=settings_menu)
+
+            # create the file object)
+            settings = Menu(settings_menu)
+            settings_menu.add_cascade(label="Settings", menu=settings)
+            settings.add_command(label="Subdivide", command=self.subdivide_world())
+
+
+
         def MapUI(self):
             self.pack(fill=tk.BOTH, expand=True)
-
             self.columnconfigure(1, weight=1)
             self.columnconfigure(3, pad=7)
             self.rowconfigure(3, weight=1)
             self.rowconfigure(5, pad=7)
             self.configure(bg='firebrick3')
+
 
             draw_icon = PhotoImage(file='images/pencil.png')
             self.draw_icon = draw_icon
@@ -139,6 +147,7 @@ else:
 
         def subdivide_world(self):
             image_world(self.world)
+            messagebox.showwarning("Subdivide warning", "Can only hit subdivide less than 5 times.")
             self.world.access_data_struct().subdivide()
 
         def move_world(self):
