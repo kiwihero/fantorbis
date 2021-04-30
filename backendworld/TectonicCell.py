@@ -23,6 +23,12 @@ class TectonicCell(WorldAttribute):
             self.velocity = starting_velocity
         super(TectonicCell, self).__init__(**kwargs)
         self._updateWorldSet()
+        if self.world is not None:
+            self.mu = self.world.conf.mu
+            self.static_mu = self.mu * self.world.conf.static_mu_factor
+        else:
+            self.mu = 0
+            self.static_mu = 0
 
     def _updateWorldSet(self):
         """
@@ -34,6 +40,13 @@ class TectonicCell(WorldAttribute):
             self.world.tectonicCells.add(self)
         elif self.world is None:
             print("ERROR NO WORLD")
+
+    def setWorld(self, world):
+        super().setWorld(world=world)
+        if self.mu is None:
+            self.mu = self.world.conf.mu
+        if self.static_mu is None:
+            self.static_mu = self.mu * self.world.conf.static_mu_factor
 
     def step(self):
         """
@@ -84,6 +97,7 @@ class TectonicCell(WorldAttribute):
         new_cell.velocity = copy.copy(self.velocity)
         new_cell.stack_size = self.stack_size
         new_cell.height = self.height
+        new_cell.mu = self.mu
         print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
         print("done updating after copy")
@@ -96,6 +110,7 @@ class TectonicCell(WorldAttribute):
         new_cell.velocity = copy.deepcopy(self.velocity)
         new_cell.stack_size = copy.deepcopy(self.stack_size)
         new_cell.height = copy.deepcopy(self.height)
+        new_cell.mu = copy.deepcopy(self.mu)
         print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
         print("done updating after copy")

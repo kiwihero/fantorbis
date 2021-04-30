@@ -8,6 +8,7 @@ from shapely.geometry.linestring import LineString
 from shapely.affinity import affine_transform, skew
 from backendworld.TectonicCell import TectonicCell
 import copy
+import math
 
 from MatplotDisplay import plt_geoms
 
@@ -230,6 +231,14 @@ class ShapelyCell:
         return {feature: poly.exterior.coords}
 
     def move(self, x_offset, y_offset, change_velocity: bool = False, velocity_offset = None):
+        """
+        NOTE THAT IF THE SQRT(XOFFSET^2+YOFFSET^2) IS LESS THAN MU OF WORLD_CELL, CELL STOPS MOVING ALTOGETHER
+        :param x_offset:
+        :param y_offset:
+        :param change_velocity:
+        :param velocity_offset:
+        :return:
+        """
         print("Called ShapelyCell.move() on the cell {}".format(self))
         old_pos = Point(self.centroid)
         old_vel = LineString(self.velocity)
@@ -253,6 +262,19 @@ class ShapelyCell:
                 print("{} old vel = {}, pos chg = {}".format(coord, old_vel.coords[coord], pos_vel_chg.coords[coord]))
                 vel_chg.append((old_vel.coords[coord][0] + pos_vel_chg.coords[coord][0],
                                 old_vel.coords[coord][1] + pos_vel_chg.coords[coord][1]))
+            print("vel chg {}".format(vel_chg))
+            vel_x = vel_chg[1][0] - vel_chg[0][0]
+            vel_y = vel_chg[1][1] - vel_chg[0][1]
+            print("vel x {}, y {}".format(vel_x, vel_y))
+            cell_mu = self.world_cell.mu
+            print("cell mu {}".format(cell_mu))
+            if abs(math.sqrt(math.pow(vel_x,2)+math.pow(vel_y,2))) < cell_mu:
+                self.polygon = old_polygon
+                self.velocity = LineString([(0, 0), (0, 0)])
+                print("U gotta stop, u can't go so slow. U now moving at {}".format(self.velocity))
+                print("U got reset back to centroid {}".format(self.centroid))
+                # raise Exception
+                return self
             if velocity_offset is not None:
                 print("velocity offset {}".format(velocity_offset))
                 print("old vel chg {}".format(vel_chg))
