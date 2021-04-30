@@ -386,16 +386,24 @@ class ShapelyCell:
         # print("world {}".format(world))
         # print("old world cell {}".format(self.world_cell))
         velocity_sum = [
-            [self.velocity.coords[0][0],self.velocity.coords[0][1]],
-            [self.velocity.coords[1][0],self.velocity.coords[1][1]]
+            [
+                self.velocity.coords[0][0]*self.world_cell.stack_size,
+                self.velocity.coords[0][1]*self.world_cell.stack_size
+            ],
+            [
+                self.velocity.coords[1][0]*self.world_cell.stack_size,
+                self.velocity.coords[1][1]*self.world_cell.stack_size
+            ]
         ]
         uneven_velocities = False
+        mass_sum = self.world_cell.stack_size
         for cell in additional_cells:
             self.creation_age_list += cell.creation_age_list
             for pt in range(min(len(self.velocity.coords),len(cell.velocity.coords))):
-                velocity_sum[pt][0] += cell.velocity.coords[pt][0]
-                velocity_sum[pt][1] += cell.velocity.coords[pt][1]
+                velocity_sum[pt][0] += cell.velocity.coords[pt][0]*cell.world_cell.stack_size
+                velocity_sum[pt][1] += cell.velocity.coords[pt][1]*cell.world_cell.stack_size
                 print("pt {} = {}".format(pt,velocity_sum[pt]))
+                mass_sum += cell.world_cell.stack_size
             if self.velocity != cell.velocity:
                 print("Uneven velocities {}, {}".format(self.velocity, cell.velocity))
                 print("velocity sum {}".format(velocity_sum))
@@ -408,8 +416,8 @@ class ShapelyCell:
         if uneven_velocities == True:
             new_vel_points = []
             for pt in range(len(velocity_sum)):
-                velocity_sum[pt][0] /= (1 + len(additional_cells))
-                velocity_sum[pt][1] /= (1 + len(additional_cells))
+                velocity_sum[pt][0] /= ((1 + len(additional_cells))*mass_sum)
+                velocity_sum[pt][1] /= ((1 + len(additional_cells))*mass_sum)
                 new_vel_points.append((velocity_sum[pt][0],velocity_sum[pt][1]))
 
             # print("New velocity {}".format(velocity_sum))
