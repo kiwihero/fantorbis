@@ -5,7 +5,7 @@ from shapely.geometry.polygon import Polygon, LineString, LinearRing
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.point import Point
 from shapely.geometry.linestring import LineString
-from shapely.affinity import affine_transform, skew
+from shapely.affinity import affine_transform, skew, scale
 from backendworld.TectonicCell import TectonicCell
 import copy
 import math
@@ -295,6 +295,10 @@ class ShapelyCell:
             #     print("Vel chg {}".format(vel_chg))
             #     raise Exception
             new_vel = LineString(vel_chg)
+            print("New velocity {}".format(new_vel))
+            new_vel = scale(new_vel, 1-cell_mu, 1-cell_mu, origin=new_vel.coords[0])
+            print("After friction velocity {}".format(new_vel))
+            # raise Exception
 
 
 

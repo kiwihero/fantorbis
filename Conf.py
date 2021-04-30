@@ -53,7 +53,7 @@ class Conf:
             'ShapelyCell', 'TectonicCell', 'geometry', 'pos', 'age_diff','pos_point','stack_size','speed'
         ]
 
-        self.mu = 0.25
+        self.mu = 0.1
         self.static_mu_factor = 1
 
         self.fnt = self.set_font(self.fontLocation, size=100)
