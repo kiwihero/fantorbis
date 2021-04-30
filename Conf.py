@@ -54,6 +54,7 @@ class Conf:
         self.ShapelyStructureColumns = [
             'ShapelyCell', 'TectonicCell', 'geometry', 'pos', 'age_diff','pos_point','stack_size','speed'
         ]
+        self.default_display_column = 'speed'
 
         self.mu = 0.1
         self.static_mu_factor = 1

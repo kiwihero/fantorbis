@@ -1,6 +1,6 @@
 # from backendstorage.StorageMechanisms.ShapelyStructure import ShapelyStructure
 from backendworld.World import World
-from MatplotDisplay import plt_to_file
+from MatplotDisplay import plt_to_file, draw_world
 
 w1 = World()
 print("World created {}".format(w1))
@@ -78,4 +78,8 @@ print(struct.CellStorage['speed'])
 random_cell_row = struct.random_cell()
 overlap = struct.find_overlap(random_cell_row)
 
-plt_to_file(w1)
+w1_pil = draw_world(w1)
+w1_pil.show()
+
+
+# plt_to_file(w1)

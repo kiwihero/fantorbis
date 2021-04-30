@@ -20,25 +20,25 @@ def pillow(as_plot: plt.subplot): #include the thing taking in
     img = Image.open(buf)
     return img
 
-x = np.arange(-3,3)
-plt.plot(x)
-fig = plt.gcf()
+# x = np.arange(-3,3)
+# plt.plot(x)
+# fig = plt.gcf()
 
-#another way too
-fig.savefig("test.jpg")
-img = cv2.imread("test.jpg")
-return PIL.Image.fromarray(img)
-
-
-#another way to try
-lst = list(fig.canvas.get_width_height())
-lst.append(3)
-return PIL.Image.fromarray(np.fromstring(fig.canvas.tostring_rgb(),dtype=np.uint8).reshape(lst))
-
+# #another way too
+# fig.savefig("test.jpg")
+# img = cv2.imread("test.jpg")
+# return PIL.Image.fromarray(img)
+#
+#
+# #another way to try
+# lst = list(fig.canvas.get_width_height())
+# lst.append(3)
+# return PIL.Image.fromarray(np.fromstring(fig.canvas.tostring_rgb(),dtype=np.uint8).reshape(lst))
+#
 # img = pillow(fig)
 # img = anothersuggestedfunction(fig)
-print("Output is type {}".format(type(img)))
-
-
-
+# print("Output is type {}".format(type(img)))
+#
+#
+#
 # img.show()
