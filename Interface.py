@@ -12,7 +12,6 @@ This is where the backend and ui interface
 
 from backendworld.World import *
 from PillowDisplay import draw_world, gif_world, image_world, _save_image
-##from tkinterGui import Login_Window
 
 import os
 import sys
@@ -43,14 +42,14 @@ else:
             self.world = None
             self.backgroundphoto = None
 
-            # master is referring to the base widget
+            # master is referring to the base widget - may change to dropdown menu
             settings_menu = Menu(self.master)
             self.master.config(menu=settings_menu)
 
             # create the file object)
             settings = Menu(settings_menu)
             settings_menu.add_cascade(label="Settings", menu=settings)
-            settings.add_command(label="Subdivide", command=self.subdivide_world())
+           # settings.add_command(label="Subdivide", command=self.subdivide_world())
 
 
 
@@ -92,10 +91,6 @@ else:
             self.exit_icon = exit_icon
             exit_button = tk.Button(self, image=exit_icon, width=50, height=50, command=lambda: self.quit())
             exit_button.grid(row=5, column=3)
-
-        def show_frame(self, cont):
-            frame = self.frames[cont]
-            frame.tkraise()
 
         def create_world(self):
             print("creating world")
@@ -146,9 +141,11 @@ else:
             self.backgroundphoto.image = photo_image
 
         def subdivide_world(self):
-            image_world(self.world)
-            messagebox.showwarning("Subdivide warning", "Can only hit subdivide less than 5 times.")
-            self.world.access_data_struct().subdivide()
+            #subdivide 3 times
+         for i in range(3):
+             image_world(self.world)
+            #messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
+             self.world.access_data_struct().subdivide()
 
         def move_world(self):
             print("MOVE WORLD")
@@ -156,30 +153,14 @@ else:
             self.world.random_wiggle()
             World.random_wiggle()
 
-
-
         def save_world(self):
             first_image_bg = self.world.images[max(self.world.images.keys())]
             photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
-            _save_image(photo_image,)
+           # _save_image(photo_image,)
 
         def help(self):
-         os.system('notepad resources/About.txt')
+           os.system('notepad resources/About.txt')
 
-
-
-
-    # class for login window Frame
-
-    class Login(Frame):
-        def __init__(self):
-            Frame.__init__(self)
-
-            ##self.login_win = Login_Window.LoginWindow(self.master)
-
-        ##def create_login(self):
-            ##self.login_win.window_properties(self.master)
-            ##self.login_win.mainloop()
 
     class Help(tk.Frame):
         def __init__(self):
@@ -189,17 +170,13 @@ else:
             text_area = tk.Text(self, height=12)
             text_area.grid(column=0, row=0, sticky='nsew')
 
-
             tf = open('resources/About.txt', 'r')
             data = tf.read()
             text_area.insert(END, data)
             tf.close()
 
 
-
-
 def main():
-      ##Login().create_login()
     root = Tk()
     root.title('Fantorbis')
     app = MainWindow()
