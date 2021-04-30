@@ -30,6 +30,8 @@ class Conf:
         self.config_log()
         self.clear_logs()
 
+        self._cwd_to_main()
+
         self.resourceFolder = 'resources/'
         self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
         self.fontExtensions = ['.ttf']
@@ -230,5 +232,21 @@ class Conf:
         self.log_from_conf('info', 'Found {} fonts'.format(len(fonts)))
 
         return fonts[list(fonts)[0]]['path']
+
+    def _cwd_to_main(self, main_dir="fantorbis"):
+        """
+        Navigates the cwd back to "fantorbis" or other specified directory above current dir in path
+        :param main_dir: Destination dir above in current path
+        :return:
+        """
+        import os
+        cwd = os.getcwd()
+        while main_dir in str(cwd) and main_dir not in str(os.path.basename(cwd)):
+            # print("current working directory {}".format(cwd))
+            # print("basename {}".format(os.path.basename(cwd)))
+            os.chdir("..")
+            cwd = os.getcwd()
+        # print("current working directory {}".format(cwd))
+        return cwd
 
 

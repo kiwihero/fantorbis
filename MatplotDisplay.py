@@ -4,6 +4,20 @@ from matplotlib.cm import ScalarMappable
 
 from backendworld.World import World
 
+def draw_world(world):
+    '''
+
+    :param world: the World object that is being drawn.
+    :param add_text: Boolean determining whether or not age should be written on the drawing.
+    :return: he draws the world, however he does not show you the world. he draws it.
+    '''
+    gdf = world.access_data_struct().CellStorage
+    fig, ax = plt.subplots(1, 1)
+    gdf.boundary.plot(ax=ax, color='gray', zorder=2)
+    gdf.plot(column='age_diff', ax=ax, legend=True)
+
+
+
 def plt_to_file(world: World):
     gdf = world.access_data_struct().CellStorage
     print("gdf")
