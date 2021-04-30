@@ -219,6 +219,7 @@ class ShapelyStructure(ArrayStructure):
         print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
         print("Path of last skew\n{}\nEnd path of last skew".format(moved_cell.last_skew_path))
         # plt_geoms(moved_cell.last_skew_path)
+        # TODO: Use last_skew_path to determine which cells should be absorbed
 
 
 
