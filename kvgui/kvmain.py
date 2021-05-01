@@ -131,7 +131,7 @@ class UserControls(GridLayout):
             button.disabled = True
 
     def reactivation(self, instance=None, force_update=True):
-        print("User controls reactivation")
+        # print("User controls reactivation")
         if self.root.running_thread is False:
             self.display_canvas.update_display(force_update=force_update)
             # raise Exception
