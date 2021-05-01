@@ -23,40 +23,78 @@ class MainLayout(GridLayout):
         self.add_widget(self.lbl2)
         self.wait_layout = WaitLayout()
         self.add_widget(self.wait_layout)
+        self.wait_layout.size_hint=(1,1)
+        # self.wait_layout.update_rect()
 class WaitLayout(RelativeLayout):
     def __init__(self, **kwargs):
         super(WaitLayout, self).__init__(**kwargs)
+        self.size_hint = (1,1)
+        # self.make_rect()
         self.world_canvas = WaitDisplay()
         self.add_widget(self.world_canvas)
 
+        # self.update_rect()
 
 
-class WaitDisplay(Widget):
+    # def update_rect(self, *args):
+    #     print("old waitlayout size {}, {}".format(self.size, self.pos))
+    #
+    #     self.rect.pos = self.pos
+    #     self.rect.size = self.size
+    #     # self.canvas.clear()
+    #
+    #     print("waitlayout size {}, {}".format(self.size,self.pos))
+
+
+
+
+class WaitDisplay(RelativeLayout):
     def __init__(self, **kwargs):
         super(WaitDisplay, self).__init__(**kwargs)
+        self.make_rect()
+        self.size_hint = (1,1)
         self.width = 400
         self.height=400
         self.canvas_image = None
         self.update_display()
+        self.bind(pos=self.update_rect)
+        self.bind(size=self.update_rect)
         self.position =0
         self.angle=90
+    def make_rect(self, *args):
+        with self.canvas.before:
+            Color(0, 1, 1, 1)  # green; colors range from 0-1 instead of 0-255
+            # self.rect = Rectangle(size=self.size,pos=self.pos)
+            self.rect = Rectangle(size_hint=(1,1))
 
+    def update_rect(self, *args):
+        print("old waitlayout size {}, {}".format(self.size, self.pos))
+
+        self.rect.pos = self.pos
+        self.rect.size = self.size
+        # self.canvas.clear()
+
+        print("waitlayout size {}, {}".format(self.size,self.pos))
 
     def update_display(self, *args):
+
+
         with self.canvas:
             Color(1, 0, 0)
-            self.canvas_image = Rectangle(pos =(10, 10), size =(self.width, self.height))
+            # self.canvas_image = Rectangle(pos =(10, 10), size =(self.width, self.height))
             # Line(circle=(150, 150, 50, 0, 360, 50)) #whole circle
-            Clock.schedule_once(self.movecircle,1)
+            Clock.schedule_once(self.movecircle)
 
 
     def movecircle(self, *args):
+        print("movecircle size {}, {}".format(self.size, self.pos))
         self.canvas.clear()
+        self.make_rect()
         with self.canvas:
             Color(1, 0, 0)
             Line(circle=(150, 150, 50, self.position, self.position+self.angle, 50)) #whole circle
             self.position=(self.position+self.angle)%360
-            Clock.schedule_once(self.movecircle, 1)
+            Clock.schedule_once(self.movecircle)
 
 
 
