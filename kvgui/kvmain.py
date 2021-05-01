@@ -31,8 +31,10 @@ class ThreadededFunctions():
         # self.dispatcher.bind(on_thread_completion=self.complete_thread)
         # self.background_dispatcher = ThreadedProgram(self.ev)
 
-    def complete_thread(self, arg1=None, arg2=None):
+    def complete_thread(self, arg1=None, arg2=None, request_display_update: bool = False):
         self.dispatcher.dispatch('on_thread_completion', 'test_message')
+        # if request_display_update is True:
+        #     self.dispatcher.dispatch('on_display_update_request', 'test_message')
         # raise Exception
 
     def start_thread(self, arg1=None, arg2=None):
@@ -61,11 +63,12 @@ class ThreadededFunctions():
         self.parent_widget.active_world.step()
         self.complete_thread()
 
-    # def refresh_display(self, instance=None):
-        # self.start_thread()
-        # self.parent_widget.disable_buttons()
+    def refresh_display(self, instance=None):
+        self.start_thread()
+        self.parent_widget.disable_buttons()
+        self.parent_widget.active_world.access_data_struct().update_cells()
         # self.parent_widget.display_canvas.update_display(force_update=True)
-        # self.complete_thread()
+        self.complete_thread(request_display_update=True)
 
 
 class UserControls(GridLayout):
@@ -98,22 +101,19 @@ class UserControls(GridLayout):
         self.control_button_saved_states = dict()
 
     def refresh_display(self, instance):
-        # t1 = threading.Thread(target=self.threaded_controls.refresh_display)
-        # t1.start()
-        # Clock.schedule_once(self.reactivation)
-        self.disable_buttons()
+        t1 = threading.Thread(target=self.threaded_controls.refresh_display)
+        t1.start()
+        self.reactivation(force_update=True)
+
+    def update_display(self, instance=None):
+        raise Exception
         self.display_canvas.update_display(force_update=True)
-        Clock.schedule_once(self.enable_buttons)
-        # self.enable_buttons()
 
     def single_step(self, instance):
         t1 = threading.Thread(target=self.threaded_controls.move_cell)
         t1.start()
         Clock.schedule_once(self.reactivation)
-        # self.disable_buttons()
-        #
-        # self.display_canvas.update_display()
-        # self.enable_buttons()
+
 
     def subdivision(self, instance):
         t1 = threading.Thread(target=self.threaded_controls.subdivision)
@@ -130,9 +130,11 @@ class UserControls(GridLayout):
             self.control_button_saved_states[button] = button.disabled
             button.disabled = True
 
-    def reactivation(self, instance=None):
+    def reactivation(self, instance=None, force_update=True):
+        print("User controls reactivation")
         if self.root.running_thread is False:
-            self.display_canvas.update_display(force_update=True)
+            self.display_canvas.update_display(force_update=force_update)
+            # raise Exception
             self.enable_buttons()
         else:
             Clock.schedule_once(self.reactivation)
@@ -167,6 +169,7 @@ class UserDisplayControls(GridLayout):
         self.add_widget(btn3)
 
     def request_update(self, instance):
+        # raise Exception
         self.display_canvas.update_display(column=instance.text)
 
 
@@ -190,6 +193,7 @@ class WorldDisplay(Widget):
     def update_display(self, column=None, force_update: bool = False):
         if column is None:
             column = self.display_type
+            # raise Exception
         self.current_world_pil = self.world_to_pil(column=column, force_update=force_update)
         self.display_type = column
         self.pil_to_canvas()
@@ -197,8 +201,6 @@ class WorldDisplay(Widget):
             self.canvas_image = Rectangle(texture=self.beeld.texture, pos=self.pos, size=self.size)
 
     def update_bg(self, *args):
-
-
         self.canvas_image.pos = self.pos
         self.canvas_image.size = self.size
         self.canvas_image.texture = self.beeld.texture
@@ -274,14 +276,19 @@ class ThreadEventDispatcher(EventDispatcher):
     def __init__(self, **kwargs):
         self.register_event_type('on_thread_completion')
         self.register_event_type('on_thread_beginning')
+        self.register_event_type('on_display_update_request')
         super(ThreadEventDispatcher, self).__init__(**kwargs)
 
     def on_thread_completion(self, *args):
-        print("Event dispatcher completion")
-        # raise Exception
+        print("Event dispatcher completion.")
         pass
 
     def on_thread_beginning(self, *args):
+        print("Event dispatcher starting")
+        # raise Exception
+        pass
+
+    def on_display_update_request(self, *args):
         print("Event dispatcher starting")
         # raise Exception
         pass
@@ -296,6 +303,7 @@ class RootWidget(FloatLayout):
         self.ev = ev = ThreadEventDispatcher()
         ev.bind(on_thread_beginning=self.start_running_thread)
         ev.bind(on_thread_completion=self.complete_running_thread)
+        ev.bind(on_display_update_request=self.request_display_update)
 
 
         # let's add a Widget to this layout
@@ -318,6 +326,16 @@ class RootWidget(FloatLayout):
     def complete_running_thread(self, arg1=None, arg2=None):
         self.running_thread = False
         # raise Exception
+
+    def request_display_update(self, arg1=None, arg2=None):
+        if self.running_thread is False:
+            self.main_layout.basic_controls.update_display()
+        else:
+            print("Cannot request update, thread is still running")
+            raise Exception
+            Clock.schedule_once(self.request_display_update)
+
+
 
 
 
