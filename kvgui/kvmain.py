@@ -4,6 +4,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.button import Button
 from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.textinput import TextInput
@@ -12,16 +13,68 @@ from kivy.core.image import Image as CoreImage
 from kivy.uix.image import Image as kiImage
 from PIL import Image, ImageDraw, ImageFont
 from kivy.graphics import Color, Line, Rectangle
+from kivy.clock import Clock
 from io import BytesIO
 # import io
+from kivy.event import EventDispatcher
 from MatplotDisplay import draw_world
 import copy
+import threading
+
+class ThreadededFunctions():
+    def __init__(self,parent_widget, root):
+        self.parent_widget = parent_widget
+        self.root = root
+        print("root {}".format(self.root))
+        # self.ev = ev = ThreadEventDispatcher()
+        self.dispatcher = self.root.ev
+        # self.dispatcher.bind(on_thread_completion=self.complete_thread)
+        # self.background_dispatcher = ThreadedProgram(self.ev)
+
+    def complete_thread(self, arg1=None, arg2=None):
+        self.dispatcher.dispatch('on_thread_completion', 'test_message')
+        # raise Exception
+
+    def start_thread(self, arg1=None, arg2=None):
+        self.dispatcher.dispatch('on_thread_beginning', 'test_message')
+
+
+
+    def subdivision(self, instance=None):
+        self.start_thread()
+        self.parent_widget.disable_buttons()
+        self.parent_widget.active_world.access_data_struct().subdivide()
+        self.complete_thread()
+
+
+    def move_cell(self, instance=None):
+        self.start_thread()
+        self.parent_widget.disable_buttons()
+        self.parent_widget.active_world.access_data_struct().move_random_cell()
+        self.complete_thread()
+        # self.parent_widget.display_canvas.update_display(force_update=True)
+        # self.parent_widget.enable_buttons()
+
+    def step(self, instance=None):
+        self.start_thread()
+        self.parent_widget.disable_buttons()
+        self.parent_widget.active_world.step()
+        self.complete_thread()
+
+    # def refresh_display(self, instance=None):
+        # self.start_thread()
+        # self.parent_widget.disable_buttons()
+        # self.parent_widget.display_canvas.update_display(force_update=True)
+        # self.complete_thread()
+
 
 class UserControls(GridLayout):
-    def __init__(self, active_world, display_canvas, **kwargs):
+    def __init__(self, active_world, display_canvas, root, **kwargs):
         super(UserControls, self).__init__(**kwargs)
         self.active_world = active_world
         self.display_canvas = display_canvas
+        self.root = root
+        self.threaded_controls = ThreadededFunctions(parent_widget=self, root=self.root)
         self.cols = 1
         self.rows = 5
         self.refresh_button = Button(text="Refresh display")
@@ -37,6 +90,7 @@ class UserControls(GridLayout):
         self.move_cell_button.bind(on_press=self.move_cell)
         self.add_widget(self.move_cell_button)
         self.control_buttons = {
+            self.refresh_button: True,
             self.subdivide_button: True,
             self.step_button: True,
             self.move_cell_button: True
@@ -44,33 +98,44 @@ class UserControls(GridLayout):
         self.control_button_saved_states = dict()
 
     def refresh_display(self, instance):
+        # t1 = threading.Thread(target=self.threaded_controls.refresh_display)
+        # t1.start()
+        # Clock.schedule_once(self.reactivation)
         self.disable_buttons()
         self.display_canvas.update_display(force_update=True)
-        self.enable_buttons()
+        Clock.schedule_once(self.enable_buttons)
+        # self.enable_buttons()
 
     def single_step(self, instance):
-        self.disable_buttons()
-        self.active_world.step()
-        self.display_canvas.update_display()
-        self.enable_buttons()
-        # self.bind(size=self.update_bg)
+        t1 = threading.Thread(target=self.threaded_controls.move_cell)
+        t1.start()
+        Clock.schedule_once(self.reactivation)
+        # self.disable_buttons()
+        #
+        # self.display_canvas.update_display()
+        # self.enable_buttons()
 
     def subdivision(self, instance):
-        self.disable_buttons()
-        self.active_world.access_data_struct().subdivide()
-        self.display_canvas.update_display(force_update=True)
-        self.enable_buttons()
+        t1 = threading.Thread(target=self.threaded_controls.subdivision)
+        t1.start()
+        Clock.schedule_once(self.reactivation)
 
     def move_cell(self, instance):
-        self.disable_buttons()
-        self.active_world.access_data_struct().move_random_cell()
-        self.display_canvas.update_display(force_update=True)
-        self.enable_buttons()
+        t1 = threading.Thread(target=self.threaded_controls.move_cell)
+        t1.start()
+        Clock.schedule_once(self.reactivation)
 
     def disable_buttons(self):
         for button,state in self.control_buttons.items():
             self.control_button_saved_states[button] = button.disabled
             button.disabled = True
+
+    def reactivation(self, instance=None):
+        if self.root.running_thread is False:
+            self.display_canvas.update_display(force_update=True)
+            self.enable_buttons()
+        else:
+            Clock.schedule_once(self.reactivation)
 
     def enable_buttons(self, force_enable: bool=False):
         for button,state in self.control_buttons.items():
@@ -164,18 +229,29 @@ class WorldDisplay(Widget):
         self.beeld.texture = im.texture
         return im
 
-class MainScreen(GridLayout):
-    def __init__(self, active_world, **kwargs):
+class MainScreen(Screen):
+    def __init__(self, active_world, root, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.active_world = active_world
+        self.root = root
+        self.layout = MainLayout(self.active_world, self.root)
 
+
+
+
+
+class MainLayout(GridLayout):
+    def __init__(self, active_world, root, **kwargs):
+        super(MainLayout, self).__init__(**kwargs)
+        self.active_world = active_world
+        self.root = root
         self.cols = 2
 
         self.world_canvas = WorldDisplay(self.active_world)
         self.add_widget(self.world_canvas)
-        self.basic_controls = UserControls(self.active_world,self.world_canvas)
+        self.basic_controls = UserControls(self.active_world, self.world_canvas, root=self.root)
         self.add_widget(self.basic_controls)
-        self.basic_display_controls = UserDisplayControls(self.active_world,self.world_canvas)
+        self.basic_display_controls = UserDisplayControls(self.active_world, self.world_canvas)
         self.add_widget(self.basic_display_controls)
         self.quit_button = Button(text="quit")
         self.quit_button.bind(on_release=self.quit_app)
@@ -194,16 +270,54 @@ class MapApp(App):
         self.root = root = RootWidget(self.active_world)
         return root
 
+class ThreadEventDispatcher(EventDispatcher):
+    def __init__(self, **kwargs):
+        self.register_event_type('on_thread_completion')
+        self.register_event_type('on_thread_beginning')
+        super(ThreadEventDispatcher, self).__init__(**kwargs)
+
+    def on_thread_completion(self, *args):
+        print("Event dispatcher completion")
+        # raise Exception
+        pass
+
+    def on_thread_beginning(self, *args):
+        print("Event dispatcher starting")
+        # raise Exception
+        pass
+
 class RootWidget(FloatLayout):
 
     def __init__(self, active_world, **kwargs):
         # make sure we aren't overriding any important functionality
         super(RootWidget, self).__init__(**kwargs)
         self.active_world = active_world
+        self.running_thread = False
+        self.ev = ev = ThreadEventDispatcher()
+        ev.bind(on_thread_beginning=self.start_running_thread)
+        ev.bind(on_thread_completion=self.complete_running_thread)
+
 
         # let's add a Widget to this layout
-        self.main_screen = MainScreen(self.active_world)
-        self.add_widget(self.main_screen)
+        self.sm = ScreenManager()
+        self.sm.transition = NoTransition()
+        self.add_widget(self.sm)
+        self.main_screen = Screen()
+        self.main_layout = MainLayout(self.active_world, root=self)
+        self.main_screen.add_widget(self.main_layout)
+        # self.main_screen = MainScreen(self.active_world, root=self, name="main")
+        self.sm.add_widget(self.main_screen)
+        print("sm curr {}".format(self.sm.current_screen))
+
+    def start_running_thread(self, arg1=None, arg2=None):
+        self.running_thread = True
+        # raise Exception
+
+
+
+    def complete_running_thread(self, arg1=None, arg2=None):
+        self.running_thread = False
+        # raise Exception
 
 
 
