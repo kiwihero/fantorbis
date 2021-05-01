@@ -141,10 +141,8 @@ else:
             self.backgroundphoto.image = photo_image
 
         def subdivide_world(self):
-            #subdivide 3 times
-         for i in range(3):
              image_world(self.world)
-            #messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
+             messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
              self.world.access_data_struct().subdivide()
 
         def move_world(self):
