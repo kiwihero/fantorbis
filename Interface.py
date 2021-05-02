@@ -145,6 +145,12 @@ else:
              messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
              self.world.access_data_struct().subdivide()
 
+        def subdivision(self, instance):
+            self.disable_buttons()
+            self.active_world.access_data_struct().subdivide()
+            self.display_canvas.update_display(force_update=True)
+            self.enable_buttons()
+
         def move_world(self):
             print("MOVE WORLD")
             image_world(self.world)
