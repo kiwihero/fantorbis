@@ -60,6 +60,7 @@ class Conf:
 
         self.mu = .1
         self.static_mu_factor = 1
+        self.overlap_to_converge = 0.5
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)

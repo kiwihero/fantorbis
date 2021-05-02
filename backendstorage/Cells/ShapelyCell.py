@@ -9,8 +9,8 @@ from shapely.affinity import affine_transform, skew, scale
 from backendworld.TectonicCell import TectonicCell
 import copy
 import math
+from MatplotDisplay import plt_geom,plt_geoms
 
-from MatplotDisplay import plt_geoms
 
 
 class ShapelyCell:
@@ -320,14 +320,20 @@ class ShapelyCell:
             old_min_rot_df = gpd.GeoDataFrame([[old_min_around], [old_offset_polygon], [self.polygon]], columns=['geometry'])
             skew_positions = gpd.GeoDataFrame([[new_min_around], [old_min_around]], columns=['geometry'])
             self.last_skew_path = skew_positions
+            if len(self.last_skew_path) is not None:
 
-            skewed_pos = self.skew(old_polygon, x_offset + self.x_size, y_offset + self.y_size)
+                # plt_geom(self.last_skew_path)
 
-            skewed_pos = skewed_pos.append({'geometry': self.polygon, 'color_scale': 3}, ignore_index=True)
-            # plt_geoms(min_rot_df)
-            # plt_geoms(new_min_rot_df)
-            # plt_geoms(old_min_rot_df)
-            # plt_geoms(skewed_pos)
+                skewed_pos = self.skew(old_polygon, x_offset + self.x_size, y_offset + self.y_size)
+                print("skewed pos {}".format(skewed_pos))
+
+                skewed_pos = skewed_pos.append({'geometry': self.polygon, 'color_scale': 3}, ignore_index=True)
+                # plt_geom(skewed_pos)
+                # raise Exception
+                # plt_geoms(min_rot_df)
+                # plt_geoms(new_min_rot_df)
+                # plt_geoms(old_min_rot_df)
+                # plt_geoms(skewed_pos)
 
 
 

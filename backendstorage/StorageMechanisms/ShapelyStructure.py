@@ -5,10 +5,13 @@ import copy
 import random
 from shapely.geometry.linestring import LineString
 from shapely.geometry.point import Point
+from shapely.geometry.polygon import Polygon
+from shapely.ops import unary_union
+from shapely.geometry.collection import GeometryCollection
 
 from backendstorage.StorageMechanisms.ArrayStructure import *
 from backendstorage.Cells.ShapelyCell import ShapelyCell
-from MatplotDisplay import plt_geoms
+from MatplotDisplay import plt_geoms, plt_geom
 
 
 class ShapelyStructure(ArrayStructure):
@@ -208,27 +211,59 @@ class ShapelyStructure(ArrayStructure):
         if allow_update is True:
             # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
             print("Moved cell\n{}\nend moved cell".format(moved_cell))
+            print("Path {} of moved_cell.last_skew_path\n{}\nEnd path of moved_cell.last_skew_path".format(type(moved_cell.last_skew_path),moved_cell.last_skew_path))
+            plt_geom(moved_cell.last_skew_path, title="moved_cell.last_skew_path")
+            skew_path = unary_union(moved_cell.last_skew_path['geometry'])
+            print("Path {} of skew_path\n{}\nEnd path of skew_path".format(type(skew_path), skew_path))
+
+
+
+            plt_geom(skew_path, title="skew_path")
+            # raise Exception
             print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
-            overlapping_rows = self.find_overlap(cell_row)
-            print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows), overlapping_rows['overlap']))
-            fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
-            print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
-            line_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
-            print("{} Adjacent results \n{}\nEnd adjacent results".format(len(line_adjacent_overlapping_rows), line_adjacent_overlapping_rows['overlap']))
-            pt_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
-            print("{} Diagonally adjacent results \n{}\nEnd diagonally adjacent results".format(len(pt_adjacent_overlapping_rows), pt_adjacent_overlapping_rows['overlap']))
-            prob1 = overlapping_rows['overlap'] >= 2
-            prob2 = overlapping_rows['overlap'] < 3
-            # print("prob1\n{}\nend prob1".format(prob1))
-            # print("prob2\n{}\nend prob2".format(prob2))
-            prob3 = prob1 & prob2
-            # print("prob3\n{}\nend prob3".format(prob3))
-            problematic_rows = overlapping_rows.loc[prob3]
-            print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows['overlap']))
-            print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
-            print("Path of last skew\n{}\nEnd path of last skew".format(moved_cell.last_skew_path))
-            # plt_geoms(moved_cell.last_skew_path)
-            # TODO: Use last_skew_path to determine which cells should be absorbed
+            # =
+
+
+            if type(skew_path) is not GeometryCollection:
+                overlapping_rows = self.find_overlap(skew_path)
+                #     print("overlapping rows\n{}\nend overlapping rows".format(overlapping_rows))
+                #     plt_geoms(overlapping_rows)
+                    # raise Exception
+                # overlapping_rows = self.find_overlap(cell_row)
+                print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows), overlapping_rows['overlap']))
+                fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
+                print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
+                line_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+                print("{} Adjacent results \n{}\nEnd adjacent results".format(len(line_adjacent_overlapping_rows), line_adjacent_overlapping_rows['overlap']))
+                pt_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+                print("{} Diagonally adjacent results \n{}\nEnd diagonally adjacent results".format(len(pt_adjacent_overlapping_rows), pt_adjacent_overlapping_rows['overlap']))
+                prob1 = overlapping_rows['overlap'] >= 2
+                prob2 = overlapping_rows['overlap'] < 3
+                # print("prob1\n{}\nend prob1".format(prob1))
+                # print("prob2\n{}\nend prob2".format(prob2))
+                prob3 = prob1 & prob2
+                # print("prob3\n{}\nend prob3".format(prob3))
+                problematic_rows = overlapping_rows.loc[prob3]
+
+                print("{} Problem (incomplete intersection) results (col 'overlap') \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows['overlap']))
+                print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
+                semi_overlap = problematic_rows.drop(['overlap'], axis=1)
+                print("{} semi overlap \n{}\nEnd semi overlap".format(
+                    len(semi_overlap), semi_overlap))
+
+                # self.add_color()
+
+                # semi_overlap.append(cell_row)
+                # print("{} semi overlap \n{}\nEnd semi overlap".format(
+                #     len(semi_overlap), semi_overlap))
+
+                # plt_geoms(moved_cell.last_skew_path)
+                # TODO: Use last_skew_path to determine which cells should be absorbed
+                plt_geoms([cell_row,fully_overlapping_rows], title="Full overlap", fill=True)
+                plt_geoms([cell_row, line_adjacent_overlapping_rows, pt_adjacent_overlapping_rows,], title="Line overlap", fill=True)
+                plt_geoms([cell_row, semi_overlap], title="Semi overlap", fill=True)
+                plt_geoms([cell_row,fully_overlapping_rows,line_adjacent_overlapping_rows,pt_adjacent_overlapping_rows,semi_overlap],title="All overlaps",fill=True)
+                raise Exception
 
 
 
@@ -274,6 +309,9 @@ class ShapelyStructure(ArrayStructure):
             #     raise Exception
 
         return moved_cell
+
+    def add_color(self,row,color):
+        return color
 
     def _wrap_position(self,pos,cell_bounds):
         x = pos[0]
@@ -491,7 +529,7 @@ class ShapelyStructure(ArrayStructure):
     def find_overlap(self, cellrow):
         print("given cellrow {}".format(cellrow))
         # TODO: Convert to gpd
-        lambda_results = pd.DataFrame()
+        lambda_results = gpd.GeoDataFrame(self.CellStorage)
         lambda_results['overlap'] = self.CellStorage.apply(lambda x: self.overlap_type(x, cellrow), axis=1)
         # print("lambda results \n{}\nEnd lambda results".format(lambda_results))
         overlapping_rows = lambda_results.loc[lambda_results['overlap'] != 0]
@@ -499,10 +537,17 @@ class ShapelyStructure(ArrayStructure):
         return overlapping_rows
 
     def overlap_type(self,c1_row, c2_row):
-        if type(c1_row) is not ShapelyCell:
-            c1 = c1_row['ShapelyCell'].polygon
-        if type(c2_row) is not ShapelyCell:
-            c2 = c2_row['ShapelyCell'].polygon
+        print("overlap type for c1 {}, c2 {}".format(type(c1_row),type(c2_row)))
+        if type(c1_row) is not Polygon:
+            if type(c1_row) is not ShapelyCell:
+                c1 = c1_row['ShapelyCell'].polygon
+        else:
+            c1 = c1_row
+        if type(c2_row) is not Polygon:
+            if type(c2_row) is not ShapelyCell:
+                c2 = c2_row['ShapelyCell'].polygon
+        else:
+            c2 = c2_row
         if c1.almost_equals(c2):
             print("{} and {} fully overlap".format(c1,c2))
             return 1.3

@@ -100,6 +100,9 @@ class UserControls(GridLayout):
         }
         self.control_button_saved_states = dict()
 
+    def reset_world(self, world):
+        self.active_world = world
+
     def refresh_display(self, instance):
         t1 = threading.Thread(target=self.threaded_controls.refresh_display)
         t1.start()
@@ -183,6 +186,9 @@ class UserDisplayControls(GridLayout):
         self.disp_controls_state = self.active_world.conf.default_controls_state
         self.plate_controls_state = self.active_world.conf.default_plates_state
 
+    def reset_world(self, world):
+        self.active_world = world
+
     def request_update(self, instance):
         if instance.group == 'disp_controls':
             self.disp_controls_state = instance.text
@@ -194,6 +200,18 @@ class UserDisplayControls(GridLayout):
         # print("instance group {} {}".format(type(instance.group),instance.group))
         # raise Exception
         self.display_canvas.update_display(column=self.disp_controls_state, plate_control=self.plate_controls_state)
+
+class ApplicationControls(GridLayout):
+    def __init__(self, active_world, display_canvas, root, **kwargs):
+        super(ApplicationControls, self).__init__(**kwargs)
+        self.root=root
+        self.active_world = active_world
+        self.display_canvas = display_canvas
+        self.cols = 1
+        self.rows = 2
+
+    def reset_world(self, world):
+        self.active_world = world
 
 
 class WorldDisplay(Widget):
@@ -213,6 +231,9 @@ class WorldDisplay(Widget):
         #     self.canvas_image = Rectangle(texture = self.beeld.texture, pos=self.pos, size=self.size)
         self.bind(pos=self.update_bg)
         self.bind(size=self.update_bg)
+
+    def reset_world(self, world):
+        self.active_world = world
 
     def update_display(self, column, plate_control, force_update: bool = False):
         print("Update display column={}, plate control={}".format(column, plate_control))
@@ -287,17 +308,32 @@ class MainLayout(GridLayout):
 
         self.basic_controls = UserControls(self.active_world, self.world_canvas, root=self.root)
         self.basic_display_controls = UserDisplayControls(self.active_world, self.world_canvas)
+        self.app_controls = ApplicationControls(self.active_world, self.world_canvas, root=self.root)
 
 
         self.add_widget(self.world_canvas)
         self.add_widget(self.basic_controls)
         self.add_widget(self.basic_display_controls)
+        self.add_widget(self.app_controls)
         self.quit_button = Button(text="quit")
         self.quit_button.bind(on_release=self.quit_app)
-        self.add_widget(self.quit_button)
+        self.app_controls.add_widget(self.quit_button)
+        self.reset_button = Button(text="New World")
+        self.reset_button.bind(on_release=self.new_world)
+        self.app_controls.add_widget(self.reset_button)
+
+    def reset_world(self, world):
+        self.active_world = world
+        self.world_canvas = WorldDisplay(self.active_world)
+        self.basic_controls.reset_world(self.active_world)
+        self.basic_display_controls.reset_world(self.active_world)
+        self.app_controls.reset_world(self.active_world)
 
     def quit_app(self, instance):
         App.get_running_app().stop()
+
+    def new_world(self, instance):
+        self.root.new_world()
 
 class MapApp(App):
     def __init__(self, **kwargs):
@@ -305,8 +341,13 @@ class MapApp(App):
         self.active_world = World()
         self.active_conf = self.active_world.conf
 
+    def new_world(self,world,instance=None,):
+        print("application new world")
+        self.active_world = world
+        self.active_conf = self.active_world.conf
+
     def build(self):
-        self.root = root = RootWidget(self.active_world)
+        self.root = root = RootWidget(self.active_world, self)
         return root
 
 class ThreadEventDispatcher(EventDispatcher):
@@ -332,9 +373,10 @@ class ThreadEventDispatcher(EventDispatcher):
 
 class RootWidget(FloatLayout):
 
-    def __init__(self, active_world, **kwargs):
+    def __init__(self, active_world, application, **kwargs):
         # make sure we aren't overriding any important functionality
         super(RootWidget, self).__init__(**kwargs)
+        self.application = application
         self.active_world = active_world
         self.running_thread = False
         self.ev = ev = ThreadEventDispatcher()
@@ -353,6 +395,21 @@ class RootWidget(FloatLayout):
         # self.main_screen = MainScreen(self.active_world, root=self, name="main")
         self.sm.add_widget(self.main_screen)
         print("sm curr {}".format(self.sm.current_screen))
+
+    def new_world(self,instance=None):
+        print("root new world")
+        self.active_world = World()
+        for child in self.children[:]:
+            self.remove_widget(child)
+        self.sm = ScreenManager()
+        self.sm.transition = NoTransition()
+        self.add_widget(self.sm)
+        self.main_screen = Screen()
+        self.main_layout = MainLayout(self.active_world, root=self)
+        self.main_screen.add_widget(self.main_layout)
+        self.sm.add_widget(self.main_screen)
+
+
 
     def start_running_thread(self, arg1=None, arg2=None):
         self.running_thread = True
