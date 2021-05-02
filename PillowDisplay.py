@@ -75,6 +75,7 @@ def draw_world(world, add_text: bool =False):
     # raise Exception
 
     world.images[world.age] = im
+    print("Drawn world at age {}".format(world.age))
 
     if add_text is True:
         annotated_img = world.images[world.age].copy()
@@ -82,6 +83,9 @@ def draw_world(world, add_text: bool =False):
         caption = world.conf.imageCaption.format(world.age)
         _annotate_image(annotated_draw, caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
         world.annotatedImages[world.age] = annotated_img
+
+        return {world.age: annotated_img}
+    return {world.age: im}
 
 def image_world(world, force_current: bool =False, current_only: bool = False, image_type=('all', True)):
     '''

@@ -4,15 +4,14 @@ import tkinter as tk
 import sys
 import os
 import sqlite3
-import hashlib
+from hashing import hash_pass, verify_pw_hash
 
 WIDTH = 500
 HEIGHT = 400
 # USERNAME_LENGTH = 24
 # PASSWORD_LENGTH = 128
-title_bar_icon_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis-old-backend\images\Fantorbis-Logo.ico'
-logo_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis-old-backend\images\Fantorbis-Logo.png'
-
+title_bar_icon_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis\images\Fantorbis-Logo.ico'
+logo_path = os.path.join(os.path.dirname(sys.path[0])) + r'\fantorbis\images\Fantorbis-Logo.png'
 
 # TODO: Add delete account button (with some "are you sure" prompt- tkinter.messagebox)
 #       Show create account window on startup if no accounts found (not crucial)
@@ -55,6 +54,11 @@ class LoginWindow(Frame):
         self.delete_acc_button = Button(master, text='Delete Account')
         self.delete_acc_button.grid(row=5)
 
+    def window_properties(self, root):
+        root.wm_title('Login')
+        root.iconbitmap(title_bar_icon_path)
+        root.geometry(str(WIDTH) + 'x' + str(HEIGHT))
+
 
 def show_hide_password(self, password_status):
     if self.show_hide_pw_button.cget('text') == 'Hide password':
@@ -86,33 +90,27 @@ def login(self):
                            "password TEXT NOT NULL, PRIMARY KEY(user_id AUTOINCREMENT));"
         cursor.execute(make_table_query)
 
-        # check if username and password exist in database
-        select_query = "SELECT username, password FROM accounts WHERE username = ? and password = ?"
+        # get the hashed password in db for the login_username
+        get_hashed_pass = "SELECT password FROM accounts WHERE username = ?"
+        cursor.execute(get_hashed_pass, (login_username,))
+        password_hash = cursor.fetchone()
 
-        cursor.execute(select_query, (login_username, login_password))
-        result = cursor.fetchone()
-        if result is None:
-            messagebox.showerror('Error', f'No account exists with username {login_username}')
+        # checks if the password is incorrect
+        if password_hash is None:
+            messagebox.showerror('No account found', f'No account with username: {login_username}')
 
-        else:
-            messagebox.showinfo('Logged in', f'Successfully logged in as user {login_username}')
+        # if the hash of login_password and the stored hash in the DB are the same, they are printed
+        elif verify_pw_hash(login_password, password_hash[0]) is True:
+            # TODO: Create window that appears once logged in that has a button to close the login window (which opens
+            #  the interface window)
+            messagebox.showinfo('Logged in',
+                                f'Successfully logged in as {login_username}. Click below to close this window.')
 
-            # self.root.destroy()
-            return login_username
+        # if the hash of login_password and the stored hash in the DB are not the same, an error appears
+        elif verify_pw_hash(login_password, password_hash[0]) is False:
+            messagebox.showerror('Incorrect password', "The password you've entered is incorrect")
 
         connection.close()
-
-
-#     validate_credential_length(self, login_username, login_password)
-#
-#
-# def validate_credential_length(self, username, password):
-#     if len(username) > USERNAME_LENGTH:
-#         messagebox.showerror('Error', 'Username too long')
-#         return False
-#     if len(password) > PASSWORD_LENGTH:
-#         messagebox.showerror('Error', 'Password too long')
-#         return False
 
 
 def create_acc_window(self):
@@ -172,16 +170,18 @@ class User:
             messagebox.showerror('Error', 'Username or password cannot contain spaces')
 
         else:
+            hashed_pass = hash_pass(self.password)
+
             #  create folder for accounts if it doesn't exist
             if not os.path.exists(os.path.join(os.path.dirname(sys.path[0]) +
-                                               fr'\fantorbis-old-backend\accounts')):
-                os.mkdir(os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis-old-backend\accounts')
+                                               fr'\fantorbis\accounts')):
+                os.mkdir(os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis\accounts')
 
             #  create folder called the current username if it doesn't exist
             if not os.path.exists(os.path.join(os.path.dirname(sys.path[0]) +
-                                               fr'\fantorbis-old-backend\accounts\{self.username}')):
+                                               fr'\fantorbis\accounts\{self.username}')):
                 os.mkdir(
-                    os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis-old-backend\accounts\{self.username}')
+                    os.path.join(os.path.dirname(sys.path[0])) + fr'\fantorbis\accounts\{self.username}')
 
             connection = sqlite3.connect('creds.db')  # creates database if it doesn't exist
             cursor = connection.cursor()
@@ -196,7 +196,7 @@ class User:
             insert_query = "INSERT INTO accounts(username, password) VALUES(?,?);"
 
             try:
-                cursor.execute(insert_query, (self.username, self.password))
+                cursor.execute(insert_query, (self.username, hashed_pass))
                 messagebox.showinfo('Account created', f'Account {self.username} created')
 
             except sqlite3.Error as error:
@@ -212,12 +212,10 @@ class User:
             connection.close()
 
 
-def main():
+def main(self):
     root = Tk()
+    self.window_properties(self, root)
     login_window = LoginWindow(root)
-    root.wm_title('Login')
-    root.iconbitmap(title_bar_icon_path)
-    root.geometry(str(WIDTH) + 'x' + str(HEIGHT))
     root.mainloop()
 
 
