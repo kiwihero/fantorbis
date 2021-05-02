@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.cm import ScalarMappable
 from backendworld.pillowtime import pillow
+from io import BytesIO
+# from PIL import
 
 from backendworld.World import World
 
-def draw_world(world, column='age_diff', force_draw:bool=False, hide_plates:bool=False):
+def draw_world(world, column='speed', force_draw:bool=False, hide_plates:bool=False):
     """
     Draw the current world state as a PIL image, save it to the world
     The return is the dictionary entry that was added to world.images
@@ -131,3 +133,4 @@ def plt_geoms(gdf):
     else:
         gdf.plot(ax=ax, legend=True)
     plt.show()
+
