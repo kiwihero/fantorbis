@@ -100,6 +100,9 @@ class TectonicBoundary(WorldAttribute):
         # raise Exception
 
         lambda_results = self.perimeter_shp_cells.apply(lambda x: self.world.access_data_struct().move_cell(cell=x['ShapelyCell'],velocity=x['perpendicular_line'], allow_update=False), axis=1)
+        print("lambda results\n{}\nend lambda results".format(lambda_results))
+        lambda_results = lambda_results.loc[lambda_results['ShapelyCell'] != False]
+            #lambda_results.loc[lambda_results]
 
         print("lambda results\n{}\nend lambda results".format(lambda_results))
         self.add_shp_cells(lambda_results)

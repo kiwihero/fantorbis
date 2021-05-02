@@ -52,7 +52,7 @@ class ThreadededFunctions():
     def move_cell(self, instance=None):
         self.start_thread()
         self.parent_widget.disable_buttons()
-        self.parent_widget.active_world.access_data_struct().move_random_cell()
+        self.parent_widget.active_world.force_split()
         self.complete_thread()
         # self.parent_widget.display_canvas.update_display(force_update=True)
         # self.parent_widget.enable_buttons()
@@ -89,7 +89,7 @@ class UserControls(GridLayout):
         self.step_button = Button(text='Step')
         self.step_button.bind(on_press=self.single_step)
         self.add_widget(self.step_button)
-        self.move_cell_button = Button(text='Move cell')
+        self.move_cell_button = Button(text='Force split')
         self.move_cell_button.bind(on_press=self.move_cell)
         self.add_widget(self.move_cell_button)
         self.control_buttons = {
