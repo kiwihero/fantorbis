@@ -3,8 +3,39 @@ from backendworld.World import World
 from MatplotDisplay import plt_to_file, draw_world
 
 w1 = World()
+struct = w1.access_data_struct()
+for x in range(3):
+    struct.subdivide()
+    struct.update_cells()
+    w1.step()
 w1.force_split()
-w1_pil = draw_world(w1)
+for x in range(2):
+    w1.step()
+    struct.update_cells()
+w1.force_split()
+w1_pil = draw_world(w1,column='speed')
+w1_pil.show()
+w1_pil = draw_world(w1,column='stack_size')
+w1_pil.show()
+w1_pil = draw_world(w1,column='age_diff')
+w1_pil.show()
+raise Exception
+struct.update_cells()
+w1.step()
+struct.update_cells()
+w1.force_split()
+raise Exception
+w1_pil = draw_world(w1,column='speed')
+w1_pil.show()
+for x in range(2):
+    struct.subdivide()
+    struct.update_cells()
+    w1.step()
+    struct.move_random_cell()
+    struct.update_cells()
+    w1.step()
+w1_pil = draw_world(w1,column='speed')
+w1.step()
 w1_pil.show()
 raise Exception
 print("World created {}".format(w1))

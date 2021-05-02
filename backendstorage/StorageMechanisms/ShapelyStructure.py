@@ -73,11 +73,17 @@ class ShapelyStructure(ArrayStructure):
         """
         n = [x.subdivide() for x in self.CellStorage['ShapelyCell']]
         self.CellStorage = gpd.GeoDataFrame(columns=self.conf.ShapelyStructureColumns)
+        self.world.clear_tectonic_plates()
         # print("After subdivide, n length {}".format(len(n)))
         for m1 in n:
-            # print("m1", len(m1), m1)
+            print("m1", len(m1), m1)
+            m_as_df = gpd.GeoDataFrame(data=m1, columns=self.conf.ShapelyStructureColumns)
+            print("m as df\n{}\nend m as df".format(m_as_df))
+            self.world.new_tectonic_plate(m_as_df)
             for m in m1:
-                # print("m",len(m),m)
+                # print("m",len(m),type(m),m)
+                # print("World tectonic cells\n{}\nend world tectonic cells".format(self.world.tectonicPlatesDf))
+                # raise Exception
                 self.CellStorage = self.CellStorage.append(m, ignore_index=True)
                 # print("Cell storage ShapelyCell column\n{}\nEnd Cell storage ShapelyCell column".format(self.CellStorage['ShapelyCell']))
                 # print("Cell storage pos column\n{}\nEnd Cell storage pos column".format(
@@ -159,7 +165,7 @@ class ShapelyStructure(ArrayStructure):
         print("lambda results\n{}\nend lambda results".format(lambda_results))
         # raise Exception
 
-    def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False):
+    def move_single_cell(self,cell_row,move_x,move_y, change_velocity: bool = False, allow_update: bool=True):
         old_move_x = copy.deepcopy(move_x)
         old_move_y = copy.deepcopy(move_y)
         if self.wrap is True:
@@ -199,29 +205,30 @@ class ShapelyStructure(ArrayStructure):
             # raise Exception
         else:
             moved_cell = shapely_cell.move(move_x,move_y,change_velocity=change_velocity)
-        # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
-        print("Moved cell\n{}\nend moved cell".format(moved_cell))
-        print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
-        overlapping_rows = self.find_overlap(cell_row)
-        print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows), overlapping_rows['overlap']))
-        fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
-        print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
-        line_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
-        print("{} Adjacent results \n{}\nEnd adjacent results".format(len(line_adjacent_overlapping_rows), line_adjacent_overlapping_rows['overlap']))
-        pt_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
-        print("{} Diagonally adjacent results \n{}\nEnd diagonally adjacent results".format(len(pt_adjacent_overlapping_rows), pt_adjacent_overlapping_rows['overlap']))
-        prob1 = overlapping_rows['overlap'] >= 2
-        prob2 = overlapping_rows['overlap'] < 3
-        # print("prob1\n{}\nend prob1".format(prob1))
-        # print("prob2\n{}\nend prob2".format(prob2))
-        prob3 = prob1 & prob2
-        # print("prob3\n{}\nend prob3".format(prob3))
-        problematic_rows = overlapping_rows.loc[prob3]
-        print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows['overlap']))
-        print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
-        print("Path of last skew\n{}\nEnd path of last skew".format(moved_cell.last_skew_path))
-        # plt_geoms(moved_cell.last_skew_path)
-        # TODO: Use last_skew_path to determine which cells should be absorbed
+        if allow_update is True:
+            # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
+            print("Moved cell\n{}\nend moved cell".format(moved_cell))
+            print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
+            overlapping_rows = self.find_overlap(cell_row)
+            print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows), overlapping_rows['overlap']))
+            fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
+            print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
+            line_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+            print("{} Adjacent results \n{}\nEnd adjacent results".format(len(line_adjacent_overlapping_rows), line_adjacent_overlapping_rows['overlap']))
+            pt_adjacent_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] == 3.2]
+            print("{} Diagonally adjacent results \n{}\nEnd diagonally adjacent results".format(len(pt_adjacent_overlapping_rows), pt_adjacent_overlapping_rows['overlap']))
+            prob1 = overlapping_rows['overlap'] >= 2
+            prob2 = overlapping_rows['overlap'] < 3
+            # print("prob1\n{}\nend prob1".format(prob1))
+            # print("prob2\n{}\nend prob2".format(prob2))
+            prob3 = prob1 & prob2
+            # print("prob3\n{}\nend prob3".format(prob3))
+            problematic_rows = overlapping_rows.loc[prob3]
+            print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows['overlap']))
+            print("{} Problem (incomplete intersection) results \n{}\nEnd problem results".format(len(problematic_rows), problematic_rows))
+            print("Path of last skew\n{}\nEnd path of last skew".format(moved_cell.last_skew_path))
+            # plt_geoms(moved_cell.last_skew_path)
+            # TODO: Use last_skew_path to determine which cells should be absorbed
 
 
 
@@ -244,27 +251,27 @@ class ShapelyStructure(ArrayStructure):
 
 
 
+        if allow_update is True:
+            cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
+            print("Cells at position\n{}\nend cells at position".format(cells_at_position))
+            if len(cells_at_position) > 0:
+                print("OLD STACK SIZE {}".format(moved_cell.world_cell.stack_size))
+                new_stack_size = moved_cell.world_cell.stack_size + len(cells_at_position)
+                print("NEW STACK SIZE {}".format(new_stack_size))
+                new_world_cell = copy.deepcopy(moved_cell.world_cell)
+                new_world_cell.stack_size = new_stack_size
+                print("New world cell {}".format(new_world_cell))
+                moved_cell.world_cell = new_world_cell
 
-        cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
-        print("Cells at position\n{}\nend cells at position".format(cells_at_position))
-        if len(cells_at_position) > 0:
-            print("OLD STACK SIZE {}".format(moved_cell.world_cell.stack_size))
-            new_stack_size = moved_cell.world_cell.stack_size + len(cells_at_position)
-            print("NEW STACK SIZE {}".format(new_stack_size))
-            new_world_cell = copy.deepcopy(moved_cell.world_cell)
-            new_world_cell.stack_size = new_stack_size
-            print("New world cell {}".format(new_world_cell))
-            moved_cell.world_cell = new_world_cell
-
-            self.CellStorage.drop(cells_at_position.index, inplace=True)
-        self.CellStorage = moved_cell.update_structure(self.CellStorage)
-        print("Updated structure\n{}\n{}\nend updated structure".format(self,self.CellStorage['geometry']))
-        # cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
-        # print("Cells at position\n{}\nend cells at position".format(cells_at_position))
-        # if len(cells_at_position) > 1:
-        #     moved_cell.world_cell.stack_size += len(cells_at_position)-1
-        #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
-        #     raise Exception
+                self.CellStorage.drop(cells_at_position.index, inplace=True)
+            self.CellStorage = moved_cell.update_structure(self.CellStorage)
+            print("Updated structure\n{}\n{}\nend updated structure".format(self,self.CellStorage['geometry']))
+            # cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
+            # print("Cells at position\n{}\nend cells at position".format(cells_at_position))
+            # if len(cells_at_position) > 1:
+            #     moved_cell.world_cell.stack_size += len(cells_at_position)-1
+            #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
+            #     raise Exception
 
         return moved_cell
 
@@ -371,6 +378,55 @@ class ShapelyStructure(ArrayStructure):
             # raise Exception
         self.move_single_cell(cellrow,x_movement,y_movement,change_velocity=True)
 
+    def move_cell(self, cell, velocity, fill_gap: bool = True, scale_movement: bool = False, allow_update: bool = True):
+        print("Input cell {}, velocity {}".format(cell, velocity))
+        print("input cell world cell {}".format(cell.world_cell.world))
+        cellrow = self.CellStorage.loc[self.CellStorage['ShapelyCell']==cell]
+        print("moving cell of cell row type {}: {}".format(type(cellrow),cellrow))
+        if len(cellrow) is 0:
+            return
+        cellrow = cellrow.iloc[0]
+        print("moving cell of cell row type {}: {}".format(type(cellrow),cellrow))
+        shpcell = cellrow['ShapelyCell']
+        print("velocity {}, coords".format(velocity,velocity.coords))
+        x_movement = velocity.coords[1][0]-velocity.coords[0][0]
+        y_movement = velocity.coords[1][1]-velocity.coords[0][1]
+        print("x movement {}".format(x_movement))
+        print("y movement {}".format(y_movement))
+        # raise Exception
+        if scale_movement is True:
+            x_movement *= shpcell.x_size
+            y_movement *= shpcell.y_size
+        print("shpcell {} bounds {} age; world cell {}".format(shpcell, shpcell.bounds, shpcell.creation_age, shpcell.world_cell))
+        print("x size {}, y size {}".format(shpcell.x_size, shpcell.y_size))
+        fill_row=None
+        # raise Exception
+        if fill_gap is True:
+            old_cell = cellrow['ShapelyCell']
+            print("old cell {} world {}".format(old_cell, old_cell.world_cell.world))
+            old_perim = old_cell.exterior
+            print("old cell age {}".format(old_cell.creation_age))
+            fill_cell = ShapelyCell(conf=old_cell.conf, shell=old_perim)
+            fill_cell.world_cell.setWorld(old_cell.world_cell.world)
+            print("fill cell age {}".format(fill_cell.creation_age))
+            print("fill cell world {}".format(fill_cell.world_cell.world))
+            print("Old perimeter {}".format(old_perim))
+            fill_row = fill_cell._cell_to_structure_df()
+            print("fill row {}, vel {}, pos {}, age {}".format(fill_row, fill_cell.velocity, fill_cell.centroid,
+                                                               fill_cell.world_cell.age))
+            print("age diff {}".format(fill_row['age_diff']))
+            print("World age {}".format(self.conf.world.age))
+            self.CellStorage = self.CellStorage.append(fill_row, ignore_index=True)
+
+        print("Moving single cell")
+        self.move_single_cell(cellrow, x_movement, y_movement, change_velocity=True,allow_update=allow_update)
+        print("fill row type {}\n{}\nEnd fill row".format(type(fill_row),fill_row))
+        print("fill cell\n{}\nend fill cell".format(fill_row.iloc[0]['ShapelyCell'].polygon))
+        # raise Exception
+        return fill_row.iloc[0]
+
+
+
         # raise Exception
 
     def step_move(self):
@@ -408,6 +464,27 @@ class ShapelyStructure(ArrayStructure):
         return self.move_single_cell(cellrow, move_x, move_y, change_velocity=False)
         # raise Exception
 
+    def find_neighbors(self,cell):
+        print("given cellrow {}".format(cell))
+        # TODO: Convert to gpd
+        lambda_results = pd.DataFrame(self.CellStorage)
+        print("copy lambda results \n{}\nEnd copy lambda results".format(lambda_results))
+        lambda_results['overlap'] = self.CellStorage.apply(lambda x: self.overlap_type(x, cell), axis=1)
+        print("lambda results \n{}\nEnd lambda results".format(lambda_results))
+        print("lambda results overlap \n{}\nEnd lambda results overlap".format(lambda_results['overlap']))
+        overlapping_rows = lambda_results.loc[lambda_results['overlap'] != 0]
+        print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows),overlapping_rows))
+        # print("{} overlapping results \n{}\nEnd overlapping results".format(len(overlapping_rows),overlapping_rows['overlap']))
+        neighboring_results = overlapping_rows.loc[overlapping_rows['overlap'] == 3.1]
+            # overlapping_rows['overlap'] == 3.1
+        print("{} neighboring results \n{}\nEnd neighboring results".format(len(neighboring_results),
+                                                                            neighboring_results))
+        # neighboring_rows = self.CellStorage.loc[neighboring_results]
+        # print("{} neighboring results \n{}\nEnd neighboring results".format(len(neighboring_rows),
+        #                                                                     neighboring_rows))
+        return neighboring_results
+        # overlapping_rows =
+
     def find_overlap(self, cellrow):
         print("given cellrow {}".format(cellrow))
         # TODO: Convert to gpd
@@ -419,8 +496,10 @@ class ShapelyStructure(ArrayStructure):
         return overlapping_rows
 
     def overlap_type(self,c1_row, c2_row):
-        c1 = c1_row['ShapelyCell'].polygon
-        c2 = c2_row['ShapelyCell'].polygon
+        if type(c1_row) is not ShapelyCell:
+            c1 = c1_row['ShapelyCell'].polygon
+        if type(c2_row) is not ShapelyCell:
+            c2 = c2_row['ShapelyCell'].polygon
         if c1.almost_equals(c2):
             print("{} and {} fully overlap".format(c1,c2))
             return 1.3

@@ -56,7 +56,7 @@ class Conf:
         ]
         self.default_display_column = 'speed'
 
-        self.mu = 0.1
+        self.mu = .1
         self.static_mu_factor = 1
 
         self.fnt = self.set_font(self.fontLocation, size=100)

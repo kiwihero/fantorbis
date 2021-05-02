@@ -28,8 +28,8 @@ def draw_world(world, column='age_diff', force_draw:bool=False):
         return world.images[world.age][column]
     gdf = world.access_data_struct().CellStorage
     fig, ax = plt.subplots(1, 1)
-    gdf.boundary.plot(ax=ax, color='gray', zorder=2)
-    plate_boundaries.boundary.plot(ax=ax, color='black', zorder=4, alpha=0.5)
+    gdf.boundary.plot(ax=ax, color='gray', zorder=4, alpha=0.5)
+    plate_boundaries.plot(ax=ax, color='purple', zorder=4, alpha=1)
     plates.plot(ax=ax, color='pink', zorder=3, alpha=0.5)
     if column in world.conf.ShapelyStructureColumns:
         gdf.plot(column=column, ax=ax, legend=True)

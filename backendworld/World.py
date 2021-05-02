@@ -5,7 +5,9 @@ from Position import Position
 from shapely.ops import shared_paths, split
 from shapely.geometry import MultiLineString
 from backendworld.ShapelyPlate import TectonicPlate
+from backendworld.ShapelyBoundary import TectonicBoundary
 import geopandas as gpd
+import pandas as pd
 
 class World:
     def __init__(self):
@@ -15,7 +17,7 @@ class World:
         self.tectonicBoundaries = set()
         self.tectonicBoundariesDf = gpd.GeoDataFrame(columns=['geometry','ShapelyBoundary'])
         self.tectonicPlates = set()
-        self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry','ShapelyPlate'])
+        self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry', 'ShapelyPlate','area','length'])
         self.tectonicCells = set()
         self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf)
         self.images = {}
@@ -121,7 +123,7 @@ class World:
 
     def new_tectonic_plate(self, df=None):
         if df is not None:
-            plate = TectonicPlate()
+            plate = TectonicPlate(world=self)
             self.tectonicPlates.add(plate)
             plate_cells = plate.add_struct_cell(df)
             # print("plate cells\n{}\nend plate cells".format(plate_cells))
@@ -131,6 +133,10 @@ class World:
             # raise Exception
         else:
             raise Exception("You need to specify an argument for new_tectonic_plate")
+
+    def clear_tectonic_plates(self):
+        self.tectonicPlates = set()
+        self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry', 'ShapelyPlate','area','length'])
 
     def _random_plate(self):
         """
@@ -151,7 +157,46 @@ class World:
         :return:
         """
         if plate is None and boundary is None:
+            print("available plates\n{}\nEnd available plates".format(self.tectonicPlates))
+            for plate in self.tectonicPlates:
+                print("\tPlate {}".format(str(plate)))
             plate = self._random_plate()
+            print("plate to create split {}".format(plate))
+            boundary_tuple = plate.random_interior_boundary()
+            boundary = boundary_tuple[0]
+            boundary_cell1 = boundary_tuple[1]
+            boundary_cell2 = boundary_tuple[2]
+            # print("Boundary to split {}".format(boundary))
+            # print("Cells for boundary {}, {}".format(str(boundary_cell1),str(boundary_cell2)))
+            # print("Cells for boundary {}, {}".format(str(boundary_cell1.world_cell.world),str(boundary_cell2.world_cell.world)))
+            # raise Exception
+            tectonic_boundary = TectonicBoundary(world=self, boundary=boundary, shp_cells=(boundary_cell1,boundary_cell2), tectonic_plates=plate)
+            print("tectonic boundary {}".format(tectonic_boundary))
+            tectonic_boundary_dict = {'geometry': tectonic_boundary.geometry, 'ShapelyBoundary':tectonic_boundary}
+            tectonic_boundary_series = pd.Series(data=tectonic_boundary_dict,index=['geometry', 'ShapelyBoundary'])
+            print("new boundaries series\n{}\nEnd boundaries series".format(tectonic_boundary_series))
+            # raise Exception
+            self.tectonicBoundariesDf = self.tectonicBoundariesDf.append(tectonic_boundary_series,ignore_index=True)
+            print("boundaries df {}".format(self.tectonicBoundariesDf['geometry']))
+
+            tectonic_boundary.stretch_boundary()
+            print("boundaries df\n{}\nEnd boundaries df".format(self.tectonicBoundariesDf))
+            self.update_tectonic_boundaries()
+            print("boundaries df\n{}\nEnd boundaries df".format(self.tectonicBoundariesDf))
+            # raise Exception
+
+
         # if plate is None and boundary is None:
+
+    def update_tectonic_boundaries(self):
+        lambda_results = self.tectonicBoundariesDf
+        print("lambda results\n{}\nend lambda results".format(lambda_results))
+        lambda_results['geometry'] = self.tectonicBoundariesDf.apply(lambda x: x['ShapelyBoundary'].geometry, axis=1)
+        print("lambda results\n{}\nend lambda results".format(lambda_results))
+        self.tectonicBoundariesDf = lambda_results
+        # raise Exception
+        # self.tectonicBoundariesDf = gpd.GeoDataFrame(columns=['geometry','ShapelyBoundary'])
+
+        # lambda_results = df.apply(lambda x: self.strip_struct_cell(x), axis=1)
 
 
