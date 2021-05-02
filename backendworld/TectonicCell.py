@@ -1,23 +1,34 @@
 from backendworld.WorldAttribute import WorldAttribute
 from Position import Position
 from Vector import Vector
-
+import copy
 
 class TectonicCell(WorldAttribute):
     """
     A single cell of a standard size, making up a World
     """
-    def __init__(self, data_structure_location: Position = None, starting_height: int = 0, starting_velocity: Vector = None,
-                 **kwargs):
+    def __init__(self, data_structure_location: Position = None, starting_height: int = 0,
+                 starting_velocity: Vector = None, stack_size: int = 1, **kwargs):
         self.age = 0
+        self.stack_size = stack_size
         self.height = starting_height
         self._dataStructureLocation = data_structure_location
+        print("Tectoniccell Data structure location {}".format(self._dataStructureLocation))
         if starting_velocity is None:
-            self.velocity = Vector(self._dataStructureLocation,self._dataStructureLocation)
+            if self._dataStructureLocation is None:
+                self.velocity = Vector(Position(0,0),Position(0,0))
+            else:
+                self.velocity = Vector(self._dataStructureLocation,self._dataStructureLocation)
         else:
             self.velocity = starting_velocity
         super(TectonicCell, self).__init__(**kwargs)
         self._updateWorldSet()
+        if self.world is not None:
+            self.mu = self.world.conf.mu
+            self.static_mu = self.mu * self.world.conf.static_mu_factor
+        else:
+            self.mu = 0
+            self.static_mu = 0
 
     def _updateWorldSet(self):
         """
@@ -30,24 +41,31 @@ class TectonicCell(WorldAttribute):
         elif self.world is None:
             print("ERROR NO WORLD")
 
+    def setWorld(self, world):
+        super().setWorld(world=world)
+        if self.mu is None:
+            self.mu = self.world.conf.mu
+        if self.static_mu is None:
+            self.static_mu = self.mu * self.world.conf.static_mu_factor
+
     def step(self):
         """
         Single step through time
         Also double checks if in world's set of known cells
         :return:
         """
-        self._updateWorldSet()
+        # self._updateWorldSet()
         if self.velocity.magnitude() > 0:
             print("CELL HAS EXISTING VELOCITY {}".format(self.velocity))
             self.move(self.velocity.y_component(),self.velocity.x_component())
         # Note the implied assumption that all elements of the world must not be older than the world
         if self.age == self.world.age:
+            # raise Exception
             if self.world is not None:
                 self.world.conf.log_from_conf(level="error", message="ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD".format(hex(id(self))))
             else:
                 print("ONE CELL (ID: {}) CAN'T BE OLDER THAN THE WORLD\nAND TO TOP IT OFF, YOU NEVER GAVE YOUR CELLS A WORLD FOR THIS MESSAGE TO BE LOGGED".format(hex(id(self))))
                 raise Exception
-
         else:
             self.age += 1
 
@@ -70,13 +88,29 @@ class TectonicCell(WorldAttribute):
             # raise Exception
 
     def __str__(self):
-        return "Tectonic cell age {}; {} in data structure".format(self.age, self._dataStructureLocation)
+        return "Tectonic cell age {}, height {}, stack {}, velocity {}; at {} in data structure".format(self.age, self.height,self.stack_size,self.velocity, self._dataStructureLocation)
 
     def __copy__(self):
         new_cell = TectonicCell(data_structure_location=self._dataStructureLocation, world=self.world)
         # new_cell = self.copy_attrs(new_cell)
         new_cell.age = self.age
-        new_cell.velocity = self.velocity.__copy__()
+        new_cell.velocity = copy.copy(self.velocity)
+        new_cell.stack_size = self.stack_size
+        new_cell.height = self.height
+        new_cell.mu = self.mu
+        print("updating after copy, new cell world now {}".format(new_cell.world))
+        new_cell._updateWorldSet()
+        print("done updating after copy")
+        return new_cell
+
+    def __deepcopy__(self, memodict={}):
+        # TODO: Handling deep copy in memo dict
+        new_cell = TectonicCell(data_structure_location=copy.deepcopy(self._dataStructureLocation), world=self.world)
+        new_cell.age = self.age
+        new_cell.velocity = copy.deepcopy(self.velocity)
+        new_cell.stack_size = copy.deepcopy(self.stack_size)
+        new_cell.height = copy.deepcopy(self.height)
+        new_cell.mu = copy.deepcopy(self.mu)
         print("updating after copy, new cell world now {}".format(new_cell.world))
         new_cell._updateWorldSet()
         print("done updating after copy")

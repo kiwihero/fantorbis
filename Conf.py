@@ -17,7 +17,8 @@ class Conf:
         'Cell': 'backendstorage.Cells.Cell',
         'VertexPoint': 'backendstorage.Vertices.VertexPoint',
         'GridStructure': 'backendstorage.StorageMechanisms.GridStructure',
-        'TectonicCell': 'backendworld.TectonicCell'
+        'TectonicCell': 'backendworld.TectonicCell',
+        'ShapelyStructure': 'backendstorage.StorageMechanisms.ShapelyStructure'
 
     }
     def __init__(self):
@@ -28,6 +29,8 @@ class Conf:
         self.logfilename = self.logFolder + '{}_backendlog.log'.format(self.startTimeInt)
         self.config_log()
         self.clear_logs()
+
+        self._cwd_to_main()
 
         self.resourceFolder = 'resources/'
         self.fontLocation = self.resourceFolder + '07558_CenturyGothic.ttf'
@@ -47,6 +50,16 @@ class Conf:
 
         self.ageGradient = ((130, 245, 0), (244,0,245))
 
+        # self.ShapelyStructureColumns = ['ShapelyCell', 'TectonicCell','geometry','pos']
+        self.ShapelyStructureColumns = [
+            'ShapelyCell', 'TectonicCell', 'geometry', 'pos', 'age_diff','pos_point','stack_size','speed'
+        ]
+        self.default_display_column = 'speed'
+        self.default_controls_state = self.default_display_column
+        self.default_plates_state = 'default_plates'
+
+        self.mu = .1
+        self.static_mu_factor = 1
 
         self.fnt = self.set_font(self.fontLocation, size=100)
         self.fnt_sm = self.set_font(self.fontLocation, size=20)
@@ -69,12 +82,11 @@ class Conf:
     # If you know the name of the class and the module/package of the class, can use str to specify class name
     # Thanks stackoverflow https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
     def class_for_name(self, class_name, module_name=None):
-        '''
-
+        """
         :param class_name: the class we're loading
         :param module_name: the module we're loading
         :return: loads module and class, raises errors if wrongs
-        '''
+        """
         try:
             if module_name is None and class_name in Conf.classes:
                 module_name = Conf.classes[class_name]
@@ -223,5 +235,21 @@ class Conf:
         self.log_from_conf('info', 'Found {} fonts'.format(len(fonts)))
 
         return fonts[list(fonts)[0]]['path']
+
+    def _cwd_to_main(self, main_dir="fantorbis"):
+        """
+        Navigates the cwd back to "fantorbis" or other specified directory above current dir in path
+        :param main_dir: Destination dir above in current path
+        :return:
+        """
+        import os
+        cwd = os.getcwd()
+        while main_dir in str(cwd) and main_dir not in str(os.path.basename(cwd)):
+            # print("current working directory {}".format(cwd))
+            # print("basename {}".format(os.path.basename(cwd)))
+            os.chdir("..")
+            cwd = os.getcwd()
+        # print("current working directory {}".format(cwd))
+        return cwd
 
 

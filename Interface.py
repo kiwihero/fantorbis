@@ -11,7 +11,10 @@ This is where the backend and ui interface
 #  use something like the gif_world(World) function in PillowDisplay?
 
 from backendworld.World import *
-from PillowDisplay import draw_world, gif_world, image_world, _save_image
+# from PillowDisplay import draw_world, gif_world, image_world, _save_image
+from MatplotDisplay import draw_plates, draw_world, plt_to_file
+from backendworld.pillowtime import pillow
+# from kvgui.kvmain import WorldDisplay
 
 import os
 import sys
@@ -96,10 +99,15 @@ else:
             print("creating world")
             interface_new_world = World()
             self.world = interface_new_world
-            image_world(self.world)
+            draw_world(self.world)
 
             last_key = max(self.world.images.keys())
-            first_image_bg = self.world.images[last_key]
+            print("last key {}".format(last_key))
+            last_key_b = list(self.world.images[last_key].keys())[0]
+            print("last key b {}".format(last_key_b))
+            # raise Exception
+            print("last key type: {} is {}".format(type(self.world.images[last_key][last_key_b]),self.world.images[last_key][last_key_b]))
+            first_image_bg = self.world.images[last_key][last_key_b]
             first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
             photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
 
@@ -116,7 +124,7 @@ else:
 
         def stepping_world(self):
             print("CALLED STEPPING WORLD")
-            image_world(self.world)
+            draw_world(self.world)
             #self.world.access_data_struct().subdivide()
             #self.world.random_wiggle()
             step_world = self.world.step()
@@ -126,7 +134,8 @@ else:
             # World.random_wiggle()
             last_key =max(self.world.images.keys())
             print("last key {}".format(last_key))
-            first_image_bg = self.world.images[max(self.world.images.keys())]
+            last_key_b = list(self.world.images[last_key].keys())[0]
+            first_image_bg = self.world.images[last_key][last_key_b]
             # self.world.images[max(self.world.images.keys())].show()
             first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
             photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
@@ -141,7 +150,7 @@ else:
             self.backgroundphoto.image = photo_image
 
         def subdivide_world(self):
-             image_world(self.world)
+             draw_world(self.world)
              messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
              self.world.access_data_struct().subdivide()
 
@@ -153,9 +162,10 @@ else:
 
         def move_world(self):
             print("MOVE WORLD")
-            image_world(self.world)
-            self.world.random_wiggle()
-            World.random_wiggle()
+            draw_world(self.world)
+            self.world.access_data_struct().move_random_cell()
+            # self.world.random_wiggle()
+            # World.random_wiggle()
 
         def save_world(self):
             first_image_bg = self.world.images[max(self.world.images.keys())]
