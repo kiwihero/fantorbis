@@ -17,7 +17,7 @@ from kivy.clock import Clock
 from io import BytesIO
 # import io
 from kivy.event import EventDispatcher
-from MatplotDisplay import draw_world
+from MatplotDisplay import draw_world, draw_plates
 import copy
 import threading
 
@@ -133,7 +133,11 @@ class UserControls(GridLayout):
     def reactivation(self, instance=None, force_update=True):
         # print("User controls reactivation")
         if self.root.running_thread is False:
-            self.display_canvas.update_display(force_update=force_update)
+            current_control = self.root.main_layout.basic_display_controls.disp_controls_state
+            current_plate =self.root.main_layout.basic_display_controls.plate_controls_state
+            self.display_canvas.update_display(force_update=force_update, column=current_control, plate_control=current_plate)
+            print("current control {}, plate {}".format(current_control, current_plate))
+            # raise Exception
             # raise Exception
             self.enable_buttons()
         else:
@@ -156,29 +160,49 @@ class UserDisplayControls(GridLayout):
         self.active_world = active_world
         self.display_canvas = display_canvas
         self.cols = 3
-        self.rows = 1
+        self.rows = 2
 
-        btn1 = ToggleButton(text='speed', group='disp_controls', state='down')
-        btn2 = ToggleButton(text='age_diff', group='disp_controls')
-        btn3 = ToggleButton(text='stack_size', group='disp_controls')
+        self.btn1 = btn1 = ToggleButton(text='speed', group='disp_controls', state='down')
+        self.btn2 = btn2 = ToggleButton(text='age_diff', group='disp_controls')
+        self.btn3 = btn3 = ToggleButton(text='stack_size', group='disp_controls')
+        self.btn4 = btn4 = ToggleButton(text='default_plates', group='plate_controls',state='down')
+        self.btn5 = btn5 = ToggleButton(text='plates_only', group='plate_controls')
+        self.btn5 = btn6 = ToggleButton(text='no_plates', group='plate_controls')
         btn1.bind(on_press=self.request_update)
         btn2.bind(on_press=self.request_update)
         btn3.bind(on_press=self.request_update)
+        btn4.bind(on_press=self.request_update)
+        btn5.bind(on_press=self.request_update)
+        btn6.bind(on_press=self.request_update)
         self.add_widget(btn1)
         self.add_widget(btn2)
         self.add_widget(btn3)
+        self.add_widget(btn4)
+        self.add_widget(btn5)
+        self.add_widget(btn6)
+        self.disp_controls_state = self.active_world.conf.default_controls_state
+        self.plate_controls_state = self.active_world.conf.default_plates_state
 
     def request_update(self, instance):
+        if instance.group == 'disp_controls':
+            self.disp_controls_state = instance.text
+        if instance.group == 'plate_controls':
+            self.plate_controls_state = instance.text
+        print("instance: {}, request update column={}, plate control={}".format(instance, self.disp_controls_state,
+                                                                                self.plate_controls_state))
+
+        # print("instance group {} {}".format(type(instance.group),instance.group))
         # raise Exception
-        self.display_canvas.update_display(column=instance.text)
+        self.display_canvas.update_display(column=self.disp_controls_state, plate_control=self.plate_controls_state)
 
 
 class WorldDisplay(Widget):
-    def __init__(self, active_world, **kwargs):
+    def __init__(self, active_world,column=None, plate_control=None, **kwargs):
         super(WorldDisplay, self).__init__(**kwargs)
         self.active_world = active_world
-        self.display_type = self.active_world.conf.default_display_column
-        self.update_display(column=self.display_type)
+        self.display_type = self.active_world.conf.default_controls_state
+        self.plate_type = self.active_world.conf.default_plates_state
+        self.update_display(column=self.display_type, plate_control=self.plate_type)
 
 
         # self.current_world_pil = self.world_to_pil()
@@ -190,11 +214,12 @@ class WorldDisplay(Widget):
         self.bind(pos=self.update_bg)
         self.bind(size=self.update_bg)
 
-    def update_display(self, column=None, force_update: bool = False):
+    def update_display(self, column, plate_control, force_update: bool = False):
+        print("Update display column={}, plate control={}".format(column, plate_control))
         if column is None:
             column = self.display_type
             # raise Exception
-        self.current_world_pil = self.world_to_pil(column=column, force_update=force_update)
+        self.current_world_pil = self.world_to_pil(column=column,plate_control=plate_control, force_update=force_update)
         self.display_type = column
         self.pil_to_canvas()
         with self.canvas:
@@ -205,10 +230,16 @@ class WorldDisplay(Widget):
         self.canvas_image.size = self.size
         self.canvas_image.texture = self.beeld.texture
 
-    def world_to_pil(self, column=None, force_update: bool = False):
+    def world_to_pil(self, column=None, plate_control=None, force_update: bool = False):
+        print("world to pil column={}, plate control={}".format(column,plate_control))
         # print("root of widget {}".format(self.get_root_window()))
         # print("active world {}".format(self.active_world))
-        drawn = draw_world(self.active_world,column=column, force_draw=force_update)
+        if plate_control is 'plates_only':
+            drawn = draw_plates(self.active_world, column=column, force_draw=force_update)
+        elif plate_control is 'no_plates':
+            drawn = draw_world(self.active_world, column=column, force_draw=force_update, hide_plates=True)
+        else:
+            drawn = draw_world(self.active_world,column=column, force_draw=force_update)
         canvas_img = drawn
         # canvas_img.show()
         return canvas_img
@@ -249,11 +280,17 @@ class MainLayout(GridLayout):
         self.root = root
         self.cols = 2
 
-        self.world_canvas = WorldDisplay(self.active_world)
-        self.add_widget(self.world_canvas)
+        default_controls_state = active_world.conf.default_controls_state
+        default_plates_state = active_world.conf.default_plates_state
+
+        self.world_canvas = WorldDisplay( self.active_world)
+
         self.basic_controls = UserControls(self.active_world, self.world_canvas, root=self.root)
-        self.add_widget(self.basic_controls)
         self.basic_display_controls = UserDisplayControls(self.active_world, self.world_canvas)
+
+
+        self.add_widget(self.world_canvas)
+        self.add_widget(self.basic_controls)
         self.add_widget(self.basic_display_controls)
         self.quit_button = Button(text="quit")
         self.quit_button.bind(on_release=self.quit_app)

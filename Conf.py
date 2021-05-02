@@ -55,6 +55,8 @@ class Conf:
             'ShapelyCell', 'TectonicCell', 'geometry', 'pos', 'age_diff','pos_point','stack_size','speed'
         ]
         self.default_display_column = 'speed'
+        self.default_controls_state = self.default_display_column
+        self.default_plates_state = 'default_plates'
 
         self.mu = .1
         self.static_mu_factor = 1
