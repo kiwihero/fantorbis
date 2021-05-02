@@ -4,6 +4,8 @@ from Position import Position
 # from shapely.ops import snap
 from shapely.ops import shared_paths, split
 from shapely.geometry import MultiLineString
+from backendworld.ShapelyPlate import TectonicPlate
+import geopandas as gpd
 
 class World:
     def __init__(self):
@@ -11,7 +13,9 @@ class World:
         self.conf.world = self
         self.age = 0
         self.tectonicBoundaries = set()
+        self.tectonicBoundariesDf = gpd.GeoDataFrame(columns=['geometry','ShapelyBoundary'])
         self.tectonicPlates = set()
+        self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry','ShapelyPlate'])
         self.tectonicCells = set()
         self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf)
         self.images = {}
@@ -114,3 +118,40 @@ class World:
         :return: World._dataStructure
         '''
         return self._dataStructure
+
+    def new_tectonic_plate(self, df=None):
+        if df is not None:
+            plate = TectonicPlate()
+            self.tectonicPlates.add(plate)
+            plate_cells = plate.add_struct_cell(df)
+            # print("plate cells\n{}\nend plate cells".format(plate_cells))
+            self.tectonicPlatesDf = self.tectonicPlatesDf.append(plate_cells, ignore_index=True)
+            # print("tectonic plates df\n{}\nEnd tectonic plates df".format(self.tectonicPlatesDf))
+
+            # raise Exception
+        else:
+            raise Exception("You need to specify an argument for new_tectonic_plate")
+
+    def _random_plate(self):
+        """
+        Internal function to get a random plate
+        :return:
+        """
+        if len(self.tectonicPlates) is 0:
+            raise Exception("No plates available, was world initiated correctly?")
+        random_number = random.randint(1,len(self.tectonicPlates))-1
+        return list(self.tectonicPlates)[random_number]
+
+
+    def force_split(self, plate=None, boundary=None):
+        """
+        Forces a split (divergent boundary)
+        :param plate: Can specify a plate to be split
+        :param boundary: Can specify a plate boundary to split along
+        :return:
+        """
+        if plate is None and boundary is None:
+            plate = self._random_plate()
+        # if plate is None and boundary is None:
+
+

@@ -3,6 +3,10 @@ from backendworld.World import World
 from MatplotDisplay import plt_to_file, draw_world
 
 w1 = World()
+w1.force_split()
+w1_pil = draw_world(w1)
+w1_pil.show()
+raise Exception
 print("World created {}".format(w1))
 struct = w1.access_data_struct()
 # plt_to_file(w1)
@@ -61,7 +65,7 @@ for x in range(2):
     struct.move_random_cell()
     struct.update_cells()
     w1.step()
-for x in range(5):
+for x in range(1):  # was 5
     struct.move_random_cell()
     struct.update_cells()
     w1.step()

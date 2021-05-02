@@ -14,11 +14,23 @@ def draw_world(world, column='age_diff', force_draw:bool=False):
     :param force_draw: Force a redraw even if previously drawn
     :return: Dictionary of the age and the PIL image
     """
+    plates = world.tectonicPlatesDf
+    print("plates")
+    print(plates)
+    plate_boundaries = world.tectonicBoundariesDf
+    print("plate boundaries")
+    print(plate_boundaries)
+    # raise Exception
+
+
+
     if force_draw is False and world.age in world.images and column in world.images[world.age]:
         return world.images[world.age][column]
     gdf = world.access_data_struct().CellStorage
     fig, ax = plt.subplots(1, 1)
     gdf.boundary.plot(ax=ax, color='gray', zorder=2)
+    plate_boundaries.boundary.plot(ax=ax, color='black', zorder=4, alpha=0.5)
+    plates.plot(ax=ax, color='pink', zorder=3, alpha=0.5)
     if column in world.conf.ShapelyStructureColumns:
         gdf.plot(column=column, ax=ax, legend=True)
     else:
@@ -37,12 +49,22 @@ def plt_to_file(world: World):
     gdf = world.access_data_struct().CellStorage
     print("gdf")
     print(gdf)
+
+    plates = world.tectonicPlatesDf
+    print("plates")
+    print(plates)
+    plate_boundaries = world.tectonicBoundariesDf
+    print("plate boundaries")
+    print(plate_boundaries)
+
     # print("geom")
     # print(gdf['geometry'].head(0))
     # print("end geom")
     fig, ax = plt.subplots(1, 1)
     gdf.boundary.plot(ax=ax,color='gray',zorder=2)
     gdf.plot(column='age_diff', ax=ax,legend=True)
+    plate_boundaries.boundary.plot(ax=ax,color='black',zorder=4,alpha=0.5)
+    plates.plot(ax=ax, color='pink', zorder=3, alpha=0.5)
     # col = gdf['age_diff']
     # print("col\n{}\nmin {} max {}".format(col, min(col),max(col)))
     # raise Exception

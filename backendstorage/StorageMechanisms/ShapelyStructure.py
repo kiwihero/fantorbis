@@ -22,6 +22,7 @@ class ShapelyStructure(ArrayStructure):
         :param kwargs:
         """
         super(ShapelyStructure, self).__init__(**kwargs)
+        self.world = self.conf.world
         first_cell = ShapelyCell(
             conf=self.conf,
             shell=[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]],
@@ -47,6 +48,7 @@ class ShapelyStructure(ArrayStructure):
         print("first cell dataframe {}".format(first_cell_df))
         self.CellStorage = self.CellStorage.append(first_cell_df)
         print("Cell storage\n{}\nEnd cell storage".format(self.CellStorage))
+        self.world.new_tectonic_plate(self.CellStorage)
         # raise Exception
 
 
