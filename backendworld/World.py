@@ -121,18 +121,20 @@ class World:
         '''
         return self._dataStructure
 
-    def new_tectonic_plate(self, df=None):
-        if df is not None:
+    def new_tectonic_plate(self, inp):
+        print("New tectonic plate input type {}".format(type(inp)))
+        if type(inp) is gpd.GeoDataFrame:
             plate = TectonicPlate(world=self)
             self.tectonicPlates.add(plate)
-            plate_cells = plate.add_struct_cell(df)
+            plate_cells = plate.add_struct_cell(inp)
             # print("plate cells\n{}\nend plate cells".format(plate_cells))
             self.tectonicPlatesDf = self.tectonicPlatesDf.append(plate_cells, ignore_index=True)
             # print("tectonic plates df\n{}\nEnd tectonic plates df".format(self.tectonicPlatesDf))
 
             # raise Exception
-        else:
-            raise Exception("You need to specify an argument for new_tectonic_plate")
+            return plate
+
+        raise Exception("You need to specify an argument for new_tectonic_plate")
 
     def clear_tectonic_plates(self):
         self.tectonicPlates = set()
@@ -160,18 +162,29 @@ class World:
             print("available plates\n{}\nEnd available plates".format(self.tectonicPlates))
             for plate in self.tectonicPlates:
                 print("\tPlate {}".format(str(plate)))
-            plate = self._random_plate()
-            print("plate to create split {}".format(plate))
-            boundary_tuple = plate.random_interior_boundary()
+            valid_plate = False
+            counter = 0
+            while valid_plate == False and counter < 2*len(self.tectonicPlates):
+                plate = self._random_plate()
+                print("plate to create split {}".format(plate))
+                boundary_tuple = plate.random_interior_boundary()
+                counter += 1
+                if boundary_tuple is not None:
+                    valid_plate = True
             boundary = boundary_tuple[0]
             boundary_cell1 = boundary_tuple[1]
             boundary_cell2 = boundary_tuple[2]
+            removed = plate.remove_struct_cell([boundary_cell1,boundary_cell2])
+            new_plate = self.new_tectonic_plate(removed)
+            print("New tectonic plate\n{}\nEnd new tectonic plate".format(new_plate))
+            # raise Exception
             # print("Boundary to split {}".format(boundary))
-            # print("Cells for boundary {}, {}".format(str(boundary_cell1),str(boundary_cell2)))
+            print("Cells for boundary {}, {}".format(str(boundary_cell1),str(boundary_cell2)))
             # print("Cells for boundary {}, {}".format(str(boundary_cell1.world_cell.world),str(boundary_cell2.world_cell.world)))
             # raise Exception
-            tectonic_boundary = TectonicBoundary(world=self, boundary=boundary, shp_cells=(boundary_cell1,boundary_cell2), tectonic_plates=plate)
+            tectonic_boundary = TectonicBoundary(world=self, boundary=boundary, shp_cells=(boundary_cell1,boundary_cell2), tectonic_plates=(plate,new_plate))
             print("tectonic boundary {}".format(tectonic_boundary))
+            # raise Exception
             tectonic_boundary_dict = {'geometry': tectonic_boundary.geometry, 'ShapelyBoundary':tectonic_boundary}
             tectonic_boundary_series = pd.Series(data=tectonic_boundary_dict,index=['geometry', 'ShapelyBoundary'])
             print("new boundaries series\n{}\nEnd boundaries series".format(tectonic_boundary_series))

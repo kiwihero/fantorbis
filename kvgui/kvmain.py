@@ -110,7 +110,7 @@ class UserControls(GridLayout):
         self.display_canvas.update_display(force_update=True)
 
     def single_step(self, instance):
-        t1 = threading.Thread(target=self.threaded_controls.move_cell)
+        t1 = threading.Thread(target=self.threaded_controls.step)
         t1.start()
         Clock.schedule_once(self.reactivation)
 

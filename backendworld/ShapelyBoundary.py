@@ -67,6 +67,7 @@ class TectonicBoundary(WorldAttribute):
             if type(tectonic_plates) is TectonicPlate:
                 tectonic_plates = [tectonic_plates]
             for tec_plt in tectonic_plates:
+                print("tectonic plate", tec_plt)
                 tec_plt_dict = {'TectonicPlate':tec_plt, 'geometry':tec_plt.geometry}
                 tec_plt_ser = pd.Series(data=tec_plt_dict,index=['TectonicPlate', 'geometry'])
                 self.perimeter_plates = self.perimeter_plates.append(tec_plt_ser, ignore_index=True)
@@ -76,7 +77,10 @@ class TectonicBoundary(WorldAttribute):
         # print("old linearring {}".format(self.boundary_linearring))
         print("old perimeter cells\n{}\nEnd old perimeter cells",self.perimeter_shp_cells)
         print("adding cells\n{}\nEnd adding cells".format(df))
-        self.perimeter_shp_cells = self.perimeter_shp_cells.append(df)
+        if type(df) is pd.Series:
+            self.perimeter_shp_cells = self.perimeter_shp_cells.append(df,ignore_index=True)
+        else:
+            self.perimeter_shp_cells = self.perimeter_shp_cells.append(df)
         print("new perimeter cells\n{}\nEnd new perimeter cells".format(self.perimeter_shp_cells))
         combo = unary_union(self.perimeter_shp_cells['geometry'])
         print("combo type: {}, {}".format(type(combo),combo))
@@ -100,11 +104,10 @@ class TectonicBoundary(WorldAttribute):
         # raise Exception
 
         lambda_results = self.perimeter_shp_cells.apply(lambda x: self.world.access_data_struct().move_cell(cell=x['ShapelyCell'],velocity=x['perpendicular_line'], allow_update=False), axis=1)
+        lambda_results = lambda_results.dropna(how='all')
         print("lambda results\n{}\nend lambda results".format(lambda_results))
-        lambda_results = lambda_results.loc[lambda_results['ShapelyCell'] != False]
-            #lambda_results.loc[lambda_results]
-
-        print("lambda results\n{}\nend lambda results".format(lambda_results))
+        # lambda_results = lambda_results.loc[lambda_results['ShapelyCell'] != False]
+        # print("lambda results\n{}\nend lambda results".format(lambda_results))
         self.add_shp_cells(lambda_results)
         # raise Exception
         print(lambda_results['ShapelyCell'])

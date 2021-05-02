@@ -384,9 +384,10 @@ class ShapelyStructure(ArrayStructure):
         cellrow = self.CellStorage.loc[self.CellStorage['ShapelyCell']==cell]
         print("moving cell of cell row type {}: {}".format(type(cellrow),cellrow))
         if len(cellrow) is 0:
-            blank_series = pd.Series(data=[False]*len(self.conf.ShapelyStructureColumns),index=self.conf.ShapelyStructureColumns)
-            print("blank series\n{}\nEnd blank series".format(blank_series))
-            return blank_series
+            return
+            # blank_series = pd.Series(data=[False]*len(self.conf.ShapelyStructureColumns),index=self.conf.ShapelyStructureColumns)
+            # print("blank series\n{}\nEnd blank series".format(blank_series))
+            # return blank_series
         cellrow = cellrow.iloc[0]
         print("moving cell of cell row type {}: {}".format(type(cellrow),cellrow))
         shpcell = cellrow['ShapelyCell']
