@@ -45,16 +45,6 @@ else:
             self.world = None
             self.backgroundphoto = None
 
-            # master is referring to the base widget - may change to dropdown menu
-            settings_menu = Menu(self.master)
-            self.master.config(menu=settings_menu)
-
-            # create the file object)
-            settings = Menu(settings_menu)
-            settings_menu.add_cascade(label="Settings", menu=settings)
-           # settings.add_command(label="Subdivide", command=self.subdivide_world())
-
-
 
         def MapUI(self):
             self.pack(fill=tk.BOTH, expand=True)
@@ -124,11 +114,11 @@ else:
 
         def stepping_world(self):
             print("CALLED STEPPING WORLD")
-            draw_world(self.world)
+            draw_world(self.world, force_draw=True)
             #self.world.access_data_struct().subdivide()
             #self.world.random_wiggle()
             step_world = self.world.step()
-            draw_world(self.world)
+            draw_world(self.world, force_draw=True)
             print("world age {}".format(self.world.age))
             # World.step(step_world)
             # World.random_wiggle()
@@ -150,13 +140,13 @@ else:
             self.backgroundphoto.image = photo_image
 
         def subdivide_world(self):
-             draw_world(self.world)
+             draw_world(self.world, force_draw=True)
              messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
              self.world.access_data_struct().subdivide()
 
         def move_world(self):
             print("MOVE WORLD")
-            draw_world(self.world)
+            draw_world(self.world, force_draw=True)
             self.world.access_data_struct().move_random_cell()
             # self.world.random_wiggle()
             # World.random_wiggle()
@@ -168,20 +158,6 @@ else:
 
         def help(self):
            os.system('notepad resources/About.txt')
-
-
-    class Help(tk.Frame):
-        def __init__(self):
-            Frame.__init__(self)
-
-            # text area
-            text_area = tk.Text(self, height=12)
-            text_area.grid(column=0, row=0, sticky='nsew')
-
-            tf = open('resources/About.txt', 'r')
-            data = tf.read()
-            text_area.insert(END, data)
-            tf.close()
 
 
 def main():
