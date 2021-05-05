@@ -115,13 +115,11 @@ else:
         def stepping_world(self):
             print("CALLED STEPPING WORLD")
             draw_world(self.world, force_draw=True)
-            #self.world.access_data_struct().subdivide()
-            #self.world.random_wiggle()
+            self.world.access_data_struct().subdivide()
+            self.world.random_wiggle()
             step_world = self.world.step()
             draw_world(self.world, force_draw=True)
             print("world age {}".format(self.world.age))
-            # World.step(step_world)
-            # World.random_wiggle()
             last_key =max(self.world.images.keys())
             print("last key {}".format(last_key))
             last_key_b = list(self.world.images[last_key].keys())[0]
@@ -140,16 +138,56 @@ else:
             self.backgroundphoto.image = photo_image
 
         def subdivide_world(self):
-             draw_world(self.world, force_draw=True)
-             messagebox.showwarning("Subdivide warning", "Can only subdivide less than 5 times.")
-             self.world.access_data_struct().subdivide()
+            print("CALLED SUBDIVIDE WORLD")
+            draw_world(self.world, force_draw=True)
+            self.world.access_data_struct().subdivide()
+            #self.world.random_wiggle()
+            step_world = self.world.step()
+            draw_world(self.world, force_draw=True)
+            print("world age {}".format(self.world.age))
+            #World.step(step_world)
+            #World.random_wiggle()
+            last_key = max(self.world.images.keys())
+            print("last key {}".format(last_key))
+            last_key_b = list(self.world.images[last_key].keys())[0]
+            first_image_bg = self.world.images[last_key][last_key_b]
+            # self.world.images[max(self.world.images.keys())].show()
+            first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+            # photo_image.show()
+            # photo_image.grid(row=1,column=1)
+
+            # background_label = Label(self.map_canvas, image=photo_image)
+            # background_label.photo = photo_image
+            # background_label.grid()
+            self.backgroundphoto.configure(image=photo_image)
+            self.backgroundphoto.image = photo_image
 
         def move_world(self):
-            print("MOVE WORLD")
+            print("CALLED MOVING WORLD")
             draw_world(self.world, force_draw=True)
-            self.world.access_data_struct().move_random_cell()
-            # self.world.random_wiggle()
-            # World.random_wiggle()
+            # self.world.access_data_struct().subdivide()
+            self.world.random_wiggle()
+            step_world = self.world.step()
+            draw_world(self.world, force_draw=True)
+            print("world age {}".format(self.world.age))
+            World.step(step_world)
+            World.random_wiggle()
+            last_key = max(self.world.images.keys())
+            print("last key {}".format(last_key))
+            last_key_b = list(self.world.images[last_key].keys())[0]
+            first_image_bg = self.world.images[last_key][last_key_b]
+            # self.world.images[max(self.world.images.keys())].show()
+            first_image_bg = PIL.Image.Image.resize(first_image_bg, (900, 600))
+            photo_image = PIL.ImageTk.PhotoImage(first_image_bg)
+            # photo_image.show()
+            # photo_image.grid(row=1,column=1)
+
+            # background_label = Label(self.map_canvas, image=photo_image)
+            # background_label.photo = photo_image
+            # background_label.grid()
+            self.backgroundphoto.configure(image=photo_image)
+            self.backgroundphoto.image = photo_image
 
         def save_world(self):
             first_image_bg = self.world.images[max(self.world.images.keys())]
