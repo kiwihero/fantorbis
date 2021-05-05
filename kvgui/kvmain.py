@@ -156,11 +156,12 @@ class UserControls(GridLayout):
 
 
     def multi_step(self, instance=None, steps=None):
-        self.threaded_controls.step_textbox = int(self.multi_step_input.text)
-        t1 = threading.Thread(target=self.threaded_controls.step_many)
-        t1.start()
-        self.multi_step_input.text = ''
-        Clock.schedule_once(self.reactivation)
+        if len(self.multi_step_input.text) > 0:
+            self.threaded_controls.step_textbox = int(self.multi_step_input.text)
+            t1 = threading.Thread(target=self.threaded_controls.step_many)
+            t1.start()
+            self.multi_step_input.text = ''
+            Clock.schedule_once(self.reactivation)
 
 
     def subdivision(self, instance):
@@ -341,14 +342,17 @@ class SplashLayout(RelativeLayout):
         super(SplashLayout, self).__init__(**kwargs)
         self.active_world = active_world
         self.root = root
-        self.main_options = GridLayout(cols=1, rows=2)
+
+        self.main_options = GridLayout(cols=1, rows=3)
         self.add_widget(self.main_options)
         self.start_button = Button(text="start")
         self.start_button.bind(on_release=root.to_main_screen)
         self.settings_button = Button(text="settings")
         self.settings_button.bind(on_release=root.to_settings_screen)
+        self.credits_label= Label(text="Program Developed by Anne and Kitty", size_hint=(1,0.2))
         self.main_options.add_widget(self.start_button)
         self.main_options.add_widget(self.settings_button)
+        self.main_options.add_widget(self.credits_label)
 
 class HelpLayout(RelativeLayout):
     def __init__(self, active_world, root, **kwargs):
@@ -431,10 +435,16 @@ class SettingsLayout(GridLayout):
                 "Label": None,
                 "Variable": self.active_world.conf.default_size,
                 "Input": IntInput(text=str(self.active_world.conf.default_size),multiline=False)
+            },
+            "Slowdown rate": {
+                "Button": None,
+                "Label": None,
+                "Variable": self.active_world.conf.mu,
+                "Input": IntInput(text=str(self.active_world.conf.mu), multiline=False)
             }
         }
 
-        self.settings_sub_layout = GridLayout(cols=3, rows=len(settings_buttons))
+        self.settings_sub_layout = GridLayout(cols=2, rows=len(settings_buttons))
         self.add_widget(self.settings_sub_layout)
 
         self.input_to_variable = dict()
@@ -445,7 +455,10 @@ class SettingsLayout(GridLayout):
             #     button_dict["Button"].bind(on_press=)
             if button_dict["Label"] is None:
                 button_dict["Label"] = Label(text=button_text)
-            button_dict["Input"].bind(on_text_validate=self.on_enter)
+            if button_text is "World start size":
+                button_dict["Input"].bind(on_text_validate=self.on_enter_wrld)
+            if button_text is "Slowdown rate":
+                button_dict["Input"].bind(on_text_validate=self.on_enter_spd)
             self.settings_sub_layout.add_widget(button_dict["Label"])
             # self.settings_sub_layout.add_widget(button_dict["Button"])
             self.settings_sub_layout.add_widget(button_dict["Input"])
@@ -457,10 +470,15 @@ class SettingsLayout(GridLayout):
         self.begin_button.bind(on_release=root.to_main_screen)
         self.add_widget(self.begin_button)
 
-    def on_enter(self, instance):
+    def on_enter_wrld(self, instance):
         print("instance text {}".format(instance.text))
         self.active_world.conf.default_size = int(instance.text)
         print("settings buttons\n{}\nEnd settings buttons".format(self.active_world.conf.default_size))
+
+    def on_enter_spd(self, instance):
+        print("instance text {}".format(instance.text))
+        self.active_world.conf.mu = int(instance.text)
+        print("settings buttons\n{}\nEnd settings buttons".format(self.active_world.conf.mu))
 
 
 

@@ -23,7 +23,7 @@ class Conf:
     }
     def __init__(self):
         self.world = None
-        self.default_size=2
+        self.default_size=0 #was 2
         self.startTimeInt = self.time_id()
         self.logFolder = 'logs/'
         self.logsSaved = 1
@@ -59,7 +59,7 @@ class Conf:
         self.default_controls_state = self.default_display_column
         self.default_plates_state = 'default_plates'
 
-        self.mu = 0.9 # temp has to set from .1 to 1
+        self.mu = 0.1 # temp has to set from .1 to 1
         self.static_mu_factor = 1
         self.overlap_to_converge = 0.5
 

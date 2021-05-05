@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="more x2 docstrings">
+    <list default="true" id="d34e4f97-2d19-42bc-a470-d849dc41b848" name="Default Changelist" comment="making work on desktop">
+      <change afterPath="$PROJECT_DIR$/resources/logo.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendworld/pillowtime.py" beforeDir="false" afterPath="$PROJECT_DIR$/backendworld/pillowtime.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/Conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendstorage/StorageMechanisms/ShapelyStructure.py" beforeDir="false" afterPath="$PROJECT_DIR$/backendstorage/StorageMechanisms/ShapelyStructure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendworld/World.py" beforeDir="false" afterPath="$PROJECT_DIR$/backendworld/World.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kvgui/kvmain.py" beforeDir="false" afterPath="$PROJECT_DIR$/kvgui/kvmain.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +37,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="backend" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -68,7 +72,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Python.pillowtime">
+  <component name="RunManager" selected="Python.kvmain">
     <configuration name="fantorbis" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="fantorbis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -82,6 +86,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="kvmain" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="fantorbis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/kvgui" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/kvgui/kvmain.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -136,9 +161,11 @@
       <item itemvalue="Python.fantorbis" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.pillowtime" />
+      <item itemvalue="Python.kvmain" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.kvmain" />
         <item itemvalue="Python.pillowtime" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.main" />
@@ -288,7 +315,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618103085832</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="making work on desktop">
+      <created>1620220966684</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1620220966684</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -315,6 +349,7 @@
     <MESSAGE value="docstrings" />
     <MESSAGE value="more docstrings" />
     <MESSAGE value="more x2 docstrings" />
-    <option name="LAST_COMMIT_MESSAGE" value="more x2 docstrings" />
+    <MESSAGE value="making work on desktop" />
+    <option name="LAST_COMMIT_MESSAGE" value="making work on desktop" />
   </component>
 </project>

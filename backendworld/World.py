@@ -162,6 +162,8 @@ class World:
         :param boundary: Can specify a plate boundary to split along
         :return:
         """
+        if len(self._dataStructure.CellStorage) < 2:
+            return
         if plate is None and boundary is None:
             print("available plates\n{}\nEnd available plates".format(self.tectonicPlates))
             for plate in self.tectonicPlates:
