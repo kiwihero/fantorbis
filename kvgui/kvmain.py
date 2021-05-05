@@ -23,6 +23,8 @@ from MatplotDisplay import draw_world, draw_plates
 import copy
 import threading
 
+from backendworld.kivywait import WaitLayout
+
 from kvgui.customkvclasses import ExtendedButton, IntInput
 
 class ThreadededFunctions():
