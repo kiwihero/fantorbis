@@ -212,19 +212,21 @@ class ShapelyStructure(ArrayStructure):
             # moved_cell = shapely_cell.move(move_x, move_y, change_velocity=change_velocity)
             print("Moved cell\n{}\nend moved cell".format(moved_cell))
             print("Path {} of moved_cell.last_skew_path\n{}\nEnd path of moved_cell.last_skew_path".format(type(moved_cell.last_skew_path),moved_cell.last_skew_path))
-            plt_geom(moved_cell.last_skew_path, title="moved_cell.last_skew_path")
+            if type(moved_cell.last_skew_path) is not GeometryCollection and len(moved_cell.last_skew_path) > 0:
+                plt_geom(moved_cell.last_skew_path, title="moved_cell.last_skew_path")
             skew_path = unary_union(moved_cell.last_skew_path['geometry'])
             print("Path {} of skew_path\n{}\nEnd path of skew_path".format(type(skew_path), skew_path))
 
 
 
-            plt_geom(skew_path, title="skew_path")
-            # raise Exception
-            print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
-            # =
+
 
 
             if type(skew_path) is not GeometryCollection:
+                plt_geom(skew_path, title="skew_path")
+                # raise Exception
+                print("Moved cell polygon\n{}\nend moved cell polygon".format(moved_cell.polygon))
+                # =
                 overlapping_rows = self.find_overlap(skew_path)
                 #     print("overlapping rows\n{}\nend overlapping rows".format(overlapping_rows))
                 #     plt_geoms(overlapping_rows)
@@ -259,22 +261,31 @@ class ShapelyStructure(ArrayStructure):
 
                 # plt_geoms(moved_cell.last_skew_path)
                 # TODO: Use last_skew_path to determine which cells should be absorbed
-                plt_geoms([cell_row,fully_overlapping_rows], title="Full overlap", fill=True)
-                plt_geoms([cell_row, line_adjacent_overlapping_rows, pt_adjacent_overlapping_rows,], title="Line overlap", fill=True)
-                plt_geoms([cell_row, semi_overlap], title="Semi overlap", fill=True)
-                plt_geoms([cell_row,fully_overlapping_rows,line_adjacent_overlapping_rows,pt_adjacent_overlapping_rows,semi_overlap],title="All overlaps",fill=True)
-                raise Exception
+                plt_geoms([moved_cell.polygon,skew_path,fully_overlapping_rows], title="Full overlap", fill=True)
+                plt_geoms([moved_cell.polygon,skew_path, line_adjacent_overlapping_rows, pt_adjacent_overlapping_rows,], title="Line overlap", fill=True)
+                plt_geoms([moved_cell.polygon,skew_path, semi_overlap], title="Semi overlap", fill=True)
+                plt_geoms([moved_cell.polygon,skew_path,fully_overlapping_rows,line_adjacent_overlapping_rows,pt_adjacent_overlapping_rows,semi_overlap],title="All overlaps",fill=True)
+                # raise Exception
 
+                cells_at_position = fully_overlapping_rows
+                print("Cells at position\n{}\nend cells at position".format(cells_at_position))
+                if len(cells_at_position) > 0:
+                    print("OLD STACK SIZE {}".format(moved_cell.world_cell.stack_size))
+                    new_stack_size = moved_cell.world_cell.stack_size + len(cells_at_position)
+                    print("NEW STACK SIZE {}".format(new_stack_size))
+                    new_world_cell = copy.deepcopy(moved_cell.world_cell)
+                    new_world_cell.stack_size = new_stack_size
+                    print("New world cell {}".format(new_world_cell))
+                    moved_cell.world_cell = new_world_cell
 
-
-
-
-
-
-
-
-
-
+                    self.CellStorage.drop(cells_at_position.index, inplace=True)
+                self.CellStorage = moved_cell.update_structure(self.CellStorage)
+                print("Updated structure\n{}\n{}\nend updated structure".format(self, self.CellStorage['geometry']))
+                overlapping_rows = self.find_overlap(skew_path)
+                fully_overlapping_rows = overlapping_rows.loc[overlapping_rows['overlap'] < 2]
+                print("{} Fully overlapping results \n{}\nEnd fully overlapping results".format(
+                    len(fully_overlapping_rows), fully_overlapping_rows['overlap']))
+                plt_geoms([moved_cell.polygon, skew_path, fully_overlapping_rows], title="Full overlap AFTER", fill=True)
 
         # raise Exception
 
@@ -286,27 +297,27 @@ class ShapelyStructure(ArrayStructure):
 
 
 
-        if allow_update is True:
-            cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
-            print("Cells at position\n{}\nend cells at position".format(cells_at_position))
-            if len(cells_at_position) > 0:
-                print("OLD STACK SIZE {}".format(moved_cell.world_cell.stack_size))
-                new_stack_size = moved_cell.world_cell.stack_size + len(cells_at_position)
-                print("NEW STACK SIZE {}".format(new_stack_size))
-                new_world_cell = copy.deepcopy(moved_cell.world_cell)
-                new_world_cell.stack_size = new_stack_size
-                print("New world cell {}".format(new_world_cell))
-                moved_cell.world_cell = new_world_cell
-
-                self.CellStorage.drop(cells_at_position.index, inplace=True)
-            self.CellStorage = moved_cell.update_structure(self.CellStorage)
-            print("Updated structure\n{}\n{}\nend updated structure".format(self,self.CellStorage['geometry']))
-            # cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
-            # print("Cells at position\n{}\nend cells at position".format(cells_at_position))
-            # if len(cells_at_position) > 1:
-            #     moved_cell.world_cell.stack_size += len(cells_at_position)-1
-            #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
-            #     raise Exception
+        # if allow_update is True:
+        #     cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
+        #     print("Cells at position\n{}\nend cells at position".format(cells_at_position))
+        #     if len(cells_at_position) > 0:
+        #         print("OLD STACK SIZE {}".format(moved_cell.world_cell.stack_size))
+        #         new_stack_size = moved_cell.world_cell.stack_size + len(cells_at_position)
+        #         print("NEW STACK SIZE {}".format(new_stack_size))
+        #         new_world_cell = copy.deepcopy(moved_cell.world_cell)
+        #         new_world_cell.stack_size = new_stack_size
+        #         print("New world cell {}".format(new_world_cell))
+        #         moved_cell.world_cell = new_world_cell
+        #
+        #         self.CellStorage.drop(cells_at_position.index, inplace=True)
+        #     self.CellStorage = moved_cell.update_structure(self.CellStorage)
+        #     print("Updated structure\n{}\n{}\nend updated structure".format(self,self.CellStorage['geometry']))
+        #     # cells_at_position = self.CellStorage.loc[self.CellStorage['pos_point'] == moved_cell.centroid]
+        #     # print("Cells at position\n{}\nend cells at position".format(cells_at_position))
+        #     # if len(cells_at_position) > 1:
+        #     #     moved_cell.world_cell.stack_size += len(cells_at_position)-1
+        #     #     print("STACK SIZE {}".format(moved_cell.world_cell.stack_size))
+        #     #     raise Exception
 
         return moved_cell
 
@@ -551,6 +562,12 @@ class ShapelyStructure(ArrayStructure):
         if c1.almost_equals(c2):
             print("{} and {} fully overlap".format(c1,c2))
             return 1.3
+        if c1.contains(c2):
+            print("{} within {} or reverse".format(c1, c2))
+            return 1.121
+        if c2.contains(c1):
+            print("{} within {}".format(c2,c1))
+            return 1.212
         if c1.touches(c2):
             # print("{} touches {}".format(c1,c2))
             print("Touches along {}".format(c1.intersection(c2)))

@@ -4,16 +4,19 @@ from MatplotDisplay import plt_to_file, draw_world
 
 w1 = World()
 struct = w1.access_data_struct()
-for x in range(4):
+for x in range(3):
     struct.subdivide()
     struct.update_cells()
     w1.step()
 w1.force_split()
-struct.update_cells()
+# struct.update_cells()
 for x in range(2):
     w1.step()
     struct.update_cells()
 w1.force_split()
+for x in range(2):
+    w1.step()
+    struct.update_cells()
 w1_pil = draw_world(w1,column='speed')
 w1_pil.show()
 w1_pil = draw_world(w1,column='stack_size')

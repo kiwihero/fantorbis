@@ -130,13 +130,19 @@ def plt_to_file(world: World):
 
 def plt_geoms(gdf, title=None, fill:bool=True):
     fig, ax = plt.subplots(1, 1)
+    if type(gdf) is Polygon:
+        gdf = [gdf]
     if type(gdf) is list:
         elem_count = 0
-        colors=['black','pink','red','green','yellow','black']
+        colors=['black','red','blue','purple','green','yellow']
         for elem in gdf:
-            print('{} elem {}, geometry {}'.format(elem_count, type(elem),elem['geometry']))
-            if type(elem) is MultiPolygon or type(elem) is Polygon:
+            # print('{} elem {}, geometry {}'.format(elem_count, type(elem),elem['geometry']))
+            if type(elem) is MultiPolygon:
                 elem = gpd.GeoDataFrame(list(elem))
+                print('{} multipoly elem {}, geometry {}'.format(elem_count, type(elem), elem.geometry))
+            if type(elem) is Polygon:
+                elem_df = gpd.GeoDataFrame([elem])
+                elem = elem_df.set_geometry([Polygon(elem.exterior.coords)])
                 print('{} poly elem {}, geometry {}'.format(elem_count, type(elem), elem.geometry))
             if type(elem) is pd.Series:
                 elem_df = elem.to_frame()
@@ -159,11 +165,14 @@ def plt_geoms(gdf, title=None, fill:bool=True):
                 if 'color_scale' in elem.columns:
                     elem.plot(ax=ax, column='color_scale', legend=True,alpha=0.4,label=str(elem_count))
                 elif elem_count < len(colors):
-                    print("set color {}".format(colors[elem_count]))
+                    print("{} elements, set color {}".format(len(elem),colors[elem_count]))
                     elem.plot(ax=ax, legend=True, alpha=0.4, color=colors[elem_count],zorder=elem_count,label=str(elem_count))
                 else:
                     elem.plot(ax=ax, legend=True,alpha=0.4,zorder=elem_count,label=str(elem_count))
             elem_count+= 1
+    elif type(gdf) is MultiPolygon:
+        poly_gdf = gpd.GeoDataFrame(list(gdf))
+        plt_geoms(poly_gdf,title=title,fill=fill)
     else:
         print(gdf['geometry'])
         gdf.boundary.plot(ax=ax, color='gray', zorder=2)
