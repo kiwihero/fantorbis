@@ -391,6 +391,7 @@ class SettingsLayout(GridLayout):
 
     def on_enter(self, instance):
         self.input_to_variable[instance] = int(instance.text)
+        print("settings buttons\n{}\nEnd settings buttons".format(self.active_world.conf.default_size))
 
 
 
