@@ -413,15 +413,27 @@ class MainLayout(GridLayout):
 
         default_controls_state = active_world.conf.default_controls_state
         default_plates_state = active_world.conf.default_plates_state
+        self.canvas_sm = ScreenManager()
+        self.root.canvas_sm = self.canvas_sm
+        self.root.canvas_screens
+        self.canvas_sm.transition = NoTransition()
+        self.world_screen = Screen(name="world_miniscreen")
+        self.root.canvas_screens['world_miniscreen'] = self.world_screen
+        self.wait_screen = Screen(name="wait_miniscreen")
+        self.root.canvas_screens['wait_miniscreen'] = self.wait_screen
 
         self.world_canvas = WorldDisplay( self.active_world)
+        self.world_screen.add_widget(self.world_canvas)
+
+        self.wait_layout = WaitLayout()
+        self.wait_screen.add_widget(self.wait_layout)
 
         self.basic_controls = UserControls(self.active_world, self.world_canvas, root=self.root)
         self.basic_display_controls = UserDisplayControls(self.active_world, self.world_canvas)
         self.app_controls = ApplicationControls(self.active_world, self.world_canvas, root=self.root)
 
-
-        self.add_widget(self.world_canvas)
+        self.add_widget(self.canvas_sm)
+        self.canvas_sm.add_widget(self.world_screen)
         self.add_widget(self.basic_controls)
         self.add_widget(self.basic_display_controls)
         self.add_widget(self.app_controls)
@@ -490,6 +502,8 @@ class RootWidget(FloatLayout):
         self.active_world = active_world
         self.running_thread = False
         self.ev = ev = ThreadEventDispatcher()
+        self.canvas_sm = None
+        self.canvas_screens = dict()
         ev.bind(on_thread_beginning=self.start_running_thread)
         ev.bind(on_thread_completion=self.complete_running_thread)
         ev.bind(on_display_update_request=self.request_display_update)
@@ -529,14 +543,17 @@ class RootWidget(FloatLayout):
 
 
 
+
     def start_running_thread(self, arg1=None, arg2=None):
         self.running_thread = True
+        self.to_wait_screen()
         # raise Exception
 
 
 
     def complete_running_thread(self, arg1=None, arg2=None):
         self.running_thread = False
+        self.to_world_screen()
         # raise Exception
 
     def request_display_update(self, arg1=None, arg2=None):
@@ -552,6 +569,15 @@ class RootWidget(FloatLayout):
 
     def to_settings_screen(self, instance):
         self.sm.switch_to(self.settings_screen)
+
+    def to_world_screen(self, instance=None):
+        self.canvas_screens['wait_miniscreen'].children[0].end_circle()
+        self.canvas_sm.switch_to(self.canvas_screens['world_miniscreen'])
+
+    def to_wait_screen(self, instance=None):
+        self.canvas_screens['wait_miniscreen'].children[0].start_circle()
+        self.canvas_sm.switch_to(self.canvas_screens['wait_miniscreen'])
+
 
 
 

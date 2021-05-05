@@ -30,10 +30,33 @@ class WaitLayout(RelativeLayout):
         super(WaitLayout, self).__init__(**kwargs)
         self.size_hint = (1,1)
         # self.make_rect()
+        # self.wait_label = Label(text="Processing\nPlease wait", size_hint=(1,0.25),color=[1,0,0,1], font_size=50)
+        # self.make_label()
+        # self.wait_label.bind(pos=self.update_label)
+        # self.wait_label.bind(size=self.update_label)
+        # self.wait_label.texture_update()
+
+        # self.add_widget(self.wait_label)
         self.world_canvas = WaitDisplay()
+
         self.add_widget(self.world_canvas)
 
         # self.update_rect()
+
+    def make_label(self, *args):
+        with self.wait_label.canvas.before:
+            Color(0, 0, 0, 1)  # green; colors range from 0-1 instead of 0-255
+            # self.rect = Rectangle(size=self.size,pos=self.pos)
+            self.label_rect = Rectangle(size_hint=(1, 1))
+
+    def update_label(self, *args):
+        self.wait_label.size = self.size
+
+    def start_circle(self):
+        self.world_canvas.start_circle()
+
+    def end_circle(self):
+        self.world_canvas.end_circle()
 
 
     # def update_rect(self, *args):
@@ -60,7 +83,11 @@ class WaitDisplay(RelativeLayout):
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
         self.position =0
-        self.angle=90
+        self.angle=9
+        self.is_active = False
+        self.wait_length = 0
+        self.wait_timer = self.wait_length
+
     def make_rect(self, *args):
         with self.canvas.before:
             Color(0, 1, 1, 1)  # green; colors range from 0-1 instead of 0-255
@@ -68,13 +95,13 @@ class WaitDisplay(RelativeLayout):
             self.rect = Rectangle(size_hint=(1,1))
 
     def update_rect(self, *args):
-        print("old waitlayout size {}, {}".format(self.size, self.pos))
+        # print("old waitlayout size {}, {}".format(self.size, self.pos))
 
         self.rect.pos = self.pos
         self.rect.size = self.size
         # self.canvas.clear()
 
-        print("waitlayout size {}, {}".format(self.size,self.pos))
+        # print("waitlayout size {}, {}".format(self.size,self.pos))
 
     def update_display(self, *args):
 
@@ -83,18 +110,36 @@ class WaitDisplay(RelativeLayout):
             Color(1, 0, 0)
             # self.canvas_image = Rectangle(pos =(10, 10), size =(self.width, self.height))
             # Line(circle=(150, 150, 50, 0, 360, 50)) #whole circle
-            Clock.schedule_once(self.movecircle)
+            Clock.schedule_once(self._movecircle)
+    def start_circle(self):
+        self.is_active = True
+        self._movecircle()
+
+    def end_circle(self):
+        self.is_active = False
 
 
-    def movecircle(self, *args):
-        print("movecircle size {}, {}".format(self.size, self.pos))
+    def _movecircle(self, *args):
+        # print("movecircle size {}, {}".format(self.size, self.pos))
         self.canvas.clear()
         self.make_rect()
         with self.canvas:
             Color(1, 0, 0)
-            Line(circle=(150, 150, 50, self.position, self.position+self.angle, 50)) #whole circle
+            x_pos = int(self.size[0]/2)
+            y_pos = int(self.size[1] / 2)
+            Line(circle=(x_pos, y_pos, int((3/4)*min(x_pos,y_pos)), self.position, self.position+self.angle, 50), width=3) #whole circle
             self.position=(self.position+self.angle)%360
-            Clock.schedule_once(self.movecircle)
+            if self.is_active is True:
+                self.wait_timer = self.wait_length
+                Clock.schedule_once(self._movecircle)
+
+    def _no_move(self, *args):
+        if self.wait_timer <= 0:
+            Clock.schedule_once(self._movecircle)
+        else:
+            self.wait_timer -= 1
+            Clock.schedule_once(self._no_move)
+
 
 
 
