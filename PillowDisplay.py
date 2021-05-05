@@ -13,7 +13,7 @@ import copy
 
 def draw_world(world, add_text: bool =False):
     '''
-
+    This one creates a PIL object and puts it in the dictionary
     :param world: the World object that is being drawn.
     :param add_text: Boolean determining whether or not age should be written on the drawing.
     :return: he draws the world, however he does not show you the world. he draws it.
@@ -89,7 +89,9 @@ def draw_world(world, add_text: bool =False):
 
 def image_world(world, force_current: bool =False, current_only: bool = False, image_type=('all', True)):
     '''
-
+    This one calls draw_world if necessary, and then saves
+    all of the PIL images or just the current one
+    to file
     :param world: World object
     :param force_current: determining if should include prevs or just current
     :param current_only: just current
@@ -145,10 +147,16 @@ def image_world(world, force_current: bool =False, current_only: bool = False, i
     if image_dicts_len == 0:
         world.conf.log_from_conf('info', "No images already known")
         # print("no images already known")
+        print("image dicts {}".format(image_dicts))
         if world.age not in image_dicts['clean']:
             draw_world(world)
+        print("world images {}".format(world.images))
+        print("world annotated images {}".format(world.annotatedImages))
         if type_mode == 'annotated' or type_mode == 'all':
+            print("world images {}".format(world.images))
             annotated_img = world.images[world.age].copy()
+            print("images for age {}".format(annotated_img))
+            raise Exception
             annotated_draw = ImageDraw.Draw(annotated_img)
             caption = world.conf.imageCaption.format(world.age)
             _annotate_image(annotated_draw,caption=caption, position=world.conf.imageSmallCaptionPos, conf=world.conf)
@@ -189,7 +197,7 @@ def image_world(world, force_current: bool =False, current_only: bool = False, i
 def _save_image(image, filename, conf):
 
     '''
-
+    The actual saving to file system is here
     :param image: the image being saved
     :param filename: where he is being saved to
     :param conf: directory
@@ -214,7 +222,8 @@ def _save_image(image, filename, conf):
 
 def gif_world(world):
     '''
-
+    All of the PIL images in the world's dictionary to a GIF
+    If you don't use the ones with text, all images with no changes take a single unit of time
     :param world: world object
     :return: this makes the world go weeee.
     '''
@@ -267,7 +276,7 @@ def gif_world(world):
 
 def _annotate_image(drawInstance, position, caption, conf):
     '''
-
+    Adds text to an image, useful for GIF ing
     :param drawInstance: the instance chosen
     :param position: the xy coordinates
     :param caption: the text thats there
@@ -286,7 +295,7 @@ def _annotate_image(drawInstance, position, caption, conf):
 def _square_cells(image, rectanglestructure, sep_ratio=0.1, sep_fixed=None):
 
     '''
-
+    Determines how to draw each cell assuming they are square
     :param image: world image working with
     :param rectanglestructure: rectangle
     :param sep_ratio: the ratio of seperation
