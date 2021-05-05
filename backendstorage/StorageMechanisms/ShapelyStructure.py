@@ -25,6 +25,7 @@ class ShapelyStructure(ArrayStructure):
         :param kwargs:
         """
         super(ShapelyStructure, self).__init__(**kwargs)
+        print("DEFAULT SIZE {}".format(default_size))
         self.world = self.conf.world
         first_cell = ShapelyCell(
             conf=self.conf,
@@ -55,6 +56,7 @@ class ShapelyStructure(ArrayStructure):
         # raise Exception
         for x in range(default_size):
             self.subdivide()
+
 
 
 

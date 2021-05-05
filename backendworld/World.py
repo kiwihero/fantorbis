@@ -22,6 +22,7 @@ class World:
         self.tectonicPlates = set()
         self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry', 'ShapelyPlate','area','length'])
         self.tectonicCells = set()
+        print("conf default size {}".format(self.conf.default_size))
         self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf,default_size=self.conf.default_size)
         self.images = {}
         self.annotatedImages = {}

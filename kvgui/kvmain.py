@@ -375,8 +375,8 @@ class SettingsLayout(GridLayout):
             "World start size": {
                 "Button": None,
                 "Label": None,
-                "Input": IntInput(),
-                "Variable": self.active_world.conf.default_size
+                "Variable": self.active_world.conf.default_size,
+                "Input": IntInput(text=str(self.active_world.conf.default_size),multiline=False)
             }
         }
 
@@ -404,7 +404,8 @@ class SettingsLayout(GridLayout):
         self.add_widget(self.begin_button)
 
     def on_enter(self, instance):
-        self.input_to_variable[instance] = int(instance.text)
+        print("instance text {}".format(instance.text))
+        self.active_world.conf.default_size = int(instance.text)
         print("settings buttons\n{}\nEnd settings buttons".format(self.active_world.conf.default_size))
 
 
@@ -454,16 +455,23 @@ class MainLayout(GridLayout):
         self.add_widget(self.basic_controls)
         self.add_widget(self.basic_display_controls)
         self.add_widget(self.app_controls)
-        self.quit_button = Button(text="quit")
-        self.quit_button.bind(on_release=self.quit_app)
-        self.app_controls.add_widget(self.quit_button)
+        self.col_box = GridLayout(cols=2, rows=1)
+        self.app_controls.add_widget(self.col_box)
+        self.settings_button = Button(text="settings")
+        self.settings_button.bind(on_release=self.root.to_settings_screen)
+        self.col_box.add_widget(self.settings_button)
         self.help_box = RelativeLayout()
         self.help_button = Button(text="help")
         self.help_button.bind(on_release=self.to_help_screen)
         self.help_box.add_widget(self.help_button)
         self.help_exit_button = Button(text="done")
         self.help_exit_button.bind(on_release=self.exit_help_screen)
-        self.app_controls.add_widget(self.help_box)
+        self.col_box.add_widget(self.help_box)
+        # self.app_controls.add_widget(self.help_box)
+        self.quit_button = Button(text="quit")
+        self.quit_button.bind(on_release=self.quit_app)
+        self.app_controls.add_widget(self.quit_button)
+
         self.reset_button = Button(text="New World")
         self.reset_button.bind(on_release=self.new_world)
         self.app_controls.add_widget(self.reset_button)
