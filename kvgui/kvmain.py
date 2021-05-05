@@ -9,6 +9,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.button import Button
 from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.textinput import TextInput
 from backendworld.World import World
 from kivy.core.image import Image as CoreImage
@@ -19,9 +20,10 @@ from kivy.clock import Clock
 from io import BytesIO
 # import io
 from kivy.event import EventDispatcher
-from MatplotDisplay import draw_world, draw_plates
+from MatplotDisplay import draw_world, draw_plates, plt_to_file
 import copy
 import threading
+import os
 
 from backendworld.kivywait import WaitLayout
 
@@ -358,6 +360,55 @@ class HelpLayout(RelativeLayout):
         self.help_label = Label(text=str(help_text))
         self.add_widget(self.help_label)
 
+class SaveLayout(BoxLayout):
+    def __init__(self, active_world, root, **kwargs):
+        super(SaveLayout, self).__init__(**kwargs)
+        self.orientation='vertical'
+        self.active_world = active_world
+        self.root = root
+        self.fc = FileChooserListView()
+        # self.fc.bind(on_selection=self.select) #on_selection: text_input.text = self.selection and self.selection[0] or '')
+        # self.fc.bind(on_release=self.select)
+        self.fc_box = BoxLayout(orientation='vertical', size_hint=(1,0.8))
+        self.text_input = TextInput(multiline=False, size_hint=(1,0.1))
+        self.fc_controls = BoxLayout(orientation='horizontal', size_hint=(1,0.1))
+        self.add_widget(self.text_input)
+        self.add_widget(self.fc_box)
+        self.fc_box.add_widget(self.fc)
+        self.fc_box.add_widget(self.fc_controls)
+        self.cancel_button = Button(text="cancel")
+        # TODO: Should handle going back to whatever screen, not just hardcode main screen
+        self.cancel_button.bind(on_release=root.to_main_screen)
+        self.confirm_button = Button(text="confirm")
+        self.confirm_button.bind(on_release=self.do_save)
+        self.fc_controls.add_widget(self.cancel_button)
+        self.fc_controls.add_widget(self.confirm_button)
+
+    # def select(self, instance):
+    #     print("instance {} {}".format(type(instance),instance))
+    #     print("text input {}".format(instance.selection and instance.selection[0] or ''))
+    #     self.text_input.text = instance.selection and instance.selection[0] or ''
+
+    def do_save(self, instance):
+        print("do_save")
+        print("fc path {}".format(self.fc.path))
+        if self.text_input.text is not None:
+            self.active_world.conf.flatImageFolder = os.path.join(self.fc.path)
+            fn = self.text_input.text
+            if '.png' not in fn:
+                fn = fn+'.png'
+            self.active_world.conf.imageName = os.path.join(self.fc.path,fn)
+        else:
+            print("No text")
+            self.active_world.conf.flatImageFolder = os.path.join(self.fc.path)
+
+            self.active_world.conf.imageName = os.path.join(self.fc.path,os.path.basename(self.active_world.conf.imageName))
+        #TODO: POPUP IF NO FILENAME
+
+        plt_to_file(self.active_world)
+        self.root.to_main_screen()
+
+
 
 
 class SettingsLayout(GridLayout):
@@ -368,8 +419,11 @@ class SettingsLayout(GridLayout):
 
         self.active_world = active_world
         self.root = root
-        self.rows = 2
+        self.rows = 3
         self.cols = 1
+
+        self.warning_label = Label(text="YOU MUST CREATE A NEW WORLD FOR THESE SETTINGS TO TAKE EFFECT\nPRESS ENTER TO CONFIRM YOUR CHANGE")
+        self.add_widget(self.warning_label)
 
         settings_buttons = {
             "World start size": {
@@ -455,7 +509,7 @@ class MainLayout(GridLayout):
         self.add_widget(self.basic_controls)
         self.add_widget(self.basic_display_controls)
         self.add_widget(self.app_controls)
-        self.col_box = GridLayout(cols=2, rows=1)
+        self.col_box = GridLayout(cols=2, rows=2)
         self.app_controls.add_widget(self.col_box)
         self.settings_button = Button(text="settings")
         self.settings_button.bind(on_release=self.root.to_settings_screen)
@@ -468,9 +522,14 @@ class MainLayout(GridLayout):
         self.help_exit_button.bind(on_release=self.exit_help_screen)
         self.col_box.add_widget(self.help_box)
         # self.app_controls.add_widget(self.help_box)
+
+        self.save_button = Button(text="save")
+        self.save_button.bind(on_release=self.root.to_save_screen)
+        self.col_box.add_widget(self.save_button)
+
         self.quit_button = Button(text="quit")
         self.quit_button.bind(on_release=self.quit_app)
-        self.app_controls.add_widget(self.quit_button)
+        self.col_box.add_widget(self.quit_button)
 
         self.reset_button = Button(text="New World")
         self.reset_button.bind(on_release=self.new_world)
@@ -566,6 +625,11 @@ class RootWidget(FloatLayout):
         self.settings_screen = Screen(name="settings")
         self.settings_layout = SettingsLayout(self.active_world, root=self)
         self.settings_screen.add_widget(self.settings_layout)
+
+        self.save_screen = Screen(name="save")
+        self.save_layout = SaveLayout(active_world=self.active_world, root=self)
+        self.save_screen.add_widget(self.save_layout)
+
         # self.main_screen = MainScreen(self.active_world, root=self, name="main")
         self.sm.add_widget(self.splash_screen)
         self.sm.add_widget(self.main_screen)
@@ -607,11 +671,14 @@ class RootWidget(FloatLayout):
             raise Exception
             Clock.schedule_once(self.request_display_update)
 
-    def to_main_screen(self, instance):
+    def to_main_screen(self, instance=None):
         self.sm.switch_to(self.main_screen)
 
     def to_settings_screen(self, instance):
         self.sm.switch_to(self.settings_screen)
+
+    def to_save_screen(self, instance):
+        self.sm.switch_to(self.save_screen)
 
     def to_world_screen(self, instance=None):
         self.canvas_screens['wait_miniscreen'].children[0].end_circle()
