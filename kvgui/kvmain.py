@@ -251,7 +251,7 @@ class ApplicationControls(GridLayout):
         self.active_world = active_world
         self.display_canvas = display_canvas
         self.cols = 1
-        self.rows = 2
+        self.rows = 3
 
     def reset_world(self, world):
         self.active_world = world
@@ -348,6 +348,18 @@ class SplashLayout(RelativeLayout):
         self.main_options.add_widget(self.start_button)
         self.main_options.add_widget(self.settings_button)
 
+class HelpLayout(RelativeLayout):
+    def __init__(self, active_world, root, **kwargs):
+        super(HelpLayout, self).__init__(**kwargs)
+        self.active_world = active_world
+        self.root = root
+        f = open("resources/About.txt", "r")
+        help_text = f.read()
+        self.help_label = Label(text=str(help_text))
+        self.add_widget(self.help_label)
+
+
+
 class SettingsLayout(GridLayout):
     def __init__(self, active_world, root, **kwargs):
         super(SettingsLayout, self).__init__(**kwargs)
@@ -421,12 +433,17 @@ class MainLayout(GridLayout):
         self.root.canvas_screens['world_miniscreen'] = self.world_screen
         self.wait_screen = Screen(name="wait_miniscreen")
         self.root.canvas_screens['wait_miniscreen'] = self.wait_screen
+        self.help_screen = Screen(name="help_miniscreen")
+        self.root.canvas_screens['help_miniscreen'] = self.help_screen
 
         self.world_canvas = WorldDisplay( self.active_world)
         self.world_screen.add_widget(self.world_canvas)
 
         self.wait_layout = WaitLayout()
         self.wait_screen.add_widget(self.wait_layout)
+
+        self.help_layout = HelpLayout(self.active_world, root=self.root)
+        self.help_screen.add_widget(self.help_layout)
 
         self.basic_controls = UserControls(self.active_world, self.world_canvas, root=self.root)
         self.basic_display_controls = UserDisplayControls(self.active_world, self.world_canvas)
@@ -440,9 +457,28 @@ class MainLayout(GridLayout):
         self.quit_button = Button(text="quit")
         self.quit_button.bind(on_release=self.quit_app)
         self.app_controls.add_widget(self.quit_button)
+        self.help_box = RelativeLayout()
+        self.help_button = Button(text="help")
+        self.help_button.bind(on_release=self.to_help_screen)
+        self.help_box.add_widget(self.help_button)
+        self.help_exit_button = Button(text="done")
+        self.help_exit_button.bind(on_release=self.exit_help_screen)
+        self.app_controls.add_widget(self.help_box)
         self.reset_button = Button(text="New World")
         self.reset_button.bind(on_release=self.new_world)
         self.app_controls.add_widget(self.reset_button)
+
+    def to_help_screen(self, instance=None):
+        for child in self.help_box.children[:]:
+            self.help_box.remove_widget(child)
+        self.help_box.add_widget(self.help_exit_button)
+        self.root.to_help_screen()
+
+    def exit_help_screen(self, instance=None):
+        for child in self.help_box.children[:]:
+            self.help_box.remove_widget(child)
+        self.help_box.add_widget(self.help_button)
+        self.root.exit_help_screen()
 
     def reset_world(self, world):
         self.active_world = world
@@ -526,7 +562,6 @@ class RootWidget(FloatLayout):
         self.sm.add_widget(self.splash_screen)
         self.sm.add_widget(self.main_screen)
         print("sm curr {}".format(self.sm.current_screen))
-
     def new_world(self,instance=None):
         print("root new world")
         old_conf = self.active_world.conf
@@ -577,6 +612,20 @@ class RootWidget(FloatLayout):
     def to_wait_screen(self, instance=None):
         self.canvas_screens['wait_miniscreen'].children[0].start_circle()
         self.canvas_sm.switch_to(self.canvas_screens['wait_miniscreen'])
+
+    def to_help_screen(self, instance=None):
+        self.canvas_sm.switch_to(self.canvas_screens['help_miniscreen'])
+
+    def exit_help_screen(self, instance=None):
+        if self.running_thread is True:
+            # TODO: this may not show circle if help while loading
+            # self.canvas_screens['wait_miniscreen'].children[0].start_circle()
+            self.canvas_sm.switch_to(self.canvas_screens['wait_miniscreen'])
+        self.canvas_sm.switch_to(self.canvas_screens['world_miniscreen'])
+
+
+
+
 
 
 
