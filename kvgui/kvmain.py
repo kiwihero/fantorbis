@@ -2,6 +2,8 @@ import kivy
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
@@ -21,6 +23,8 @@ from MatplotDisplay import draw_world, draw_plates
 import copy
 import threading
 
+from kvgui.customkvclasses import ExtendedButton, IntInput
+
 class ThreadededFunctions():
     def __init__(self,parent_widget, root):
         self.parent_widget = parent_widget
@@ -28,6 +32,7 @@ class ThreadededFunctions():
         print("root {}".format(self.root))
         # self.ev = ev = ThreadEventDispatcher()
         self.dispatcher = self.root.ev
+        self.step_textbox = 0
         # self.dispatcher.bind(on_thread_completion=self.complete_thread)
         # self.background_dispatcher = ThreadedProgram(self.ev)
 
@@ -63,6 +68,14 @@ class ThreadededFunctions():
         self.parent_widget.active_world.step()
         self.complete_thread()
 
+    def step_many(self, instance=None, steps_requested=1):
+        print("step many; textbox {}".format(self.step_textbox))
+        self.start_thread()
+        self.parent_widget.disable_buttons()
+        for s in range(int(self.step_textbox)):
+            self.parent_widget.active_world.step()
+        self.complete_thread()
+
     def refresh_display(self, instance=None):
         self.start_thread()
         self.parent_widget.disable_buttons()
@@ -86,9 +99,21 @@ class UserControls(GridLayout):
         self.subdivide_button = Button(text='Subdivide')
         self.subdivide_button.bind(on_press=self.subdivision)
         self.add_widget(self.subdivide_button)
-        self.step_button = Button(text='Step')
+        self.step_layout = BoxLayout(orientation='horizontal')
+        self.step_button = Button(text="Step")
+        self.add_widget(self.step_layout)
+        self.step_layout.add_widget(self.step_button)
         self.step_button.bind(on_press=self.single_step)
-        self.add_widget(self.step_button)
+        self.multi_step_button = Button(text="Multi-step")
+        self.multi_step_button.bind(on_press=self.multi_step)
+        self.multi_step_input = IntInput(multiline=False)
+        self.multi_step_input.bind(on_text_validate=self.on_enter)
+        self.step_layout.add_widget(self.multi_step_input)
+        self.step_layout.add_widget(self.multi_step_button)
+        # TODO: Multi-select button
+        # self.extended_step_button = ExtendedButton(main_button=self.step_button, dropdown_buttons=[self.multi_step_button])
+        # self.extended_step_button.main_button.
+        # self.add_widget(self.extended_step_button)
         self.move_cell_button = Button(text='Force split')
         self.move_cell_button.bind(on_press=self.move_cell)
         self.add_widget(self.move_cell_button)
@@ -96,6 +121,8 @@ class UserControls(GridLayout):
             self.refresh_button: True,
             self.subdivide_button: True,
             self.step_button: True,
+            self.multi_step_input: True,
+            self.multi_step_button: True,
             self.move_cell_button: True
         }
         self.control_button_saved_states = dict()
@@ -115,6 +142,20 @@ class UserControls(GridLayout):
     def single_step(self, instance):
         t1 = threading.Thread(target=self.threaded_controls.step)
         t1.start()
+        Clock.schedule_once(self.reactivation)
+
+
+
+    def on_enter(self, instance):
+        self.threaded_controls.step_textbox = int(instance)
+        self.multi_step(steps=int(instance))
+
+
+    def multi_step(self, instance=None, steps=None):
+        self.threaded_controls.step_textbox = int(self.multi_step_input.text)
+        t1 = threading.Thread(target=self.threaded_controls.step_many)
+        t1.start()
+        self.multi_step_input.text = ''
         Clock.schedule_once(self.reactivation)
 
 
@@ -283,16 +324,82 @@ class WorldDisplay(Widget):
         self.beeld.texture = im.texture
         return im
 
-class MainScreen(Screen):
+
+# class SplashScreen(Screen):
+#     def __init__(self, active_world, root, **kwargs):
+#         super(SplashScreen, self).__init__(**kwargs)
+#         self.active_world = active_world
+#         self.root = root
+#         self.layout = SplashLayout(self.active_world, self.root)
+
+class SplashLayout(RelativeLayout):
     def __init__(self, active_world, root, **kwargs):
-        super(MainScreen, self).__init__(**kwargs)
+        super(SplashLayout, self).__init__(**kwargs)
         self.active_world = active_world
         self.root = root
-        self.layout = MainLayout(self.active_world, self.root)
+        self.main_options = GridLayout(cols=1, rows=2)
+        self.add_widget(self.main_options)
+        self.start_button = Button(text="start")
+        self.start_button.bind(on_release=root.to_main_screen)
+        self.settings_button = Button(text="settings")
+        self.settings_button.bind(on_release=root.to_settings_screen)
+        self.main_options.add_widget(self.start_button)
+        self.main_options.add_widget(self.settings_button)
+
+class SettingsLayout(GridLayout):
+    def __init__(self, active_world, root, **kwargs):
+        super(SettingsLayout, self).__init__(**kwargs)
 
 
 
+        self.active_world = active_world
+        self.root = root
+        self.rows = 2
+        self.cols = 1
 
+        settings_buttons = {
+            "World start size": {
+                "Button": None,
+                "Label": None,
+                "Input": IntInput(),
+                "Variable": self.active_world.conf.default_size
+            }
+        }
+
+        self.settings_sub_layout = GridLayout(cols=3, rows=len(settings_buttons))
+        self.add_widget(self.settings_sub_layout)
+
+        self.input_to_variable = dict()
+
+        for button_text, button_dict in settings_buttons.items():
+            # if button_dict["Button"] is None:
+            #     button_dict["Button"] = Button()
+            #     button_dict["Button"].bind(on_press=)
+            if button_dict["Label"] is None:
+                button_dict["Label"] = Label(text=button_text)
+            button_dict["Input"].bind(on_text_validate=self.on_enter)
+            self.settings_sub_layout.add_widget(button_dict["Label"])
+            # self.settings_sub_layout.add_widget(button_dict["Button"])
+            self.settings_sub_layout.add_widget(button_dict["Input"])
+            self.input_to_variable[button_dict["Input"]] = button_dict["Variable"]
+
+
+
+        self.begin_button = Button(text="begin")
+        self.begin_button.bind(on_release=root.to_main_screen)
+        self.add_widget(self.begin_button)
+
+    def on_enter(self, instance):
+        self.input_to_variable[instance] = int(instance.text)
+
+
+
+# class MainScreen(Screen):
+#     def __init__(self, active_world, root, **kwargs):
+#         super(MainScreen, self).__init__(**kwargs)
+#         self.active_world = active_world
+#         self.root = root
+#         self.layout = MainLayout(self.active_world, self.root)
 
 class MainLayout(GridLayout):
     def __init__(self, active_world, root, **kwargs):
@@ -389,16 +496,24 @@ class RootWidget(FloatLayout):
         self.sm = ScreenManager()
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
-        self.main_screen = Screen()
+        self.splash_screen = Screen(name="splash")
+        self.splash_layout = SplashLayout(self.active_world, root=self)
+        self.splash_screen.add_widget(self.splash_layout)
+        self.main_screen = Screen(name="main")
         self.main_layout = MainLayout(self.active_world, root=self)
         self.main_screen.add_widget(self.main_layout)
+        self.settings_screen = Screen(name="settings")
+        self.settings_layout = SettingsLayout(self.active_world, root=self)
+        self.settings_screen.add_widget(self.settings_layout)
         # self.main_screen = MainScreen(self.active_world, root=self, name="main")
+        self.sm.add_widget(self.splash_screen)
         self.sm.add_widget(self.main_screen)
         print("sm curr {}".format(self.sm.current_screen))
 
     def new_world(self,instance=None):
         print("root new world")
-        self.active_world = World()
+        old_conf = self.active_world.conf
+        self.active_world = World(old_conf)
         for child in self.children[:]:
             self.remove_widget(child)
         self.sm = ScreenManager()
@@ -428,6 +543,12 @@ class RootWidget(FloatLayout):
             print("Cannot request update, thread is still running")
             raise Exception
             Clock.schedule_once(self.request_display_update)
+
+    def to_main_screen(self, instance):
+        self.sm.switch_to(self.main_screen)
+
+    def to_settings_screen(self, instance):
+        self.sm.switch_to(self.settings_screen)
 
 
 

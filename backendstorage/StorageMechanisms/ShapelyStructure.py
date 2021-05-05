@@ -19,7 +19,7 @@ class ShapelyStructure(ArrayStructure):
     Not a real structure either, don't use this itself
     Structures that use arrays instead of pointers to hold information
     """
-    def __init__(self, wrap: bool = True, **kwargs):
+    def __init__(self, wrap: bool = True, default_size=2, **kwargs):
         """
         This is an actual structure
         :param kwargs:
@@ -53,6 +53,8 @@ class ShapelyStructure(ArrayStructure):
         print("Cell storage\n{}\nEnd cell storage".format(self.CellStorage))
         self.world.new_tectonic_plate(self.CellStorage)
         # raise Exception
+        for x in range(default_size):
+            self.subdivide()
 
 
 

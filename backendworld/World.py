@@ -10,8 +10,11 @@ import geopandas as gpd
 import pandas as pd
 
 class World:
-    def __init__(self):
-        self.conf = Conf()
+    def __init__(self, conf=None):
+        if conf is not None:
+            self.conf = conf
+        else:
+            self.conf = Conf()
         self.conf.world = self
         self.age = 0
         self.tectonicBoundaries = set()
@@ -19,7 +22,7 @@ class World:
         self.tectonicPlates = set()
         self.tectonicPlatesDf = gpd.GeoDataFrame(columns=['geometry', 'ShapelyPlate','area','length'])
         self.tectonicCells = set()
-        self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf)
+        self._dataStructure = self.conf.class_for_name('ShapelyStructure')(conf=self.conf,default_size=self.conf.default_size)
         self.images = {}
         self.annotatedImages = {}
         self.detailedImages = {}

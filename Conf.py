@@ -23,6 +23,7 @@ class Conf:
     }
     def __init__(self):
         self.world = None
+        self.default_size=2
         self.startTimeInt = self.time_id()
         self.logFolder = 'logs/'
         self.logsSaved = 1
